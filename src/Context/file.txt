@@ -1,0 +1,22 @@
+<GlobalProvider>
+      <div>
+        <ProductProvider.Provider
+          value={{
+            cartProducts,
+            SetCartProducts,
+            TotalProductsInCart,
+            setTotalProductsInCart,
+            totalProductPrice,
+            setTotalProductPrice,
+            cartSideBarToggle,
+            setCartSideBarToggle,
+            refreshCart,
+          }}
+        >
+          <Navbar />
+          <HeroImage />
+          <SectionTitle />
+          <ProductLayout />
+        </ProductProvider.Provider>
+      </div>
+    </GlobalProvider>

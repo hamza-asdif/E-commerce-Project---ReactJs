@@ -1,0 +1,216 @@
+/* Navbar.css - Reorganized layout with logo in middle, menu on right, cart on left */
+
+:root {
+    --main-color: #F24547;
+}
+
+* {
+    font-family: "El Messiri", serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+    color: var(--main-color);
+}
+
+.header {
+    width: 100%;
+    height: auto;
+    min-height: 80px;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.header-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Cart on the LEFT side */
+.header-cart {
+    order: 1;
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    min-width: 150px;
+}
+
+/* Logo in the MIDDLE */
+.header-logo {
+    order: 2;
+    flex: 0 1 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+}
+
+/* Menu on the RIGHT side */
+.header-links {
+    order: 3;
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    min-width: 150px;
+}
+
+/* Logo Style */
+.header-logo > a {
+    max-width: 150px;
+}
+
+.logo-box > img {
+    width: 100%;
+    height: auto;
+    max-height: 80px;
+}
+
+/* Links/Menu Style on RIGHT */
+.header-links ul {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.header-links li {
+    position: relative;
+    transition: all 0.3s ease-in;
+    padding: 10px 0;
+}
+
+.header-links .header-a {
+    padding: 10px 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+    font-size: 1em;
+    white-space: nowrap;
+}
+
+.header-links .header-a::after {
+    content: "";
+    position: absolute;
+    margin: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 0;
+    height: 3px;
+    background-color: var(--main-color);
+    transition: 0.4s;
+}
+
+.header-links .header-a:hover::after {
+    width: 50%;
+}
+
+/* Cart Icon Style on LEFT */
+.cart-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.cart-content {
+    border: 1px solid white;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.cart-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.cart-icon-box {
+    padding: 8px 12px;
+    border-right: 1px solid white;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cart-span {
+    padding: 8px 12px;
+    letter-spacing: 0.9px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.cart-counter {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Mobile Menu Button */
+.mobile-menu-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+    order: 3; /* Put mobile menu button on right side */
+}
+
+#mobile-menu {
+    color: var(--main-color);
+    width: 30px;
+    height: 30px;
+    padding: 4px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: none; /* Hide by default, show in media query */
+}
+
+/* Class for mobile menu when active */
+.mobile-menu-active {
+    display: block !important;
+}
+
+/* Media query for responsive design */
+@media screen and (max-width: 768px) {
+    .header-links {
+        display: none; /* Hide regular menu on mobile */
+    }
+    
+    #mobile-menu {
+        display: block; /* Show mobile menu button */
+    }
+    
+    .header-container {
+        flex-wrap: wrap;
+    }
+    
+    .mobile-menu-active {
+        order: 4;
+        width: 100%;
+    }
+}

@@ -1,0 +1,16 @@
+:root{
+    --main-color : #F24547;
+    --text-color : #fff;
+}
+
+
+.top-bar {
+    height: 55px;
+    width: 100%;
+    text-align: center;
+    background-color: var(--main-color);
+    color: white;
+    font-weight: bold;
+    line-height: 55px;
+    font-size: 16px;
+}

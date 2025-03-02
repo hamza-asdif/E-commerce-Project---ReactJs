@@ -1,0 +1,223 @@
+/* * ===== cart sidebar style ======= */
+.cart-sidebar {
+  position: fixed;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  background: white;
+  width: 25%;
+  transition: all 0.2s ease-out;
+  transform: translateX(0);
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-sidebar-header {
+  width: 100%;
+  padding: 16px;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.sidebar-header-content * {
+  display: inline-block;
+  color: black;
+}
+
+#close-sidebar {
+  cursor: pointer;
+}
+
+.sidebar-header-span {
+  margin-right: 8px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.sidebar-header-title {
+  font-size: 18px;
+}
+
+.cart-sidebar-header i {
+  font-size: 20px;
+  color: black;
+  cursor: pointer;
+}
+
+.cart-sidebar-products {
+  flex-grow: 1; /* يجعل منطقة المنتجات تتمدد لتأخذ أكبر مساحة ممكنة */
+  overflow-y: auto; /* تفعيل التمرير العمودي */
+  padding: 20px;
+  max-height: calc(100vh - 245px); /* تحديد أقصى ارتفاع لمنطقة المنتجات */
+}
+
+.sidebar-call-to-action {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  border-top: 1px solid #eee;
+  padding: 0px 15px;
+  z-index: 999;
+}
+
+.sidebar-first-tab {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0px;
+}
+
+.first-tab-title {
+  color: black;
+  font-weight: bold;
+}
+
+.first-tab-span {
+  color: black;
+  font-weight: 600;
+}
+
+.middle-tab-btn,
+.last-tab-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.middle-tab-btn {
+  background-color: var(--main-color);
+  color: white;
+}
+
+.last-tab-btn {
+  background: none;
+  border: 1px solid #ddd;
+  color: #333;
+  margin: 15px 0px 20px 0px;
+}
+
+.cart-sidebar-products ul {
+  padding: 13px;
+}
+
+.cart-sidebar-products ul li {
+  display: flex;
+  align-items: self-start;
+}
+
+.cart-product-box {
+  width: 70px;
+  height: 70px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.cart-product-box img {
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.cart-product-box:hover {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.cart-product-box:hover > img {
+  scale: 1.1;
+}
+
+.cart-sidebar-products li a {
+  width: 70%;
+  text-align: right;
+  margin-right: 13px;
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+  padding-left: 5px;
+}
+
+.cart-product-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* تحديد عدد الأسطر المسموح بها */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word; /* يضمن عدم خروج الكلمات عن الحدود */
+}
+
+.cart-product-icons {
+  max-width: 8%;
+  min-height: 70px;
+  padding: 2px 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-content: center;
+}
+
+.cart-product-icons button {
+  padding: 4px 0;
+  text-align: center;
+  margin-top: 0;
+  border: none;
+  background-color: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+}
+
+.cart-product-icons button svg {
+  color: #444;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.cart-product-infos {
+  width: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin: 0px 50px 15px 50px;
+  transform: translate(-25px, -18px);
+  gap: 4px;
+}
+
+.cart-product-infos-title {
+  color: black;
+  font-weight: 400;
+}
+
+.cart-product-quantite {
+  width: 20px;
+  height: 20px;
+  background: #fafafa;
+  border: 1px solid #ddd;
+  line-height: 20px;
+  text-align: center;
+  color: black;
+}
+
+.cart-product-price {
+  color: black;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* !!!!!!!! -------------if no product in cart style --------------- !!!!!!!!! */
+
+.cart-sidebar-products.No-Product-Span {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
