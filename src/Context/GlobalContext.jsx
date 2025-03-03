@@ -2,8 +2,10 @@ import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
 // تحديد URL واحد للـ API
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://api.jsonbin.io/v3/b/67c54486e41b4d34e49fc194";
 const API_BASE_URL_Cart = "http://localhost:3000"
+const DATA_PATH_API = "data.record.Products"
+const Master_Key = "$2a$10$JSduiJIAxlAAiB5UQSJ9n.rCUN94IKEeZ8QwNDmKsxfCuURp/m3Xe"
 
 const GlobalContext = createContext();
 
@@ -27,8 +29,12 @@ export const GlobalProvider = ({ children }) => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/Products`);
-      setAllProducts(response.data);
+      const response = await axios.get(API_BASE_URL, {
+        headers : {
+          "X-Master-Key" : Master_Key
+        }
+      });
+      setAllProducts(response.DATA_PATH_API);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -112,7 +118,10 @@ export const GlobalProvider = ({ children }) => {
         removeProductFromCart,
         cartSideBarToggle,
         toggleCart,
-        NavigateToProduct
+        NavigateToProduct,
+        // !!! ----- API VARIABLES -------- !!! //
+        DATA_PATH_API,
+        Master_Key
       }}
     >
       {children}

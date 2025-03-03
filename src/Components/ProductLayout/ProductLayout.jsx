@@ -3,18 +3,24 @@ import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard/ProductCard";
 import axios from "axios";
 import "./ProductLayout.css";
+import { useGlobalContext } from "../../Context/GlobalContext";
 
 export default function ProductLayout({ Num }) {
   const [ProductsData, setProductsData] = useState([]);
   const [FilteredProducts, setFilteredProducts] = useState([]);
+  const {DATA_PATH_API, Master_Key} = useGlobalContext()
 
   useEffect(() => {
-    const URL = "http://localhost:5000/Products";
+    const URL = "https://api.jsonbin.io/v3/b/67c54486e41b4d34e49fc194";
     axios
-      .get(URL)
+      .get(URL, {
+        headers : {
+          "X-Master-Key": Master_Key
+        }
+      })
       .then((res) => {
-        console.log("Fetched Data:", res.data);
-        setProductsData(res.data);
+        console.log("Fetched Data:", res.data.record.Products);
+        setProductsData(res.data.record.Products);
       })
       .catch((err) => console.error("Error fetching products:", err));
   }, []);

@@ -16,7 +16,7 @@ function AppContent() {
       {cartSideBarToggle && <SideBarWidget />}
       <HeroImage />
       <SectionTitle />
-      <ProductLayout Num="4"/>
+      <ProductLayout Num="8"/>
       <SectionTitle 
       SectionTitle="🔥 الأكثر مبيعا 🔥"
       SectionSpan="منتجات موصى بها"
