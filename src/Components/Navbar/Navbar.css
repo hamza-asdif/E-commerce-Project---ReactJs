@@ -42,7 +42,7 @@ a {
     flex: 1;
     display: flex;
     justify-content: flex-start;
-    min-width: 150px;
+    /* min-width: 150px; */
 }
 
 /* Logo in the MIDDLE */
@@ -143,6 +143,7 @@ a {
 .cart-icon-box {
     padding: 8px 12px;
     border-right: 1px solid white;
+    border-left: 1px solid white;
     font-size: 18px;
     display: flex;
     justify-content: center;

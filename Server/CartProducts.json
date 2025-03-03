@@ -6,7 +6,7 @@
       "Image": "images/new-products/charger.jpeg",
       "price": 349,
       "OldPrice": 199,
-      "quantity": 2
+      "quantity": 3
     },
     {
       "id": "4",
@@ -22,7 +22,7 @@
       "Image": "images/new-products/car-product.jpeg",
       "price": 349,
       "OldPrice": 199,
-      "quantity": 3
+      "quantity": 5
     },
     {
       "id": "7",

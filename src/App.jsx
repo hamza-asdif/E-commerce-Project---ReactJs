@@ -13,12 +13,17 @@ function AppContent() {
   return (
     <div>
       <Navbar />
+      {cartSideBarToggle && <SideBarWidget />}
       <HeroImage />
       <SectionTitle />
-      <ProductLayout />
-      {cartSideBarToggle && <SideBarWidget />}
+      <ProductLayout Num="4"/>
+      <SectionTitle 
+      SectionTitle="🔥 الأكثر مبيعا 🔥"
+      SectionSpan="منتجات موصى بها"
+      />
+      <ProductLayout Num="4" />
     </div>
-  );
+  ); 
 }
 
 function App() {

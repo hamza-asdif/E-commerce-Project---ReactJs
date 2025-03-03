@@ -114,7 +114,7 @@
   /* Buttons */
   .product-btn {
     width: 100%;
-    padding: 10px 15px;
+    padding: 8px 15px;
     border-radius: 5px;
     font-size: 16px;
     color: var(--main-color);
@@ -133,6 +133,13 @@
   }
   
   /* Favorite Button */
+
+  .heart-icon-toggle{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .favorite-a {
     width: 100%;
     margin-top: 12px;
@@ -173,32 +180,35 @@
     cursor: not-allowed;
   }
   
-  /* Loader Animation */
-  .loader {
-    width: 20px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: 
-      linear-gradient(0deg, rgba(0, 0, 0, 0.5) 30%, transparent 0 70%, rgba(0, 0, 0, 1) 0) 50%/8% 100%,
-      linear-gradient(90deg, rgba(0, 0, 0, 0.25) 30%, transparent 0 70%, rgba(0, 0, 0, 0.75) 0) 50%/100% 8%;
-    background-repeat: no-repeat;
-    animation: spin 1s infinite steps(12);
-  }
-  
-  .loader::before,
-  .loader::after {
-    content: "";
-    grid-area: 1/1;
-    border-radius: 50%;
-    background: inherit;
-    opacity: 0.915;
-    transform: rotate(30deg);
-  }
-  
-  .loader::after {
-    opacity: 0.83;
-    transform: rotate(60deg);
-  }
+  /* HTML: <div class="loader"></div> */
+.loader {
+  width: 20px;
+  margin: auto;
+  aspect-ratio: 1;
+  display: grid;
+  border-radius: 50%;
+  background:
+    linear-gradient(0deg ,rgb(0 0 0/50%) 30%,#0000 0 70%,rgb(0 0 0/100%) 0) 50%/8% 100%,
+    linear-gradient(90deg,rgb(0 0 0/25%) 30%,#0000 0 70%,rgb(0 0 0/75% ) 0) 50%/100% 8%;
+  background-repeat: no-repeat;
+  animation: l23 1s infinite steps(12);
+}
+.loader::before,
+.loader::after {
+   content: "";
+   grid-area: 1/1;
+   border-radius: 50%;
+   background: inherit;
+   opacity: 0.915;
+   transform: rotate(30deg);
+}
+.loader::after {
+   opacity: 0.83;
+   transform: rotate(60deg);
+}
+@keyframes l23 {
+  100% {transform: rotate(1turn)}
+}
   
   @keyframes spin {
     100% {
@@ -228,7 +238,7 @@
   @media screen and (max-width: 480px) {
     .product-data-section,
     .product-data-section-cart {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr; 
     }
     
     .product-img-box {

@@ -24,7 +24,7 @@ export default function Navbar() {
   // التحقق من حجم الشاشة
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 1024);
+      setIsMobile(window.innerWidth < 1280);
     };
 
     // تنفيذ الفحص عند تحميل المكون
