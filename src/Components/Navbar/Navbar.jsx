@@ -47,7 +47,7 @@ export default function Navbar() {
   return (
     <div>
       <Topbar />
-      <header className="header">
+      <header className="header" dir="ltr">
         <div className="header-container" >
           {isMobile && (
             <div className="mobile-menu-box" >

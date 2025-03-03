@@ -21,7 +21,7 @@ function AppContent() {
       SectionTitle="🔥 الأكثر مبيعا 🔥"
       SectionSpan="منتجات موصى بها"
       />
-      <ProductLayout Num="4" />
+      <ProductLayout Num="12" />
     </div>
   ); 
 }
