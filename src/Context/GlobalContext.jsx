@@ -41,6 +41,8 @@ export const GlobalProvider = ({ children }) => {
     saveCartToLocalStorage(); // حفظ بيانات السلة في التخزين المحلي عند أي تغيير
   }, [productsInCart]);
 
+  
+
   // جلب بيانات المنتجات من jsonbin.io
   const fetchProducts = async () => {
     try {

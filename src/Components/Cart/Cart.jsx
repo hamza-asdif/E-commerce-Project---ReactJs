@@ -1,22 +1,51 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect } from "react";
 import { FaShoppingCart, FaTrash, FaEdit } from "react-icons/fa";
 import "./Cart.css";
 import { useGlobalContext } from "../../Context/GlobalContext";
+import "alertifyjs/build/css/alertify.rtl.css";
+import "alertifyjs/build/css/themes/default.rtl.css";
+import "../../Context/alertify.custom.css";
+import alertify from "alertifyjs";
 
 function Cart() {
   const {
     productsInCart,
+    setProductsInCart,
     productsInCart_TotalPrice,
     toggleCart,
     cartSideBarToggle,
+    removeProductFromCart,
   } = useGlobalContext();
 
-
-  useEffect( () => {
+  useEffect(() => {
     return () => {
-      toggleCart(false)
-    }
-  }, [] )
+      toggleCart(false);
+    };
+  }, []);
+
+  const Alertify_Prompt_Quanity_edit = (product) => {
+    const activeProduct = productsInCart.find( (item) =>  item.id === product.id) 
+    console.log(product.quantity)
+    alertify.prompt(
+      "Prompt Title",
+      "Prompt Message",
+      product.quantity,
+      function (evt, value) {
+        if(activeProduct && activeProduct.quantity != value){
+          activeProduct.quantity = parseInt(value)
+          const updatedProductsInCart = productsInCart.map( (item) => {
+            item.id  === activeProduct.id ? item.quantity = activeProduct.quuantity : item
+          } )
+          setProductsInCart(updatedProductsInCart)
+        }
+        alertify.success("You entered: " + value);
+      },
+      function () {
+        alertify.error("Cancel");
+      }
+    );
+  };
 
   // Cart Product Item Component
   const CartProductItem = ({ product, index }) => (
@@ -32,10 +61,16 @@ function Cart() {
         <div className="main-cart-product-header">
           <h3 className="main-cart-product-title">{product.name}</h3>
           <div className="main-cart-product-actions">
-            <button className="main-cart-action-btn edit">
+            <button
+              className="main-cart-action-btn edit"
+              onClick={() => Alertify_Prompt_Quanity_edit(product)}
+            >
               <FaEdit />
             </button>
-            <button className="main-cart-action-btn delete">
+            <button
+              className="main-cart-action-btn delete"
+              onClick={() => removeProductFromCart(product.id)}
+            >
               <FaTrash />
             </button>
           </div>
@@ -85,7 +120,8 @@ function Cart() {
             <FaShoppingCart className="main-cart-header-icon" />
             سلة المشتريات
             <span className="main-cart-count">
-              ({productsInCart.length} {productsInCart.length === 1 ? 'منتج' : 'منتجات'})
+              ({productsInCart.length}{" "}
+              {productsInCart.length === 1 ? "منتج" : "منتجات"})
             </span>
           </h1>
         </div>
@@ -95,10 +131,10 @@ function Cart() {
           <div className="main-cart-products-wrapper">
             {productsInCart.length ? (
               productsInCart.map((product, index) => (
-                <CartProductItem 
-                  product={product} 
-                  index={index} 
-                  key={product.id} 
+                <CartProductItem
+                  product={product}
+                  index={index}
+                  key={product.id}
                 />
               ))
             ) : (
@@ -110,12 +146,13 @@ function Cart() {
           <div className="main-cart-summary">
             <div className="main-cart-summary-content">
               <h2 className="main-cart-summary-title">ملخص الطلب</h2>
-              
+
               <div className="main-cart-summary-items">
                 <div className="main-cart-summary-row">
                   <span>عدد المنتجات</span>
                   <span>
-                    {productsInCart.length} {productsInCart.length === 1 ? 'منتج' : 'منتجات'}
+                    {productsInCart.length}{" "}
+                    {productsInCart.length === 1 ? "منتج" : "منتجات"}
                   </span>
                 </div>
                 <div className="main-cart-summary-row">
