@@ -7,6 +7,7 @@ import "alertifyjs/build/css/alertify.rtl.css";
 import "alertifyjs/build/css/themes/default.rtl.css";
 import "../../Context/alertify.custom.css";
 import alertify from "alertifyjs";
+import { Link } from "react-router-dom";
 
 function Cart() {
   const {
@@ -28,23 +29,30 @@ function Cart() {
     const activeProduct = productsInCart.find( (item) =>  item.id == product.id) 
     console.log(activeProduct)
     alertify.prompt(
-      "Prompt Title",
-      "Prompt Message",
+      "تعديل الكمية",
+      "الرجاء إدخال الكمية الجديدة",
       product.quantity,
       function (evt, value) {
-        if(activeProduct){
-          activeProduct.quantity = parseInt(value)
-          const updatedProductsInCart = productsInCart.map( (item) => {
-            return item.id  === activeProduct.id ? item.quantity = activeProduct.quantity : item
-          } )
-          console.log(updatedProductsInCart)
-        }
-        alertify.success("You entered: " + value);
+      if(activeProduct){
+        activeProduct.quantity = parseInt(value)
+        const updatedProductsInCart = productsInCart.map( (item) => {
+        return item.id === activeProduct.id ? {...item, quantity : activeProduct.quantity} : item
+        })
+
+        setProductsInCart(updatedProductsInCart)
+        console.log(updatedProductsInCart)
+      }
+      alertify.success("تم تحديث الكمية إلى: " + value);
       },
       function () {
-        alertify.error("Cancel");
+      alertify.error("تم إلغاء التعديل");
       }
-    );
+    ).set({
+      labels: {
+      ok: 'تأكيد',
+      cancel: 'إلغاء'
+      }
+    });
   };
 
   // Cart Product Item Component
@@ -168,9 +176,9 @@ function Cart() {
                 </span>
               </div>
 
-              <button className="main-cart-checkout-btn">
+              <Link to="/checkout" className="main-cart-checkout-btn">
                 المتابعة لإتمام الطلب
-              </button>
+              </Link>
             </div>
           </div>
         </div>
