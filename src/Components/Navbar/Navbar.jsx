@@ -24,13 +24,6 @@ export default function Navbar() {
     setSearchState((val) => !val);
   };
 
-  useEffect(() => {
-    return () => {
-      toggleCart(false);
-      setSearchState(false);
-    };
-  }, [])
-
   // التحقق من حجم الشاشة
   useEffect(() => {
     const checkScreenSize = () => {

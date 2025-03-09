@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 function ProductPage() {
-  const { productPage_Product, setproductPage_Product } = useGlobalContext();
+  const { productPage_Product, setproductPage_Product, toggleCart, setSearchState } = useGlobalContext();
   const [productPage_Storage, setProductPage_Storage] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noProduct, setNoProduct] = useState(false);
@@ -17,6 +17,16 @@ function ProductPage() {
     city: "test",
     address: "test",
   });
+
+
+  useEffect(() => {
+      return () => {
+        toggleCart(false);
+        setSearchState(false);
+      };
+    }, [])
+  
+
 
   const getPoductById = async () => {
     try {
