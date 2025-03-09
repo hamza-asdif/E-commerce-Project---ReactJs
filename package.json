@@ -13,9 +13,14 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@coreui/coreui": "^5.2.0",
+    "@coreui/react": "^5.5.0",
+    "alertifyjs": "^1.14.0",
+    "bootstrap": "^5.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.2.0"
+    "react-router-dom": "^7.2.0",
+    "strapi-plugin-import-export-content": "^0.4.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

@@ -1,6 +1,6 @@
 /* navBar-mobile.css - الأنماط المخصصة للأجهزة المحمولة */
 
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1279px) {
     .header-container {
         width: 90%;
         display: grid;
@@ -42,7 +42,6 @@
     .header-links ul {
         flex-direction: column;
         align-items: flex-start;
-        padding: 10px 0;
     }
     
     .header-links li {
@@ -52,13 +51,22 @@
     .header-links .header-a {
         width: 100%;
         text-align: right;
-        justify-content: flex-start;
-        padding: 15px 10px;
+        justify-content: flex-end;
         font-size: 0.9em;
     }
     
     .cart-content {
         margin-right: 0;
+    }
+
+    .header-links li {
+        position: relative;
+        transition: all 0.3s ease-in;
+        padding: 5px 0px;
+    }
+
+    .header-links li:first-child{
+        margin-top: 8px;
     }
 }
 

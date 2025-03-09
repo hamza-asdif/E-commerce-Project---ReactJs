@@ -42,7 +42,7 @@ a {
     flex: 1;
     display: flex;
     justify-content: flex-start;
-    min-width: 150px;
+
 }
 
 /* Logo in the MIDDLE */
@@ -150,6 +150,10 @@ a {
     align-items: center;
 }
 
+#header-search-icon{
+    font-size: 18px;
+}
+
 .cart-span {
     padding: 8px 12px;
     letter-spacing: 0.9px;
@@ -213,5 +217,9 @@ a {
     .mobile-menu-active {
         order: 4;
         width: 100%;
+    }
+
+    .header-links .header-a::after{
+        background: #000;
     }
 }

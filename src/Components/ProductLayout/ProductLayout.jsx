@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-key */
 import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard/ProductCard";
 import "./ProductLayout.css";
@@ -7,20 +6,39 @@ import { useGlobalContext } from "../../Context/GlobalContext";
 export default function ProductLayout({ Num }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { allProducts } = useGlobalContext();
+  const { allProducts, setDisplayedProducts, displayedProducts } = useGlobalContext(); // نستخدم فقط القراءة هنا
 
+  // محاكاة تأخير التحميل
   useEffect(() => {
-    // Simulate loading time for demonstration
     const timer = setTimeout(() => {
       setLoading(false);
     }, 2000);
-
     return () => clearTimeout(timer);
   }, []);
 
-  // Check if there was an error loading products
+  // تحديث المنتجات المعروضة بناءً على allProducts ووجود prop Num
   useEffect(() => {
-    if (!loading && !allProducts.length) {
+    if (allProducts.length > 0) {
+      if (Num) {
+        // إذا تم تمرير prop Num، نقوم بتحديد عدد المنتجات المطلوب
+        const numberOfProducts = parseInt(Num, 10);
+        // هنا يمكنك الاختيار بين عشوائي أو أخذ العناصر من البداية:
+        // اختيار عشوائي:
+        let shuffled = [...allProducts].sort(() => 0.5 - Math.random());
+        let selected = shuffled.slice(0, numberOfProducts);
+        setDisplayedProducts(selected);
+        // أو إذا كنت تريد أخذ أول العناصر:
+        // setDisplayedProducts(allProducts.slice(0, numberOfProducts));
+      } else {
+        // إذا لم يتم تمرير prop Num، عرض جميع المنتجات
+        setDisplayedProducts(allProducts);
+      }
+    }
+  }, [allProducts, Num]);
+
+  // التحقق من وجود خطأ في التحميل
+  useEffect(() => {
+    if (!loading && allProducts.length === 0) {
       setError("Unable to load products. Please try again later.");
     } else {
       setError(null);
@@ -38,9 +56,17 @@ export default function ProductLayout({ Num }) {
     );
   }
 
-  
+  if (error) {
+    return (
+      <div className="container">
+        <div className="error-container">
+          <h3>{error}</h3>
+        </div>
+      </div>
+    );
+  }
 
-  if (!allProducts.length) {
+  if (displayedProducts.length === 0) {
     return (
       <div className="container">
         <div className="no-products-container">
@@ -56,14 +82,14 @@ export default function ProductLayout({ Num }) {
   return (
     <div className="container">
       <div className="product-data-section">
-        {allProducts.map((Product) => (
+        {displayedProducts.map((product) => (
           <ProductCard
-            ProductTitle={Product.name}
-            ProductImage={Product.Image}
-            ProductId={Product.id}
-            ProductPrice={Product.price}
-            ProductOldPrice={Product.OldPrice}
-            key={Product.id}
+            ProductTitle={product.name}
+            ProductImage={product.Image}
+            ProductId={product.id}
+            ProductPrice={product.price}
+            ProductOldPrice={product.OldPrice}
+            key={product.id}
           />
         ))}
       </div>

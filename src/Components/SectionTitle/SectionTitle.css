@@ -27,3 +27,20 @@
     letter-spacing: 0.5px;
     text-transform: capitalize;
 }
+
+
+/* الأجهزة المحمولة */
+@media (max-width: 480px) {
+    .section-title-container{
+        margin: 20px  auto 30px auto;
+    }
+
+    .section-content-title {
+        padding: 10px 0px;
+        color: #222;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-transform: capitalize;
+    }
+  }
+  

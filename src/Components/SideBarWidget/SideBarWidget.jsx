@@ -1,37 +1,42 @@
 /* eslint-disable react/prop-types */
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import "./SideBarWidget.css";
 import { FaRegCircleXmark } from "react-icons/fa6";
 import ProductInCart from "./ProductInCart/ProductInCart";
-import { CartProductsProps } from "./ProductInCart/ProductInCart";
-import axios from "axios";
-
 import { useGlobalContext } from "../../Context/GlobalContext";
+import { Link } from "react-router-dom";
 
-export default function SideBarWidget(props) {
-  const [CartProducts, SetCartProducts] = useState([]);
-  const [singleProduct, setSingleProduct] = useState({});
-  const {
-    setCartSideBarToggle,
-    cartSideBarToggle,
-    toggleCart
-  } = useGlobalContext()
 
+export default function SideBarWidget() {
   const {
-      productsInCart,
-      productsInCart_TotalPrice,
-    } = useGlobalContext();
+    productsInCart,
+    productsInCart_TotalPrice,
+    cartSideBarToggle, // This should control the visibility
+    toggleCart,
+  } = useGlobalContext();
+
+  // Handler for overlay click
+  const handleOverlayClick = () => {
+    toggleCart(false);
+  };
+
   
-
+  
 
   return (
     <div dir="rtl">
-      <div className="cart-sidebar">
+      {/* Add overlay */}
+      <div
+        className={`cart-overlay ${cartSideBarToggle ? "active" : ""}`}
+        onClick={handleOverlayClick}
+      />
+
+      {/* Add active class based on cartSideBarToggle */}
+      <div className={`cart-sidebar ${cartSideBarToggle ? "active" : ""}`}>
         <div className="cart-sidebar-header">
           <div className="sidebar-header-content">
             <h3 className="sidebar-header-title">سلة مشترياتي</h3>
             <span className="sidebar-header-span">
-              {" "}
               {productsInCart.length} عناصر
             </span>
           </div>
@@ -42,23 +47,19 @@ export default function SideBarWidget(props) {
           />
         </div>
 
-        <div className={productsInCart.length ? "cart-sidebar-products" : "cart-sidebar-products No-Product-Span"} >
+        <div
+          className={`cart-sidebar-products ${
+            !productsInCart.length ? "No-Product-Span" : ""
+          }`}
+        >
           <ul className="ul-product-dom">
-            {/* ------------------------------ */}
-            {productsInCart.length
-              ? productsInCart.map((CartP) => {
-                  return (
-                    <ProductInCart
-                      Cart_Products={CartP}
-                      setCart_Products={SetCartProducts}
-                      key={CartP.id}
-                    />
-                  );
-                })
-              : (
-                <span className="No-Product-Span">سلة مشترياتكم فارغة</span>
-              )}
-            {/* ------------------------------ */}
+            {productsInCart.length ? (
+              productsInCart.map((CartP) => (
+                <ProductInCart Cart_Products={CartP} key={CartP.id} />
+              ))
+            ) : (
+              <span className="No-Product-Span">سلة مشترياتكم فارغة</span>
+            )}
           </ul>
         </div>
 
@@ -71,18 +72,16 @@ export default function SideBarWidget(props) {
           </div>
 
           <div className="sidebar-middle-tab">
-            <a href="cart.html" id="cart-buy-now">
-              {" "}
-              <button className="middle-tab-btn">شراء الآن</button>{" "}
-            </a>
+            <Link to="/cart" className="middle-tab-btn" >شراء الآن</Link>
           </div>
 
           <div className="sidebar-last-tab">
-            <button className="last-tab-btn">استمر في التسوق</button>
+            <button className="last-tab-btn" onClick={() => toggleCart(false)}>
+              استمر في التسوق
+            </button>
           </div>
         </div>
       </div>
     </div>
   );
-
 }

@@ -3,23 +3,33 @@ import { IoSearch } from "react-icons/io5";
 import { FaCartPlus } from "react-icons/fa6";
 import { FaBars } from "react-icons/fa";
 import { FaBarsStaggered } from "react-icons/fa6";
+import SideBarWidget from "../SideBarWidget/SideBarWidget";
+import { NavLink, Link } from "react-router-dom";
 
-
-import Logo from "../../../public/images/logo.png";
 import Topbar from "./TopBar/Topbar";
 import "./Navbar.css";
 import "./navBar-mobile.css";
 
 import { useGlobalContext } from "../../Context/GlobalContext";
+import SearchBar from "../searchBar/SearchBar";
 
 export default function Navbar() {
   const HeaderLinks = ["الصفحة الرئيسية", "تسجيل الدخول", "إنشاء حساب"];
-
-  const { productsInCart, productsInCart_TotalPrice, toggleCart } =
+  const { productsInCart, productsInCart_TotalPrice, toggleCart, cartSideBarToggle, setSearchState, searchState } =
     useGlobalContext();
-
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleSearch = () => {
+    setSearchState((val) => !val);
+  };
+
+  useEffect(() => {
+    return () => {
+      toggleCart(false);
+      setSearchState(false);
+    };
+  }, [])
 
   // التحقق من حجم الشاشة
   useEffect(() => {
@@ -45,73 +55,83 @@ export default function Navbar() {
   };
 
   return (
-    <div>
-      <Topbar />
-      <header className="header" dir="ltr">
-        <div className="header-container" >
-          {isMobile && (
-            <div className="mobile-menu-box" >
-              <FaBarsStaggered id="mobile-menu" onClick={toggleMobileMenu} />
-            </div>
-          )}
+    <>
+      <div>
+        <Topbar />
+        <header className="header" dir="ltr">
+          <div className="header-container">
+            {isMobile && (
+              <div className="mobile-menu-box">
+                <FaBarsStaggered id="mobile-menu" onClick={toggleMobileMenu} />
+              </div>
+            )}
 
-          {/* عرض القائمة دائمًا ولكن مع تطبيق أنماط CSS المناسبة */}
-          <div
-            className={`header-links ${
-              isMobile && mobileMenuOpen ? "mobile-menu-active" : ""
-            }`}
-          >
-            <ul>
-              {HeaderLinks.map((link, index) => (
-                <li className="header-li" key={index}>
+            {/* عرض القائمة دائمًا ولكن مع تطبيق أنماط CSS المناسبة */}
+            <div
+              className={`header-links ${
+                isMobile && mobileMenuOpen ? "mobile-menu-active" : ""
+              }`}
+            >
+              <ul>
+                {HeaderLinks.map((link, index) => (
+                  <li className="header-li" key={index}>
+                    <a href="#" className="header-a">
+                      {link}
+                    </a>
+                  </li>
+                ))}
+
+                <li className="header-li" onClick={toggleSearch}>
                   <a href="#" className="header-a">
-                    {link}
+                    <IoSearch
+                      className="header-search-icon"
+                      id="header-search-icon"
+                    />
                   </a>
                 </li>
-              ))}
+              </ul>
+            </div>
 
-              <li className="header-li">
-                <a href="#" className="header-a">
-                  <IoSearch
-                    className="header-search-icon"
-                    id="header-search-icon"
-                  />
-                </a>
-              </li>
-            </ul>
-          </div>
+            <div className="header-logo">
+              <NavLink to="" className="logo-box">
+              <img src={`${import.meta.env.BASE_URL}/images/logo.png`} alt="Logo" />
 
-          <div className="header-logo">
-            <a href="#" className="logo-box">
-              <img src={Logo} alt="Logo" />
-            </a>
-          </div>
 
-          <div className="header-cart">
-            <div className="cart-box">
-              <div className="cart-box-div">
-                <div className="cart-content">
-                  <a
-                    href="#"
-                    className="cart-link"
-                    onClick={() => toggleCart(true)}
-                  >
-                    <span className="cart-span" dir="rtl">
-                      {productsInCart_TotalPrice} ريال سعودي
-                    </span>
-                    <div className="cart-icon-box">
-                      <FaCartPlus id="cart-icon" />
-                    </div>
-                    <span className="cart-counter">
-                      {productsInCart.length}
-                    </span>
-                  </a>
+              </NavLink>
+            </div>
+
+            <div className="header-cart">
+              <div className="cart-box">
+                <div className="cart-box-div">
+                  <div className="cart-content">
+                    <a
+                      href="#"
+                      className="cart-link"
+                      onClick={() => toggleCart(true)}
+                    >
+                      <span className="cart-span" dir="rtl">
+                        {productsInCart_TotalPrice} ريال سعودي
+                      </span>
+                      <div className="cart-icon-box">
+                        <FaCartPlus id="cart-icon" />
+                      </div>
+                      <span className="cart-counter">
+                        {productsInCart.length}
+                      </span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
-    </div>
+
+          
+        </header>
+      </div>
+
+      {searchState && <SearchBar />}
+      {cartSideBarToggle && <SideBarWidget />}
+
+    </>
   );
 }

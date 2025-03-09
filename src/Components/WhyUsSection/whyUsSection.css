@@ -1,0 +1,79 @@
+/* !!!!! last products sections styles */
+
+.last-product-section {
+  width: 80%;
+  margin: 150px auto 25px auto;
+  text-align: center;
+}
+
+.last-product-h2 {
+  font-size: 1.5rem;
+  padding-bottom: 5px;
+}
+
+.last-product-span {
+  font-size: 18px;
+}
+
+.last-product-products-content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: space-around;
+  align-items: center;
+  gap: 35px;
+}
+
+.last-product-content-box {
+  flex-grow: 1;
+  text-align: center;
+  padding: 35px 0px;
+}
+
+.last-text-content span {
+  display: block;
+}
+
+.last-icon-box .last-product-icon {
+  font-size: 45px;
+  color: var(--main-color);
+  margin: 0px auto;
+}
+
+.last-text-content-span {
+  font-size: 1.17em;
+  color: var(--main-color);
+  margin: 0px 0px 5px;
+  font-weight: 700;
+}
+
+.last-text-content-sub-span {
+  font-size: 16px;
+}
+
+/* الأجهزة المحمولة */
+@media (max-width: 480px) {
+  .last-product-products-content {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 0px auto 25px auto;
+  }
+
+  .last-product-h2 {
+    font-size: 1.5rem;
+  }
+
+  .last-product-icon{
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* الأجهزة اللوحية */
+@media (min-width: 768px) and (max-width: 1024px) {
+  
+}
+
+/* الشاشات الكبيرة (لابتوب وسطح المكتب) */
+@media (min-width: 1025px) {
+  
+}
