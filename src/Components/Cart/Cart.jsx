@@ -25,19 +25,19 @@ function Cart() {
   }, []);
 
   const Alertify_Prompt_Quanity_edit = (product) => {
-    const activeProduct = productsInCart.find( (item) =>  item.id === product.id) 
-    console.log(product.quantity)
+    const activeProduct = productsInCart.find( (item) =>  item.id == product.id) 
+    console.log(activeProduct)
     alertify.prompt(
       "Prompt Title",
       "Prompt Message",
       product.quantity,
       function (evt, value) {
-        if(activeProduct && activeProduct.quantity != value){
+        if(activeProduct){
           activeProduct.quantity = parseInt(value)
           const updatedProductsInCart = productsInCart.map( (item) => {
-            item.id  === activeProduct.id ? item.quantity = activeProduct.quuantity : item
+            return item.id  === activeProduct.id ? item.quantity = activeProduct.quantity : item
           } )
-          setProductsInCart(updatedProductsInCart)
+          console.log(updatedProductsInCart)
         }
         alertify.success("You entered: " + value);
       },
@@ -134,7 +134,7 @@ function Cart() {
                 <CartProductItem
                   product={product}
                   index={index}
-                  key={product.id}
+                  key={index}
                 />
               ))
             ) : (
