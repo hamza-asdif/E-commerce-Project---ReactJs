@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import 'alertifyjs/build/css/alertify.min.css';
-import 'alertifyjs/build/css/themes/default.min.css';
-import alertify from 'alertifyjs';
- // استيراد الثيم الافتراضي // استيراد ملف الـ CSS الخاص بـ AlertifyJS
+import "alertifyjs/build/css/alertify.rtl.css";
+import "alertifyjs/build/css/themes/default.rtl.css";
+import "./alertify.custom.css";
+import alertify from "alertifyjs";
+// استيراد الثيم الافتراضي // استيراد ملف الـ CSS الخاص بـ AlertifyJS
 import { CAlert } from "@coreui/react";
 import SearchForProducts from "../Components/SearchForProducts/SearchForProducts";
 
@@ -25,8 +26,7 @@ export const GlobalProvider = ({ children }) => {
   const [productPage_Product, setproductPage_Product] = useState({});
   const [isFav, setIsFav] = useState(false);
   const [searchForProduct, setSearchForProduct] = useState("");
-  const [searchResults, setSearchResults] = useState([])
-  
+  const [searchResults, setSearchResults] = useState([]);
 
   // جلب بيانات المنتجات عند بدء التطبيق
   useEffect(() => {
@@ -71,7 +71,7 @@ export const GlobalProvider = ({ children }) => {
   // Fix the saving to localStorage function
   const saveCartToLocalStorage = () => {
     try {
-      if (productsInCart && productsInCart.length > 0) {
+      if (productsInCart) {
         localStorage.setItem("ProductsInCart", JSON.stringify(productsInCart));
         console.log("Cart saved to localStorage:", productsInCart);
       }
@@ -107,7 +107,7 @@ export const GlobalProvider = ({ children }) => {
       setProductsInCart(updatedCart);
 
       // Then save to localStorage
-      localStorage.setItem("ProductsInCart2", JSON.stringify(updatedCart));
+      localStorage.setItem("ProductsInCart", JSON.stringify(updatedCart));
       return true;
     } catch (error) {
       console.error("Error adding product to cart:", error);
@@ -123,32 +123,60 @@ export const GlobalProvider = ({ children }) => {
     setProductsInCart_TotalPrice(totalPrice);
   };
 
+
+  const alertifyPopUp_Confirm = (id, set_Function, updatedData) => {
+    alertify
+        .confirm(
+          "تأكيد الحذف",
+          "هل تريد حذف هذا المنتج من السلة؟",
+          function () {
+            // استدعاء الدالة مباشرة مع البيانات المحدثة
+            set_Function(updatedData);
+            alertify.success("تم حذف المنتج بنجاح ✅");
+            console.log("تمت إزالة المنتج من السلة، المعرف:", id);
+          },
+          function () {
+            alertify.error("تم إلغاء العملية");
+          }
+        )
+        .set({
+          labels: {
+            ok: "حذف",
+            cancel: "إلغاء",
+          },
+          transition: "slide",
+          movable: false,
+          closableByDimmer: false,
+          defaultFocusOn: "cancel",
+          padding: 10,
+          closable: false,
+          rtl: true,
+          delay: 200,
+          pinnable: false,
+          theme: {
+            input: "alertify-input",
+            ok: "alertify-ok-button",
+            cancel: "alertify-cancel-button",
+          },
+        });
+}
+
   // إزالة منتج من السلة
   const removeProductFromCart = async (productId) => {
     try {
       // تحويل المعرف إلى رقم
       const id = parseInt(productId);
 
-      // إنشاء نسخة جديدة من السلة بدون المنتج المحدد
-      const updatedCart = productsInCart.filter(
+       // إنشاء نسخة جديدة من السلة بدون المنتج المحدد
+       const updatedCart = productsInCart.filter(
         (item) => parseInt(item.id) !== id
       );
 
-      alertify.confirm(
-        "Alert - Delete",
-        "Do You Want To Delete This Task ? ",
-        function () {
-          alertify.success("Added Successfully ✅");
-          // تحديث حالة السلة
-          setProductsInCart(updatedCart);
-          alertify.alert("Ready!");
 
-          console.log("تمت إزالة المنتج من السلة، المعرف:", id);
-        },
-        function () {
-          alertify.error("Cancel");
-        }
-      );
+
+      console.log(updatedCart.length)
+      
+      alertifyPopUp_Confirm(id, setProductsInCart, updatedCart)
 
       return true;
     } catch (error) {
@@ -236,24 +264,24 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-
   const seachForProductFunction = (e) => {
-    e.target.value.trim().length >  3 ? setSearchForProduct(e.target.value) : setSearchForProduct("");
+    e.target.value.trim().length > 3
+      ? setSearchForProduct(e.target.value)
+      : setSearchForProduct("");
 
-    if(searchForProduct.length > 3) {
+    if (searchForProduct.length > 3) {
       const value = e.target.value.trim().toLowerCase();
-      const productsFounded = allProducts.filter(product =>  product.name.toLowerCase().includes(value));
-      console.log(productsFounded)
-      if(productsFounded){
-        setSearchResults(productsFounded)
+      const productsFounded = allProducts.filter((product) =>
+        product.name.toLowerCase().includes(value)
+      );
+      console.log(productsFounded);
+      if (productsFounded) {
+        setSearchResults(productsFounded);
       }
+    } else if (searchForProduct.length === 0) {
+      setSearchResults([]);
     }
-
-  else if(searchForProduct.length === 0){
-    setSearchResults([])
-  }
-}
-
+  };
 
   return (
     <GlobalContext.Provider
@@ -287,7 +315,6 @@ export const GlobalProvider = ({ children }) => {
         searchResults,
         searchState,
         setSearchState,
-
       }}
     >
       {children}

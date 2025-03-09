@@ -6,7 +6,10 @@ export default defineConfig({
   base: '/shopping-cart-react',
   build: {
     rollupOptions: {
-      external: ['axios'],
+      external: [
+        'axios',
+        'react-icons/fa6'
+      ]
     }
   }
 })

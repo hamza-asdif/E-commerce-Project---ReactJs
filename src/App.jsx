@@ -29,31 +29,10 @@ function AppContent() {
     };
   }, []);
 
-  // للحصول على منتج محدد عن طريق ID
-  useEffect(() => {
-    const productId = 2; // المنتج المطلوب
-
-    axios
-      .get("https://api.jsonbin.io/v3/b/67c54486e41b4d34e49fc194", {
-        headers: {
-          "X-Access-Key":
-            "$2a$10$lHC6.TYTGJdHEzvNt8D6DOCWIDRJHjfUUWMBzLBRfhQGlEBEIK6oa",
-        },
-      })
-      .then((res) => {
-        const product = res.data.record.Products.find(
-          (p) => p.id === productId
-        );
-        console.log(product);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
 // استرجاع جميع المنتجات
 
 
-// استيراد مكتبة axios
-// Note: axios is already imported at the top of the file
+
 
 // الدالة لحذف منتج بناءً على معرّفه (ID)
 function deleteProduct(productId) {
@@ -71,8 +50,6 @@ function deleteProduct(productId) {
   });
 }
 
-// استدعاء الدالة لحذف منتج
-deleteProduct(14);  // استبدل "14" بمعرف المنتج الذي تريد حذفه
 
 
 
