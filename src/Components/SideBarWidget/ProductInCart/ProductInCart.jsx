@@ -13,7 +13,7 @@ export default function ProductInCart({ Cart_Products }) {
       <div className="cart-product-main">
         <div className="cart-product-box">
           <img
-            src={`/shopping-cart-react/${Cart_Products.Image}`}
+            src={`/${Cart_Products.Image}`}
             alt={Cart_Products.name}
           />
         </div>

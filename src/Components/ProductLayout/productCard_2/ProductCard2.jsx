@@ -66,7 +66,7 @@ function ProductCard2() {
             randomProducts.map((item) => (
               <div className="card2-box" key={item.id} onClick={() => handleProductClick(item)}>
                 <div className="card2-content">
-                  <img src={`../shopping-cart-react/public/${item.Image}`} alt="" className="card-product-img" />
+                  <img src={`/${item.Image}`} alt="" className="card-product-img" />
                   <div className="card2-product-card-info">
                     <div className="card2-product-title">
                       <h3>{item.name}</h3>

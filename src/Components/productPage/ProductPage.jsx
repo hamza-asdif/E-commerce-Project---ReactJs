@@ -134,7 +134,7 @@ function ProductPage() {
             <div className="single-product-gallery">
               <div className="single-product-main-image">
                 <img
-                  src={`/shopping-cart-react/${productPage_Product.Image}`}
+                  src={`/${productPage_Product.Image}`}
                   alt={productPage_Product.name}
                 />
               </div>
@@ -142,7 +142,7 @@ function ProductPage() {
                 {productImages.map((image, index) => (
                   <div key={index} className="single-product-thumbnail">
                     <img
-                      src={`/shopping-cart-react/${image}`}
+                      src={`/${image}`}
                       alt={`${productPage_Product.name} - ${index + 1}`}
                     />
                   </div>

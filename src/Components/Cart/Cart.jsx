@@ -60,7 +60,7 @@ function Cart() {
     <div className="main-cart-product-item" key={product.id}>
       <div className="main-cart-product-image">
         <img
-          src={`/shopping-cart-react/${product.Image}`}
+          src={`/${product.Image}`}
           alt={`${product.name}-${index}`}
         />
       </div>

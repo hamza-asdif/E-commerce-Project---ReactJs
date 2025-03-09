@@ -8,7 +8,7 @@ function Footer() {
         <div className="footer-logo-container">
             <div className="footer-logo-box">
                 <a href="index.html" className="footer-logo-link">
-                    <img src="/shopping-cart-react/images/logo.png" alt="" />
+                    <img src="/images/logo.png" alt="" />
                 </a>
             </div>
 

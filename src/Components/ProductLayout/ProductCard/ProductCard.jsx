@@ -149,7 +149,7 @@ function ProductCard({
       <div className="product-container">
         <div className="product-img-box" onClick={handleProductClick}>
           <img
-            src={`/shopping-cart-react/${ProductImage}`}
+            src={`/${ProductImage}`}
             alt={ProductTitle}
             className="product-img"
           />

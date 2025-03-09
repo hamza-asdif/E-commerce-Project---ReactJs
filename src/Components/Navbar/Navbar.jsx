@@ -87,7 +87,7 @@ export default function Navbar() {
 
             <div className="header-logo">
               <NavLink to="" className="logo-box">
-              <img src={`${import.meta.env.BASE_URL}/images/logo.png`} alt="Logo" />
+              <img src="images/logo.png" alt="Logo" />
 
 
               </NavLink>
