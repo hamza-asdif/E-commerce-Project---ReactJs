@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
-import alertify from "alertifyjs";
-import "alertifyjs/build/css/alertify.min.css";
-import "alertifyjs/build/css/themes/default.min.css"; // استيراد الثيم الافتراضي // استيراد ملف الـ CSS الخاص بـ AlertifyJS
+import 'alertifyjs/build/css/alertify.min.css';
+import 'alertifyjs/build/css/themes/default.min.css';
+import alertify from 'alertifyjs';
+ // استيراد الثيم الافتراضي // استيراد ملف الـ CSS الخاص بـ AlertifyJS
 import { CAlert } from "@coreui/react";
 import SearchForProducts from "../Components/SearchForProducts/SearchForProducts";
 
