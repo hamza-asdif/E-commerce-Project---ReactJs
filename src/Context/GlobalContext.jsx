@@ -27,6 +27,8 @@ export const GlobalProvider = ({ children }) => {
   const [isFav, setIsFav] = useState(false);
   const [searchForProduct, setSearchForProduct] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 
   useEffect(() => {
@@ -80,6 +82,14 @@ export const GlobalProvider = ({ children }) => {
       console.error("Error loading cart from localStorage:", error);
     }
   };
+
+
+  // !!!! Function to reset all states ----- navigate between components
+  const resetAllStates = () => {
+    toggleCart(false);
+    setSearchState(false);
+    setMobileMenuOpen(false)
+  }
 
   // Fix the saving to localStorage function
   const saveCartToLocalStorage = () => {
@@ -328,6 +338,11 @@ export const GlobalProvider = ({ children }) => {
         searchResults,
         searchState,
         setSearchState,
+        isMobile,
+        setIsMobile,
+        mobileMenuOpen,
+        setMobileMenuOpen,
+        resetAllStates
       }}
     >
       {children}

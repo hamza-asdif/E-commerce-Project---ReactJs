@@ -4,7 +4,7 @@ import { useGlobalContext } from "../../Context/GlobalContext";
 import './SearchForProducts.css';
 
 function SearchForProducts() {
-  const { searchResults, setSearchResults, seachForProductFunction } =
+  const { searchResults, setSearchResults, seachForProductFunction, resetAllStates } =
     useGlobalContext();
   const [loading, setLoading] = useState(true);
   const [searchResults_InPage, setSearchResults_InPage] = useState([]);
@@ -15,6 +15,10 @@ function SearchForProducts() {
       setLoading(false);
     }, 2000);
   }, [searchResults]);
+
+  useEffect( () => {
+    resetAllStates()
+  }, [] )
 
   if (loading) {
     return (

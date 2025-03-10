@@ -15,10 +15,9 @@ import SearchBar from "../searchBar/SearchBar";
 
 export default function Navbar() {
   const HeaderLinks = ["الصفحة الرئيسية", "تسجيل الدخول", "إنشاء حساب"];
-  const { productsInCart, productsInCart_TotalPrice, toggleCart, cartSideBarToggle, setSearchState, searchState } =
+  const { productsInCart, productsInCart_TotalPrice, toggleCart, cartSideBarToggle, setSearchState,resetAllStates, searchState, isMobile, setIsMobile, mobileMenuOpen, setMobileMenuOpen } =
     useGlobalContext();
-  const [isMobile, setIsMobile] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
 
   const toggleSearch = () => {
     setSearchState((val) => !val);
@@ -26,6 +25,7 @@ export default function Navbar() {
 
   // التحقق من حجم الشاشة
   useEffect(() => {
+    
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 1280);
     };
@@ -40,6 +40,9 @@ export default function Navbar() {
     return () => {
       window.removeEventListener("resize", checkScreenSize);
     };
+
+
+    
   }, []);
 
   // تبديل حالة قائمة الجوال
@@ -86,8 +89,8 @@ export default function Navbar() {
             </div>
 
             <div className="header-logo">
-              <NavLink to="" className="logo-box">
-              <img src="images/logo.png" alt="Logo" />
+              <NavLink to="" className="logo-box" onClick={resetAllStates}>
+              <img src="/images/logo.png" alt="Logo" />
 
 
               </NavLink>

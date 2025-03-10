@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import Navbar from "./Components/Navbar/Navbar.jsx";
 import HeroImage from "./Components/HeroImage/HeroImg.jsx";
@@ -16,12 +16,14 @@ import SearchForProducts from "./Components/SearchForProducts/SearchForProducts.
 import Checkout from "./Components/Checkout/Checkout.jsx";
 
 function AppContent() {
-  const { toggleCart, setSearchState } = useGlobalContext();
+  const { toggleCart, setSearchState, isMobile, setIsMobile, mobileMenuOpen, setMobileMenuOpen, resetAllStates } = useGlobalContext();
 
   useEffect(() => {
     console.log('AppContent mounted'); // إضافة
-    toggleCart(false);
-    setSearchState(false);
+    // *** reset all states ***
+    resetAllStates()
+
+    // clean the comp when is lefted
     return () => {
       toggleCart(false);
       setSearchState(false);
@@ -51,17 +53,21 @@ function AppContent() {
 
 function App() {
   return (
-    <BrowserRouter> {/* Removed basename */}
+    <BrowserRouter>
       <GlobalProvider>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<AppContent />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/product/:id" element={<ProductPage />} />
-          <Route path="/search" element={<SearchForProducts />} />
-          <Route path="/checkout" element={<Checkout />} />
-        </Routes>
-        <Footer />
+        <div className="app-container">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<AppContent />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/product/:id" element={<ProductPage />} />
+            <Route path="/search" element={<SearchForProducts />} />
+            <Route path="/checkout" element={<Checkout />} />
+            {/* Add a catch-all route */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <Footer />
+        </div>
       </GlobalProvider>
     </BrowserRouter>
   );

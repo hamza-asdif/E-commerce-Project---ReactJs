@@ -17,9 +17,11 @@ function Cart() {
     toggleCart,
     cartSideBarToggle,
     removeProductFromCart,
+    resetAllStates
   } = useGlobalContext();
 
   useEffect(() => {
+    resetAllStates()
     return () => {
       toggleCart(false);
     };

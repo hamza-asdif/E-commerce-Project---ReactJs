@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FaShoppingCart, FaMapMarkerAlt, FaTruck, FaLock } from 'react-icons/fa';
 import './Checkout.css';
+import { useGlobalContext } from '../../Context/GlobalContext';
 
 function Checkout() {
+  const {resetAllStates} = useGlobalContext()
+
+  useEffect( () => {
+    resetAllStates()
+  } )
+
   return (
     <div className="checkout-page">
       <div className="checkout-container">

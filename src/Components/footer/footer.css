@@ -83,10 +83,6 @@ footer{
 /* الأجهزة اللوحية */
 @media screen and (max-width: 1024px) {
 
-    .footer{
-        margin-bottom: 200px;
-    }
-
     .footer-link-box{
         width: 100%;
     }
