@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosSearch, IoMdClose } from "react-icons/io";
 import "./searchBar.css";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 
 function SearchBar() {
-  const { allProducts, seachForProductFunction, searchForProduct, setSearchResults } =
-    useGlobalContext();
+  const {
+    allProducts,
+    seachForProductFunction,
+    searchForProduct,
+    setSearchResults,
+  } = useGlobalContext();
   const [showAlert, setShowAlert] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,31 +37,31 @@ function SearchBar() {
     seachForProductFunction(e);
   };
 
-// Inside your handleSearchClick function
-const handleSearchClick = () => {
-  if (searchQuery.length < 3) {
+  // Inside your handleSearchClick function
+  const handleSearchClick = () => {
+    if (searchQuery.length < 3) {
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 3000);
-  } else {
+    } else {
       // Clear previous results first
       setSearchResults([]);
       // Perform search
       seachForProductFunction({ target: { value: searchQuery } });
       // Navigate to search page
       navigateToSearchNow("/search");
-  }
-};
+    }
+  };
 
   // Handle category change
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
-    
+
     // You can add additional category filtering logic here
   };
 
   // Handle Enter key press
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" ) {
+    if (e.key === "Enter") {
       searchQuery.length > 3 && navigateToSearchNow("/search");
       handleSearchClick();
     }
@@ -69,22 +73,25 @@ const handleSearchClick = () => {
 
   // Alert Component
   const AlertBox = () => (
-    <div className="alert-box">
-      <p>الرجاء إدخال أكثر من 3 أحرف للبحث</p>
-      <button onClick={() => setShowAlert(false)}>إغلاق</button>
+    <div className="alert-box-container">
+      <div className="alert-box">
+        <p>الرجاء إدخال أكثر من 3 أحرف للبحث</p>
+        <button className="alert-close" onClick={() => setShowAlert(false)}>
+          <IoMdClose />
+        </button>
+      </div>
     </div>
   );
 
-  const handleAllFunctions = (e) =>  {
-    if(searchQuery.length  > 3){
+  const handleAllFunctions = (e) => {
+    if (searchQuery.length > 3) {
       handleIconClick();
-      handleSearchClick(e)
-    }
-    else{
+      handleSearchClick(e);
+    } else {
       setShowAlert(true);
       setTimeout(() => setShowAlert(false), 3000);
     }
-  }
+  };
 
   return (
     <div className="search-bar">

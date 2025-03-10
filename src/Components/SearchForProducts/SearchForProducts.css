@@ -1,60 +1,182 @@
-/* Loading Container Styles */
+:root {
+  --search-bg: #f8fafc;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+.search-results-page {
+  min-height: calc(100vh - 80px);
+  background: var(--search-bg);
+  padding: 2rem 1rem;
+}
+
+/* Header Styles */
+.search-header {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-info h1 {
+  color: #1e293b;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.search-info p {
+  color: #64748b;
+  font-size: 0.9375rem;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.filter-btn:hover {
+  background: #e2e8f0;
+}
+
+/* Content Styles */
+.search-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
+}
+
+/* No Results Styles */
+.no-results {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: var(--card-shadow);
+}
+
+.no-results-icon {
+  font-size: 4rem;
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+}
+
+.no-results h2 {
+  color: #1e293b;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.no-results p {
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.browse-categories-btn {
+  padding: 0.875rem 2rem;
+  background: var(--main-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.browse-categories-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(242, 69, 71, 0.2);
+}
+
+/* Loading Styles */
 .loading-container {
-    min-height: calc(100vh - 80px);
-    display: flex;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--search-bg);
+}
+
+.loading-spinner {
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid var(--main-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .search-header {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
+    gap: 1rem;
+    text-align: center;
   }
-  
-  .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid var(--main-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+
+  .search-info h1 {
+    font-size: 1.25rem;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .no-results {
+    padding: 3rem 1rem;
+  }
+
+  .no-results-icon {
+    font-size: 3rem;
+  }
+
+  .no-results h2 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-results-page {
+    padding: 1rem 0.5rem;
+  }
+
+  .search-header {
+    padding: 1rem;
     margin-bottom: 1rem;
   }
-  
-  .loading-container p {
-    font-size: 1.1rem;
-    color: #636e72;
+
+  .products-grid {
+    grid-template-columns: 1fr;
   }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+
+  .loading-spinner {
+    width: 2.5rem;
+    height: 2.5rem;
   }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .product-not-found .container {
-      padding: 2rem 1.5rem;
-    }
-  
-    .product-not-found h2 {
-      font-size: 1.5rem;
-    }
-  
-    .product-not-found p {
-      font-size: 1rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .product-not-found {
-      padding: 1rem;
-    }
-  
-    .loading-spinner {
-      width: 40px;
-      height: 40px;
-      border-width: 3px;
-    }
-  }
+}

@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useGlobalContext } from "../../Context/GlobalContext";
-import { FaHome, FaChevronLeft, FaCartPlus } from "react-icons/fa";
+import { FaCartPlus } from "react-icons/fa";
 import "./Productpage.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 
 function ProductPage() {
-  const { productPage_Product, setproductPage_Product, toggleCart, setSearchState, resetAllStates } = useGlobalContext();
+  const {
+    productPage_Product,
+    setproductPage_Product,
+    toggleCart,
+    setSearchState,
+    resetAllStates,
+  } = useGlobalContext();
   const [productPage_Storage, setProductPage_Storage] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noProduct, setNoProduct] = useState(false);
@@ -18,16 +25,13 @@ function ProductPage() {
     address: "test",
   });
 
-
   useEffect(() => {
-    resetAllStates()
-      return () => {
-        toggleCart(false);
-        setSearchState(false);
-      };
-    }, [])
-  
-
+    resetAllStates();
+    return () => {
+      toggleCart(false);
+      setSearchState(false);
+    };
+  }, []);
 
   const getPoductById = async () => {
     try {
@@ -105,27 +109,23 @@ function ProductPage() {
     const city = formData.get("city");
     const address = formData.get("address");
 
-    
     // Here you can handle form submission manually
     console.log("Order submitted");
   };
 
   const handleInputChange = (e) => {
-    e.target.value.trim() != "" && setFormData({ ...formData, [e.target.name]: e.target.value });
-  }
+    e.target.value.trim() != "" &&
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   return (
+    <>
+    <Breadcrumb
+        pathNameInfo="
+المنتجات الأكثر طلبا في المملكة"
+      />
     <div className="single-product-page">
       {/* Breadcrumb Navigation */}
-      <div className="single-product-breadcrumb">
-        <div className="container">
-          <div className="single-product-breadcrumb-content">
-            <FaHome className="breadcrumb-home-icon" />
-            <FaChevronLeft className="breadcrumb-chevron-icon" />
-            <span>منتجات حصريا في المملكة العربية السعودية 🔥</span>
-          </div>
-        </div>
-      </div>
 
       {/* Product Content */}
       <div className="single-product-container">
@@ -178,7 +178,6 @@ function ProductPage() {
                   className="single-product-order-form"
                   onSubmit={handleSubmit}
                   onChange={handleInputChange}
-
                 >
                   <div className="single-product-form-grid">
                     <input
@@ -186,7 +185,6 @@ function ProductPage() {
                       placeholder="الاسم بالكامل"
                       required
                       name="fullName"
-                      
                     />
                     <input
                       type="tel"
@@ -225,7 +223,7 @@ function ProductPage() {
                   🔥أكثر من 2500 زبون راض عن هذا المنتج🔥
                 </p>
                 <p className="single-product-stats-item">
-                📦 التوصيل مجاني داخل مدينة الرياض ومدن المملكة الكبرى
+                  📦 التوصيل مجاني داخل مدينة الرياض ومدن المملكة الكبرى
                 </p>
                 <p className="single-product-stats-item">
                   👁‍🗨 يشاهده{" "}
@@ -238,6 +236,8 @@ function ProductPage() {
         </div>
       </div>
     </div>
+    </>
+    
   );
 }
 

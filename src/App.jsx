@@ -14,6 +14,7 @@ import ProductPage from "./Components/productPage/ProductPage.jsx";
 import Cart from "./Components/Cart/Cart.jsx";
 import SearchForProducts from "./Components/SearchForProducts/SearchForProducts.jsx";
 import Checkout from "./Components/Checkout/Checkout.jsx";
+import Breadcrumb from "./Components/Breadcrumb/Breadcrumb.jsx";
 
 function AppContent() {
   const { toggleCart, setSearchState, isMobile, setIsMobile, mobileMenuOpen, setMobileMenuOpen, resetAllStates } = useGlobalContext();
@@ -51,6 +52,24 @@ function AppContent() {
   );
 }
 
+const CartBreadcrumb = () => {
+  return (
+    <>
+    <Breadcrumb pathNameInfo="سلة التسوق"/>
+    <Cart />
+    </>
+  )
+}
+
+const SearchBreadcrumb = () => {
+  return (
+    <>
+    <Breadcrumb pathNameInfo="نتائج البحث"/>
+    <SearchForProducts />
+    </>
+    )
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -59,9 +78,9 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<AppContent />} />
-            <Route path="/cart" element={<Cart />} />
+            <Route path="/cart" element={<CartBreadcrumb />} />
             <Route path="/product/:id" element={<ProductPage />} />
-            <Route path="/search" element={<SearchForProducts />} />
+            <Route path="/search" element={<SearchBreadcrumb />} />
             <Route path="/checkout" element={<Checkout />} />
             {/* Add a catch-all route */}
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,0 +1,32 @@
+/* Enhanced Breadcrumb */
+.single-product-breadcrumb {
+    background: white;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .single-product-breadcrumb-content {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    color: #64748b;
+    font-size: 0.95rem;
+  }
+  
+  .breadcrumb-home-icon {
+    font-size: 1.1rem;
+    color: var(--main-color);
+    transition: color 0.2s ease;
+    cursor: pointer;
+  }
+  
+  .breadcrumb-chevron-icon {
+    font-size: 0.8rem;
+    color: #94a3b8;
+  }
+  
+  .single-product-breadcrumb-content span{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }

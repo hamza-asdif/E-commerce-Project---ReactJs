@@ -301,7 +301,7 @@ export const GlobalProvider = ({ children }) => {
       if (productsFounded) {
         setSearchResults(productsFounded);
       }
-    } else if (searchForProduct.length === 0) {
+    } else if (!searchForProduct.length) {
       setSearchResults([]);
     }
   };

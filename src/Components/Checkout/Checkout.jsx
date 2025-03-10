@@ -1,42 +1,46 @@
-import React, { useEffect } from 'react';
-import { FaShoppingCart, FaMapMarkerAlt, FaTruck, FaLock } from 'react-icons/fa';
+import React from 'react';
+import { FaShoppingCart, FaMapMarkerAlt, FaCreditCard, FaLock, FaBox } from 'react-icons/fa';
 import './Checkout.css';
-import { useGlobalContext } from '../../Context/GlobalContext';
 
 function Checkout() {
-  const {resetAllStates} = useGlobalContext()
-
-  useEffect( () => {
-    resetAllStates()
-  } )
-
   return (
     <div className="checkout-page">
       <div className="checkout-container">
-        {/* Checkout Steps */}
+        {/* Enhanced Steps Indicator */}
         <div className="checkout-steps">
           <div className="step active">
-            <FaShoppingCart />
+            <div className="step-icon">
+              <FaShoppingCart />
+              <div className="step-line"></div>
+            </div>
             <span>تأكيد الطلب</span>
           </div>
           <div className="step">
-            <FaMapMarkerAlt />
+            <div className="step-icon">
+              <FaMapMarkerAlt />
+              <div className="step-line"></div>
+            </div>
             <span>معلومات التوصيل</span>
           </div>
           <div className="step">
-            <FaTruck />
-            <span>الشحن والدفع</span>
+            <div className="step-icon">
+              <FaCreditCard />
+            </div>
+            <span>الدفع</span>
           </div>
         </div>
 
         <div className="checkout-content">
-          {/* Order Summary */}
+          {/* Order Summary - Left Side */}
           <div className="checkout-summary">
-            <h2 className="checkout-title">ملخص الطلب</h2>
+            <h2 className="checkout-title">
+              <FaBox className="section-icon" />
+              ملخص الطلب
+            </h2>
             <div className="checkout-summary-items">
               <div className="summary-row">
                 <span>المجموع الفرعي</span>
-                <span>299 ريال سعودي</span>
+                <span className="amount">299 ريال سعودي</span>
               </div>
               <div className="summary-row">
                 <span>رسوم الشحن</span>
@@ -44,43 +48,65 @@ function Checkout() {
               </div>
               <div className="summary-total">
                 <span>الإجمالي</span>
-                <span>299 ريال سعودي</span>
+                <span className="total-amount">299 ريال سعودي</span>
               </div>
             </div>
-
             <div className="checkout-secure">
               <FaLock />
               <span>الدفع آمن ومشفر 100%</span>
             </div>
           </div>
 
-          {/* Shipping Form */}
+          {/* Shipping Form - Right Side */}
           <div className="checkout-form">
-            <h2 className="checkout-title">معلومات التوصيل</h2>
-            <form>
+            <h2 className="checkout-title">
+              <FaMapMarkerAlt className="section-icon" />
+              معلومات التوصيل
+            </h2>
+            <form className="shipping-form">
               <div className="form-grid">
                 <div className="form-group">
                   <label>الاسم الكامل</label>
-                  <input type="text" placeholder="أدخل اسمك الكامل" />
+                  <input 
+                    type="text" 
+                    placeholder="أدخل اسمك الكامل"
+                    name="fullName"
+                  />
                 </div>
                 <div className="form-group">
                   <label>رقم الهاتف</label>
-                  <input type="tel" placeholder="05xxxxxxxx" />
+                  <input 
+                    type="tel" 
+                    placeholder="05xxxxxxxx"
+                    name="phone"
+                  />
                 </div>
                 <div className="form-group">
                   <label>البريد الإلكتروني</label>
-                  <input type="email" placeholder="example@domain.com" />
+                  <input 
+                    type="email" 
+                    placeholder="example@domain.com"
+                    name="email"
+                  />
                 </div>
                 <div className="form-group">
                   <label>المدينة</label>
-                  <input type="text" placeholder="أدخل اسم المدينة" />
+                  <select name="city" defaultValue="">
+                    <option value="" disabled>اختر المدينة</option>
+                    <option value="riyadh">الرياض</option>
+                    <option value="jeddah">جدة</option>
+                    <option value="dammam">الدمام</option>
+                  </select>
                 </div>
                 <div className="form-group full-width">
                   <label>العنوان التفصيلي</label>
-                  <textarea placeholder="أدخل العنوان التفصيلي"></textarea>
+                  <textarea 
+                    placeholder="أدخل العنوان التفصيلي"
+                    name="address"
+                    rows="4"
+                  ></textarea>
                 </div>
               </div>
-
               <button type="submit" className="checkout-submit">
                 متابعة الطلب
               </button>
