@@ -1,0 +1,34 @@
+{
+    "version": 2,
+    "routes": [
+      {
+        "src": "/assets/(.*)",
+        "dest": "/assets/$1"
+      },
+      {
+        "src": "/static/(.*)",
+        "dest": "/static/$1"
+      },
+      {
+        "src": "/favicon.ico",
+        "dest": "/favicon.ico"
+      },
+      {
+        "src": "/manifest.json",
+        "dest": "/manifest.json"
+      },
+      {
+        "src": "/robots.txt",
+        "dest": "/robots.txt"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/index.html",
+        "headers": {
+          "Cache-Control": "s-maxage=0"
+        }
+      }
+    ],
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist"
+  }
