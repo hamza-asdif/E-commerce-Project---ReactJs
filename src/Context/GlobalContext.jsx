@@ -28,6 +28,17 @@ export const GlobalProvider = ({ children }) => {
   const [searchForProduct, setSearchForProduct] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
+
+  useEffect(() => {
+    console.log('GlobalProvider mounted');
+    try {
+      fetchProducts();
+      loadCartFromLocalStorage();
+    } catch (error) {
+      console.error('Error in GlobalProvider:', error);
+    }
+  }, []);
+
   // جلب بيانات المنتجات عند بدء التطبيق
   useEffect(() => {
     fetchProducts();

@@ -1,5 +1,5 @@
 {
-  "homepage": "https://hamza-asdif.github.io/shopping-cart-react",
+  "homepage": "https://hamza-asdif.github.io/E-commerce-Project---ReactJs",
   "name": "react-website",
   "private": true,
   "version": "0.0.0",
@@ -18,10 +18,10 @@
     "alertifyjs": "^1.14.0",
     "axios": "^1.8.2",
     "bootstrap": "^5.3.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-icons": "^5.5.0",
-    "react-router-dom": "^7.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.12.0",
+    "react-router-dom": "^6.22.1",
     "strapi-plugin-import-export-content": "^0.4.2"
   },
   "devDependencies": {

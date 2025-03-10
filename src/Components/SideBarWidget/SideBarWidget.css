@@ -102,6 +102,7 @@
   text-align: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: block;
 }
 
 .middle-tab-btn {

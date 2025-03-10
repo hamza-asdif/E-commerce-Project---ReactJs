@@ -6,6 +6,10 @@ import './whyUsSection.css'
 import * as FaIcons from "react-icons/fa";
 import * as Fa6Icons from "react-icons/fa6";
 
+import { FaCircleCheck } from 'react-icons/fa6';
+import { FaShippingFast } from 'react-icons/fa';
+import { FaCartArrowDown } from 'react-icons/fa6';
+
 
 function Why_Us_Section() {
   return (
@@ -20,7 +24,7 @@ function Why_Us_Section() {
         <div className="last-product-products-content">
             <div className="last-product-content-box">
                 <div className="last-icon-box">
-                <Fa6Icons.FaCircleCheck className='last-product-icon' id="circle-check" />
+                <FaCircleCheck className='last-product-icon' id="circle-check" />
                 </div>
     
                 <div className="last-text-content">
@@ -31,7 +35,7 @@ function Why_Us_Section() {
     
             <div className="last-product-content-box">
                 <div className="last-icon-box">
-                    <FaIcons.FaShippingFast className='last-product-icon' />
+                    <FaShippingFast className='last-product-icon' />
                 </div>
     
                 <div className="last-text-content">
@@ -42,7 +46,7 @@ function Why_Us_Section() {
     
             <div className="last-product-content-box">
                 <div className="last-icon-box">
-                    <FaIcons.FaCartArrowDown className='last-product-icon' />
+                    <FaCartArrowDown className='last-product-icon' />
                 </div>
     
                 <div className="last-text-content">

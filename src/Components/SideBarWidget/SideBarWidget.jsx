@@ -76,9 +76,9 @@ export default function SideBarWidget() {
           </div>
 
           <div className="sidebar-last-tab">
-            <button className="last-tab-btn" onClick={() => toggleCart(false)}>
+            <Link to="/" className="last-tab-btn" onClick={() => toggleCart(false)}>
               استمر في التسوق
-            </button>
+            </Link>
           </div>
         </div>
       </div>

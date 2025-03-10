@@ -19,6 +19,7 @@ function AppContent() {
   const { toggleCart, setSearchState } = useGlobalContext();
 
   useEffect(() => {
+    console.log('AppContent mounted'); // إضافة
     toggleCart(false);
     setSearchState(false);
     return () => {
@@ -26,6 +27,12 @@ function AppContent() {
       setSearchState(false);
     };
   }, []);
+
+  // إضافة معالج أخطاء
+  if (!toggleCart || !setSearchState) {
+    console.error('GlobalContext values are missing');
+    return <div>Loading...</div>;
+  }
 
   return (
     <>

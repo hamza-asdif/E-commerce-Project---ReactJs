@@ -3,19 +3,11 @@ import react from "@vitejs/plugin-react-swc";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/",
+  base: '/',
   build: {
-    outDir: "dist",
-    assetsDir: "assets",
     sourcemap: true,
     rollupOptions: {
-      external: ["react-icons/fa", "react-icons/fa6"],
-      output: {
-        manualChunks: {
-          vendor: ["react", "react-dom"],
-          icons: ["react-icons"],
-        },
-      },
-    },
-  },
+      external: [],  // إزالة external لأنه يسبب مشاكل مع react-icons
+    }
+  }
 });
