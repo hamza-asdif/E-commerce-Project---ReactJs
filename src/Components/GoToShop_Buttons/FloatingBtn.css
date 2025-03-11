@@ -1,0 +1,77 @@
+.floating-shop-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--main-color);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+}
+
+.floating-shop-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  background: #d83f41; /* Slightly darker shade */
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .floating-shop-btn {
+    bottom: 1.5rem;
+    right: 50%;
+    transform: translateX(50%);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    /* Mobile glass effect */
+    background: rgba(242, 69, 71, 0.95);
+  }
+
+  .floating-shop-btn:hover {
+    transform: translateX(50%) translateY(0);
+  }
+
+  /* Active/Pressed state for mobile */
+  .floating-shop-btn:active {
+    transform: translateX(50%) scale(0.95);
+    background: #d83f41;
+  }
+}
+
+/* Small screens and landscape mode */
+@media (max-width: 480px), (max-height: 480px) {
+  .floating-shop-btn {
+    bottom: 1rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Hide text on very small screens, show only icon */
+  @media (max-width: 360px) {
+    .floating-shop-btn span {
+      display: none;
+    }
+
+    .floating-shop-btn {
+      padding: 0.75rem;
+      border-radius: 50%;
+      aspect-ratio: 1;
+      justify-content: center;
+    }
+  }
+}
+
+/* Handle devices with bottom navigation bars */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .floating-shop-btn {
+    bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+}

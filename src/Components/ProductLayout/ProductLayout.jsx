@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ProductCard from "./ProductCard/ProductCard";
 import "./ProductLayout.css";
 import { useGlobalContext } from "../../Context/GlobalContext";
+import { Link } from "react-router-dom";
 
 export default function ProductLayout({ Num }) {
   const [loading, setLoading] = useState(true);

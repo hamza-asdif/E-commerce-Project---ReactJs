@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, Link } from "react-router-dom";
 import "./App.css";
 import Navbar from "./Components/Navbar/Navbar.jsx";
 import HeroImage from "./Components/HeroImage/HeroImg.jsx";
@@ -15,14 +15,26 @@ import Cart from "./Components/Cart/Cart.jsx";
 import SearchForProducts from "./Components/SearchForProducts/SearchForProducts.jsx";
 import Checkout from "./Components/Checkout/Checkout.jsx";
 import Breadcrumb from "./Components/Breadcrumb/Breadcrumb.jsx";
+import ShopPage from "./Components/ShopPage/ShopPage.jsx";
+import { FaArrowLeft } from "react-icons/fa";
+import ToShopSections from "./Components/GoToShop_Buttons/ToShopSection";
+import FloatingBtn from "./Components/GoToShop_Buttons/FloatingBtn.jsx";
 
 function AppContent() {
-  const { toggleCart, setSearchState, isMobile, setIsMobile, mobileMenuOpen, setMobileMenuOpen, resetAllStates } = useGlobalContext();
+  const {
+    toggleCart,
+    setSearchState,
+    isMobile,
+    setIsMobile,
+    mobileMenuOpen,
+    setMobileMenuOpen,
+    resetAllStates,
+  } = useGlobalContext();
 
   useEffect(() => {
-    console.log('AppContent mounted'); // إضافة
+    console.log("AppContent mounted"); // إضافة
     // *** reset all states ***
-    resetAllStates()
+    resetAllStates();
 
     // clean the comp when is lefted
     return () => {
@@ -33,7 +45,7 @@ function AppContent() {
 
   // إضافة معالج أخطاء
   if (!toggleCart || !setSearchState) {
-    console.error('GlobalContext values are missing');
+    console.error("GlobalContext values are missing");
     return <div>Loading...</div>;
   }
 
@@ -42,6 +54,7 @@ function AppContent() {
       <HeroImage />
       <SectionTitle />
       <ProductLayout Num="8" />
+      <ToShopSections />
       <SectionTitle
         SectionTitle="🔥 الأكثر مبيعا 🔥"
         SectionSpan="منتجات موصى بها"
@@ -55,20 +68,38 @@ function AppContent() {
 const CartBreadcrumb = () => {
   return (
     <>
-    <Breadcrumb pathNameInfo="سلة التسوق"/>
-    <Cart />
+      <Breadcrumb pathNameInfo="سلة التسوق" />
+      <Cart />
     </>
-  )
-}
+  );
+};
 
 const SearchBreadcrumb = () => {
   return (
     <>
-    <Breadcrumb pathNameInfo="نتائج البحث"/>
-    <SearchForProducts />
+      <Breadcrumb pathNameInfo="نتائج البحث" />
+      <SearchForProducts />
     </>
-    )
-}
+  );
+};
+
+const CheckoutBreadcrumb = () => {
+  return (
+    <>
+      <Breadcrumb pathNameInfo="تأكيد الطلب وإتمام الشراء" />
+      <Checkout />
+    </>
+  );
+};
+
+const ShopPageBrreadcrumb = () => {
+  return (
+    <>
+      <Breadcrumb pathNameInfo={"hello"} />
+      <ShopPage />
+    </>
+  );
+};
 
 function App() {
   return (
@@ -81,10 +112,12 @@ function App() {
             <Route path="/cart" element={<CartBreadcrumb />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/search" element={<SearchBreadcrumb />} />
-            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/checkout" element={<CheckoutBreadcrumb />} />
+            <Route path="/shop" element={<ShopPageBrreadcrumb />} />
             {/* Add a catch-all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <FloatingBtn />
           <Footer />
         </div>
       </GlobalProvider>

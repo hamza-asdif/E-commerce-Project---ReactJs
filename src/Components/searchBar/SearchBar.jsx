@@ -9,11 +9,14 @@ function SearchBar() {
     allProducts,
     seachForProductFunction,
     searchForProduct,
+    Search_Products,
+    setSearchQuery,
+    searchQuery,
     setSearchResults,
+    searchResults
   } = useGlobalContext();
   const [showAlert, setShowAlert] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
   const navigateToSearchNow = useNavigate();
 
   const categories = [
@@ -25,51 +28,35 @@ function SearchBar() {
     "Beauty",
   ];
 
-  // Handle search input change
-  const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
 
-    if (value.length < 3) {
-      setShowAlert(false);
-    }
-
-    seachForProductFunction(e);
-  };
-
-  // Inside your handleSearchClick function
-  const handleSearchClick = () => {
-    if (searchQuery.length < 3) {
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
-    } else {
-      // Clear previous results first
-      setSearchResults([]);
-      // Perform search
-      seachForProductFunction({ target: { value: searchQuery } });
-      // Navigate to search page
-      navigateToSearchNow("/search");
-    }
-  };
-
-  // Handle category change
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-
-    // You can add additional category filtering logic here
-  };
-
-  // Handle Enter key press
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      searchQuery.length > 3 && navigateToSearchNow("/search");
-      handleSearchClick();
-    }
-  };
+  const handleInputSearch = (e) => {
+    const value = e.target.value.trim()
+    setSearchQuery(value)
+  }
 
   const handleIconClick = () => {
-    navigateToSearchNow("/search");
-  };
+    if(searchQuery.length >= 3 && allProducts) {
+      const searchRes = allProducts.filter( (p) => {
+        return p.name.toLowerCase().includes(searchQuery.toLowerCase())
+      } )
+
+      setSearchResults(searchRes)
+      navigateToSearchNow("/search")
+    }
+    else{
+      setShowAlert(true)
+      setTimeout(() => {
+        setShowAlert(false)
+      }, 3000);
+    }
+  }
+
+
+  const handleKeyUp = (e) => {
+    if(e.key === "Enter"){
+      handleIconClick()
+    }
+  }
 
   // Alert Component
   const AlertBox = () => (
@@ -83,16 +70,6 @@ function SearchBar() {
     </div>
   );
 
-  const handleAllFunctions = (e) => {
-    if (searchQuery.length > 3) {
-      handleIconClick();
-      handleSearchClick(e);
-    } else {
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
-    }
-  };
-
   return (
     <div className="search-bar">
       <div className="search-bar-box">
@@ -100,7 +77,6 @@ function SearchBar() {
           <select
             title="collections"
             name="collection"
-            onChange={handleCategoryChange}
             value={selectedCategory}
           >
             <option value="" id="select-first">
@@ -115,20 +91,8 @@ function SearchBar() {
         </div>
 
         <div className="search-input-box">
-          <input
-            type="text"
-            placeholder="البحث عن منتج"
-            id="seachBar"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            onKeyUp={handleKeyPress}
-          />
-          <IoIosSearch
-            id="search-bar-icon"
-            onClick={(e) => {
-              handleAllFunctions(e);
-            }}
-          />
+          <input type="text" placeholder="البحث عن منتج" id="seachBar" onChange={handleInputSearch} onKeyUp={handleKeyUp} />
+          <IoIosSearch id="search-bar-icon" onClick={handleIconClick} />
         </div>
 
         {showAlert && <AlertBox />}

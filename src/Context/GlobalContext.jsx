@@ -25,19 +25,18 @@ export const GlobalProvider = ({ children }) => {
   const [displayedProducts, setDisplayedProducts] = useState([]);
   const [productPage_Product, setproductPage_Product] = useState({});
   const [isFav, setIsFav] = useState(false);
-  const [searchForProduct, setSearchForProduct] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
-    console.log('GlobalProvider mounted');
+    console.log("GlobalProvider mounted");
     try {
       fetchProducts();
       loadCartFromLocalStorage();
     } catch (error) {
-      console.error('Error in GlobalProvider:', error);
+      console.error("Error in GlobalProvider:", error);
     }
   }, []);
 
@@ -53,8 +52,6 @@ export const GlobalProvider = ({ children }) => {
     calculateTotalPrice();
     saveCartToLocalStorage(); // حفظ بيانات السلة في التخزين المحلي عند أي تغيير
   }, [productsInCart]);
-
-  
 
   // جلب بيانات المنتجات من jsonbin.io
   const fetchProducts = async () => {
@@ -83,13 +80,12 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-
   // !!!! Function to reset all states ----- navigate between components
   const resetAllStates = () => {
     toggleCart(false);
     setSearchState(false);
-    setMobileMenuOpen(false)
-  }
+    setMobileMenuOpen(false);
+  };
 
   // Fix the saving to localStorage function
   const saveCartToLocalStorage = () => {
@@ -146,43 +142,42 @@ export const GlobalProvider = ({ children }) => {
     setProductsInCart_TotalPrice(totalPrice);
   };
 
-
   const alertifyPopUp_Confirm = (id, set_Function, updatedData) => {
     alertify
-        .confirm(
-          "تأكيد الحذف",
-          "هل تريد حذف هذا المنتج من السلة؟",
-          function () {
-            // استدعاء الدالة مباشرة مع البيانات المحدثة
-            set_Function(updatedData);
-            alertify.success("تم حذف المنتج بنجاح ✅");
-            console.log("تمت إزالة المنتج من السلة، المعرف:", id);
-          },
-          function () {
-            alertify.error("تم إلغاء العملية");
-          }
-        )
-        .set({
-          labels: {
-            ok: "حذف",
-            cancel: "إلغاء",
-          },
-          transition: "slide",
-          movable: false,
-          closableByDimmer: false,
-          defaultFocusOn: "cancel",
-          padding: 10,
-          closable: false,
-          rtl: true,
-          delay: 200,
-          pinnable: false,
-          theme: {
-            input: "alertify-input",
-            ok: "alertify-ok-button",
-            cancel: "alertify-cancel-button",
-          },
-        });
-}
+      .confirm(
+        "تأكيد الحذف",
+        "هل تريد حذف هذا المنتج من السلة؟",
+        function () {
+          // استدعاء الدالة مباشرة مع البيانات المحدثة
+          set_Function(updatedData);
+          alertify.success("تم حذف المنتج بنجاح ✅");
+          console.log("تمت إزالة المنتج من السلة، المعرف:", id);
+        },
+        function () {
+          alertify.error("تم إلغاء العملية");
+        }
+      )
+      .set({
+        labels: {
+          ok: "حذف",
+          cancel: "إلغاء",
+        },
+        transition: "slide",
+        movable: false,
+        closableByDimmer: false,
+        defaultFocusOn: "cancel",
+        padding: 10,
+        closable: false,
+        rtl: true,
+        delay: 200,
+        pinnable: false,
+        theme: {
+          input: "alertify-input",
+          ok: "alertify-ok-button",
+          cancel: "alertify-cancel-button",
+        },
+      });
+  };
 
   // إزالة منتج من السلة
   const removeProductFromCart = async (productId) => {
@@ -190,16 +185,14 @@ export const GlobalProvider = ({ children }) => {
       // تحويل المعرف إلى رقم
       const id = parseInt(productId);
 
-       // إنشاء نسخة جديدة من السلة بدون المنتج المحدد
-       const updatedCart = productsInCart.filter(
+      // إنشاء نسخة جديدة من السلة بدون المنتج المحدد
+      const updatedCart = productsInCart.filter(
         (item) => parseInt(item.id) !== id
       );
 
+      console.log(updatedCart.length);
 
-
-      console.log(updatedCart.length)
-      
-      alertifyPopUp_Confirm(id, setProductsInCart, updatedCart)
+      alertifyPopUp_Confirm(id, setProductsInCart, updatedCart);
 
       return true;
     } catch (error) {
@@ -287,24 +280,6 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-  const seachForProductFunction = (e) => {
-    e.target.value.trim().length > 3
-      ? setSearchForProduct(e.target.value)
-      : setSearchForProduct("");
-
-    if (searchForProduct.length > 3) {
-      const value = e.target.value.trim().toLowerCase();
-      const productsFounded = allProducts.filter((product) =>
-        product.name.toLowerCase().includes(value)
-      );
-      console.log(productsFounded);
-      if (productsFounded) {
-        setSearchResults(productsFounded);
-      }
-    } else if (!searchForProduct.length) {
-      setSearchResults([]);
-    }
-  };
 
   return (
     <GlobalContext.Provider
@@ -331,18 +306,17 @@ export const GlobalProvider = ({ children }) => {
         setDisplayedProducts,
         productPage_Product,
         setproductPage_Product,
-        seachForProductFunction,
-        searchForProduct,
-        setSearchForProduct,
         setSearchResults,
         searchResults,
+        searchQuery,
+        setSearchQuery,
         searchState,
         setSearchState,
         isMobile,
         setIsMobile,
         mobileMenuOpen,
         setMobileMenuOpen,
-        resetAllStates
+        resetAllStates,
       }}
     >
       {children}

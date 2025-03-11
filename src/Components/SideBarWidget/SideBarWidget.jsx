@@ -6,7 +6,6 @@ import ProductInCart from "./ProductInCart/ProductInCart";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import { Link } from "react-router-dom";
 
-
 export default function SideBarWidget() {
   const {
     productsInCart,
@@ -19,9 +18,6 @@ export default function SideBarWidget() {
   const handleOverlayClick = () => {
     toggleCart(false);
   };
-
-  
-  
 
   return (
     <div dir="rtl">
@@ -47,20 +43,18 @@ export default function SideBarWidget() {
           />
         </div>
 
-        <div
-          className={`cart-sidebar-products ${
-            !productsInCart.length ? "No-Product-Span" : ""
-          }`}
-        >
-          <ul className="ul-product-dom">
-            {productsInCart.length ? (
-              productsInCart.map((CartP) => (
+        <div className="cart-sidebar-products">
+          {productsInCart.length ? (
+            <ul className="ul-product-dom">
+              {productsInCart.map((CartP) => (
                 <ProductInCart Cart_Products={CartP} key={CartP.id} />
-              ))
-            ) : (
-              <span className="No-Product-Span">سلة مشترياتكم فارغة</span>
-            )}
-          </ul>
+              ))}
+            </ul>
+          ) : (
+            <div className="empty-cart-message">
+              <span>سلة مشترياتكم فارغة</span>
+            </div>
+          )}
         </div>
 
         <div className="sidebar-call-to-action">
@@ -72,11 +66,17 @@ export default function SideBarWidget() {
           </div>
 
           <div className="sidebar-middle-tab">
-            <Link to="/cart" className="middle-tab-btn" >شراء الآن</Link>
+            <Link to="/cart" className="middle-tab-btn">
+              شراء الآن
+            </Link>
           </div>
 
           <div className="sidebar-last-tab">
-            <Link to="/" className="last-tab-btn" onClick={() => toggleCart(false)}>
+            <Link
+              to="/"
+              className="last-tab-btn"
+              onClick={() => toggleCart(false)}
+            >
               استمر في التسوق
             </Link>
           </div>

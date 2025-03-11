@@ -1,47 +1,60 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { FiEdit3 } from "react-icons/fi";
-import { LuTrash } from "react-icons/lu";
+import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { useGlobalContext } from "../../../Context/GlobalContext";
 import "./ProductInCart.css";
 
 export default function ProductInCart({ Cart_Products }) {
-  const { removeProductFromCart } = useGlobalContext();
+  const { updateProductQuantity, removeProductFromCart } = useGlobalContext();
 
   return (
-    <li className="cart-product-item">
-      <div className="cart-product-main">
-        <div className="cart-product-box">
-          <img
-            src={`/${Cart_Products.Image}`}
-            alt={Cart_Products.name}
-          />
+    <li className="cart-item">
+      <div className="cart-item-image">
+        <img src={Cart_Products.Image} alt={Cart_Products.name} />
+      </div>
+
+      <div className="cart-item-content">
+        <h4 className="cart-item-title">{Cart_Products.name}</h4>
+
+        <div className="cart-item-price">
+          <span>{Cart_Products.price} ريال</span>
         </div>
 
-        <div className="cart-product-content">
-          <span className="cart-product-title">{Cart_Products.name}</span>
+        <div className="cart-item-actions">
+          <div className="quantity-controls">
+            <button
+              className="quantity-btn"
+              onClick={() =>
+                updateProductQuantity(
+                  Cart_Products.id,
+                  Cart_Products.quantity - 1
+                )
+              }
+              disabled={Cart_Products.quantity <= 1}
+            >
+              <FaMinus />
+            </button>
 
-          <div className="cart-product-details">
-            <div className="cart-info-item">
-              <span className="cart-product-price">
-                {Cart_Products.price} ريال سعودي
-              </span>
-            </div>
+            <span className="quantity-display">{Cart_Products.quantity}</span>
 
-            <div className="cart-info-quantity">
-              <span className="quantity-label">الكمية:</span>
-              <span className="quantity-value">{Cart_Products.quantity}</span>
-            </div>
+            <button
+              className="quantity-btn"
+              onClick={() =>
+                updateProductQuantity(
+                  Cart_Products.id,
+                  Cart_Products.quantity + 1
+                )
+              }
+            >
+              <FaPlus />
+            </button>
           </div>
-        </div>
 
-        <div className="cart-product-actions">
           <button
-            type="button"
-            className="action-button delete"
+            className="remove-btn"
             onClick={() => removeProductFromCart(Cart_Products.id)}
           >
-            <LuTrash />
+            <FaTrash />
           </button>
         </div>
       </div>
