@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "orders",
+  "info": {
+    "singularName": "order",
+    "pluralName": "orders",
+    "displayName": "Orders",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "orderNumber": {
+      "type": "string"
+    },
+    "products": {
+      "type": "json"
+    },
+    "totalPrice": {
+      "type": "integer"
+    },
+    "Order_status": {
+      "type": "enumeration",
+      "enum": [
+        "Pending",
+        "Processing",
+        "Completed"
+      ]
+    },
+    "customerInfo": {
+      "type": "json"
+    }
+  }
+}

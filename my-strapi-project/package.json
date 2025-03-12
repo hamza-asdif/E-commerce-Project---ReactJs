@@ -1,5 +1,5 @@
 {
-  "name": "my-strapi-api",
+  "name": "my-strapi-project",
   "version": "0.1.0",
   "private": true,
   "description": "A Strapi application",
@@ -22,7 +22,6 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
-    "strapi-import-export": "^0.0.1",
     "styled-components": "^6.0.0"
   },
   "devDependencies": {
@@ -36,6 +35,6 @@
     "npm": ">=6.0.0"
   },
   "strapi": {
-    "uuid": "2ce0f5ed-0e4a-4da4-bd4a-c8e3c93aa586"
+    "uuid": "7db270cd-25fe-4b74-b58b-8cc8e33378c5"
   }
 }
