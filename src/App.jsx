@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Route, Routes, Navigate, Link } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, Link, useLocation } from "react-router-dom";
 import "./App.css";
 import { GlobalProvider, useGlobalContext } from "./Context/GlobalContext.jsx";
 
@@ -27,6 +27,8 @@ import {
 
 
 function AppContent() {
+  const pathname = useLocation()
+
   const {
     toggleCart,
     setSearchState,
@@ -53,6 +55,10 @@ function AppContent() {
   if (!toggleCart || !setSearchState) {
     console.error("GlobalContext values are missing");
     return <div>Loading...</div>;
+  }
+
+  const getpath = () => {
+    console.log("this is the page here : ",  pathname)
   }
 
   return (
@@ -106,6 +112,8 @@ const ShopPageBreadcrumb = () => {
     </>
   );
 };
+
+
 
 function App() {
   return (

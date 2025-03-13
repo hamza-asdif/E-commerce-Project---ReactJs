@@ -30,6 +30,10 @@ export const GlobalProvider = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
+  const API_URL = 'http://localhost:1337/api';
+  const TOKEN = '20c532f89bb0f0520e494a15fbe8025076035ac07a9b9b555618ae1cbc54ea22c7c3114da16c6f34da7451cdcf14e135e7917770624c8ec1a20b313ecce3899063fdc6f60406a14bf5761788c5788124bf45f981ddad4949642f43615972aebd69a7dfa41eac4937ef2db1d7ffd01875137f5adb3ab33ac4575c5666b2a06442';
+  
+
   useEffect(() => {
     console.log("GlobalProvider mounted");
     try {
@@ -63,6 +67,32 @@ export const GlobalProvider = ({ children }) => {
       console.error("خطأ في تحميل المنتجات:", error);
     }
   };
+
+
+  // const fetchProducts = async () => {
+  //   try {
+  //     const response = await axios.get(`${API_URL}/products`, {
+  //       headers: {
+  //         Authorization: `Bearer ${TOKEN}`
+  //       },
+  //       params: {
+  //         populate: '*'
+  //       }
+  //     });
+      
+  //     const requestData = response.data.data;
+  //     console.log("All Products here: ", requestData);
+  //     // Log images specifically
+  //     requestData.forEach(product => {
+  //       console.log("Product images: ", product.Image);
+  //     });
+      
+  //     setAllProducts(requestData);
+  //   }
+  //   catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
   // Fix the loading from localStorage function
   const loadCartFromLocalStorage = () => {

@@ -18,11 +18,14 @@
     "alertifyjs": "^1.14.0",
     "axios": "^1.8.2",
     "bootstrap": "^5.3.3",
+    "formik": "^2.4.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.54.2",
     "react-icons": "^4.12.0",
     "react-router-dom": "^6.22.1",
-    "strapi-plugin-import-export-content": "^0.4.2"
+    "strapi-plugin-import-export-content": "^0.4.2",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
