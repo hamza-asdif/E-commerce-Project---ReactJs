@@ -40,19 +40,39 @@ export default function ProductLayout({ Num }) {
   // التحقق من وجود خطأ في التحميل
   useEffect(() => {
     if (!loading && allProducts.length === 0) {
-      setError("Unable to load products. Please try again later.");
+      setError("تعذر تحميل المنتجات. يرجى المحاولة مرة أخرى لاحقاً.");
     } else {
       setError(null);
     }
-  }, [loading, allProducts]);
+  }, [loading]);
+
+  const NoProduct = () => {
+    if (displayedProducts.length === 0) {
+      return (
+        <div className="container">
+          <div className="no-products-container">
+            <div className="no-products-icon">📦</div>
+            <h3>لا توجد منتجات</h3>
+            <p>لم نتمكن من العثور على أي منتجات لعرضها في الوقت الحالي.</p>
+          </div>
+        </div>
+      );
+    }
+  }
+
+
+  useEffect( () => {
+    NoProduct()
+  }, [loading] )
+
 
   if (loading) {
     return (
       <div className="container">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading products...</p>
-        </div>
+      <div className="loading-container">
+      <div className="loading-spinner"></div>
+      <p>جاري تحميل المنتجات...</p>
+      </div>
       </div>
     );
   }
@@ -67,18 +87,7 @@ export default function ProductLayout({ Num }) {
     );
   }
 
-  if (displayedProducts.length === 0) {
-    return (
-      <div className="container">
-        <div className="no-products-container">
-          <div className="no-products-icon">📦</div>
-          <h3>No Products Found</h3>
-          <p>We couldn't find any products to display at the moment.</p>
-          <p>Check back soon or try adjusting your filters.</p>
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="container">

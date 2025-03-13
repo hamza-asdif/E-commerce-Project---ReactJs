@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaFilter, FaSort, FaSearch } from "react-icons/fa";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import ProductCard from "../ProductLayout/ProductCard/ProductCard";
@@ -21,6 +21,10 @@ function ShopPage() {
     min: 0,
     max: 1000,
   });
+  const [isThisMobile, setIsThisMobile] = useState(false);
+  const filterSideBarRef_Mobile = useRef(null);
+  const Min_PriceRef = useRef(null);
+  const Max_PriceRef = useRef(null);
 
   // Get products from context
   const { allProducts } = useGlobalContext();
@@ -126,7 +130,11 @@ function ShopPage() {
     setTimeout(() => {
       setLoading(false);
     }, 1000);
+
+    // !!! function to handle filter sidebar on mobile devices
+    handleFilterSideBar_Mobile();
   };
+
   const ProductsFilters = (arr) => {
     // Only show no products message if we're not loading and array is empty
     if (!loading && (!arr || arr.length === 0)) {
@@ -154,7 +162,14 @@ function ShopPage() {
     setActiveCategory("all"); // Change from false to "all"
     setCategoryProducts([]); // Add this
     setSortedProducts([]); // Add this
-    setIsSortActive(false); // Add this
+    setIsSortActive(false); // Add this*
+    setFiltterPrice(() => ({
+      min: 0,
+      max: 1000,
+    }));
+
+    Min_PriceRef.current.value = "";
+    Max_PriceRef.current.value = "";
   };
 
   const resetFilters = () => {
@@ -167,28 +182,33 @@ function ShopPage() {
   };
 
   const handleFilterByPrice = () => {
-    setLoading(true);
-    setLoadingText("جاري تصفية المنتجات حسب السعر...");
+    if (
+      Object.values(filterPrice)[0] !== 0 &&
+      Object.values(filterPrice)[1] !== 1000
+    ) {
+      setLoading(true);
+      setLoadingText("جاري تصفية المنتجات حسب السعر...");
 
-    // Fix the condition to check for "all" instead of !activeCategory
-    const getProductsFirst =
-      activeCategory === "all" ? [...allProducts] : [...categoryProducts];
+      // Fix the condition to check for "all" instead of !activeCategory
+      const getProductsFirst =
+        activeCategory === "all" ? [...allProducts] : [...categoryProducts];
 
-    const NewProducts = getProductsFirst.filter((product) => {
-      const PriceMin = parseInt(filterPrice.min);
-      const PriceMax = parseInt(filterPrice.max);
-      const ProductPrice = Number(product.price);
+      const NewProducts = getProductsFirst.filter((product) => {
+        const PriceMin = parseInt(filterPrice.min);
+        const PriceMax = parseInt(filterPrice.max);
+        const ProductPrice = Number(product.price);
 
-      return ProductPrice >= PriceMin && ProductPrice <= PriceMax;
-    });
+        return ProductPrice >= PriceMin && ProductPrice <= PriceMax;
+      });
 
-    // Update the filtered products state
-    setSortedProducts(NewProducts);
-    setIsSortActive(true);
+      // Update the filtered products state
+      setSortedProducts(NewProducts);
+      setIsSortActive(true);
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    }
   };
 
   const handlePriceInput = (e) => {
@@ -198,6 +218,20 @@ function ShopPage() {
       [name]: Number(value),
     }));
     console.log(`${name} price:`, value);
+  };
+
+  const handleFilterSideBar_Mobile = () => {
+    window.addEventListener("resize", () => {
+      if (window.outerWidth < 980) {
+        filterSideBarRef_Mobile.current.classList.remove("active");
+        setIsFilterOpen(false);
+      }
+    });
+
+    if (window.outerWidth < 1280) {
+      filterSideBarRef_Mobile.current.classList.remove("active");
+      setIsFilterOpen(false);
+    }
   };
 
   return (
@@ -210,7 +244,10 @@ function ShopPage() {
 
       <div className="shop-container">
         {/* Filters Panel */}
-        <aside className={`shop-filters ${isFilterOpen ? "active" : ""}`}>
+        <aside
+          className={`shop-filters ${isFilterOpen ? "active" : ""}`}
+          ref={filterSideBarRef_Mobile}
+        >
           <div className="filters-header">
             <h3>تصفية المنتجات</h3>
             <button onClick={handleToggle_reset_filters} className="filter-btn">
@@ -259,6 +296,7 @@ function ShopPage() {
                       placeholder="0"
                       name="min"
                       onChange={(e) => handlePriceInput(e)}
+                      ref={Min_PriceRef}
                     />
                     <span className="currency">ر.س</span>
                   </div>
@@ -271,6 +309,7 @@ function ShopPage() {
                       placeholder="1000"
                       name="max"
                       onChange={(e) => handlePriceInput(e)}
+                      ref={Max_PriceRef}
                     />
                     <span className="currency">ر.س</span>
                   </div>
