@@ -208,8 +208,18 @@ function ShopPage() {
       setTimeout(() => {
         setLoading(false);
       }, 500);
+
+      handleFilterSideBar_Mobile();
     }
   };
+
+
+  const handlekeyPress = (e) => {
+    if(e.key === "Enter") {
+      handleFilterByPrice();
+    }
+  }
+
 
   const handlePriceInput = (e) => {
     const { name, value } = e.target;
@@ -296,6 +306,7 @@ function ShopPage() {
                       placeholder="0"
                       name="min"
                       onChange={(e) => handlePriceInput(e)}
+                      onKeyDown={(e) => handlekeyPress(e)}
                       ref={Min_PriceRef}
                     />
                     <span className="currency">ر.س</span>
@@ -309,6 +320,7 @@ function ShopPage() {
                       placeholder="1000"
                       name="max"
                       onChange={(e) => handlePriceInput(e)}
+                      onKeyDown={(e) => handlekeyPress(e)}
                       ref={Max_PriceRef}
                     />
                     <span className="currency">ر.س</span>

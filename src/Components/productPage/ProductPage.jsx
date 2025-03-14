@@ -332,8 +332,8 @@ function ProductPage() {
                       type="submit"
                       className="single-product-submit-button"
                     >
-                      <FaCartPlus className="single-product-cart-icon" />
                       <span>لتأكيد الطلب اضغط هنا</span>
+                      <FaCartPlus className="single-product-cart-icon" />
                     </button>
                   </form>
                 </div>

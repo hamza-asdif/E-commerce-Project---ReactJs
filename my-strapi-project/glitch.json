@@ -1,0 +1,14 @@
+{
+  "start": "npm run glitch-start",
+  "install": "npm install",
+  "watch": {
+    "ignore": ["\\.git", "node_modules/**/node_modules", ".tmp"],
+    "install": {
+      "include": ["^package\\.json$"]
+    },
+    "restart": {
+      "include": ["\\.js$", "\\.json"]
+    },
+    "throttle": 100
+  }
+}
