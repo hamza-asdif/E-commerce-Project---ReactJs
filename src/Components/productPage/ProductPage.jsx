@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { useForm } from "react-hook-form";
+import CheckoutForm from "../Checkout/CheckoutForm/CheckoutForm";
 
 function ProductPage() {
   const {
@@ -19,27 +20,7 @@ function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [noProduct, setNoProduct] = useState(false);
   const { id } = useParams();
-  const [formData, setFormData] = useState({
-    fullName: "",
-    tel: "",
-    city: "",
-    address: "",
-  });
-  const fullNameRef = useRef(null)
-
-
-
-  
-
-  
-
-  // Update the state to handle multiple errors
-  const [errors, setErrors] = useState({
-    fullName: "",
-    tel: "",
-    city: "",
-    address: "",
-  });
+  const [randomVisitors, setRandomVisitors] = useState(0);
 
   useEffect(() => {
     resetAllStates();
@@ -49,13 +30,19 @@ function ProductPage() {
     };
   }, []);
 
-  useEffect( () => {
-    if(!loading, fullNameRef.current) {
-    fullNameRef.current.focus()
+  const handleVisitorsRandom = () => {
+    const randomDelay = Math.floor(Math.random() * (4000 - 2000 + 1)) + 2000;
+    setInterval(() => {
+      const randomNumber = Math.floor(Math.random() * (120 - 30 + 1)) + 30;
 
-    }
-  }, [productPage_Product] )
+      setRandomVisitors(randomNumber)
+      console.log(randomNumber);
+    }, randomDelay);
+  };
 
+  useEffect(() => {
+    handleVisitorsRandom();
+  }, []);
 
   const getPoductById = async () => {
     try {
@@ -125,81 +112,6 @@ function ProductPage() {
     productPage_Product.Image,
   ];
 
-  // Enhance the handleSubmit function
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let isValid = true;
-    const newErrors = {};
-
-    // Validate all fields
-    if (!formData.fullName || formData.fullName.length < 3) {
-      newErrors.fullName = "الاسم مطلوب ويجب أن يكون 3 أحرف على الأقل";
-      isValid = false;
-    }
-
-    if (!formData.tel || !/^(05)[0-9]{8}$/.test(formData.tel)) {
-      newErrors.tel = "يجب إدخال رقم هاتف سعودي صحيح";
-      isValid = false;
-    }
-
-    if (!formData.city) {
-      newErrors.city = "المدينة مطلوبة";
-      isValid = false;
-    }
-
-    if (!formData.address || formData.address.length < 10) {
-      newErrors.address = "يرجى إدخال عنوان تفصيلي";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-
-    if (isValid) {
-      // Process the form
-      console.log("Order submitted:", formData);
-      // Add your submission logic here
-    }
-  };
-
-  // Enhance the handleInputChange function
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    // Clear error when user starts typing
-    setErrors((prev) => ({
-      ...prev,
-      [name]: "",
-    }));
-
-    // Validate as user types
-    switch (name) {
-      case "tel":
-        if (!/^\+?[0-9]{8,}$/.test(value)) {
-          setErrors((prev) => ({
-            ...prev,
-            tel: "يرجى إدخال رقم هاتف صحيح (8 أرقام على الأقل)",
-          }));
-        }
-        break;
-      case "fullName":
-        if (value.length < 3) {
-          setErrors((prev) => ({
-            ...prev,
-            fullName: "يجب أن يكون الاسم 3 أحرف على الأقل",
-          }));
-        }
-        break;
-    }
-
-    // Update form data
-    if (value.trim() !== "") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
-
   return (
     <>
       <Breadcrumb
@@ -251,92 +163,7 @@ function ProductPage() {
                 </div>
 
                 {/* Order Form */}
-                <div className="single-product-order-section">
-                  <h3 className="single-product-order-title">
-                    للطلب يرجى إدخال معلوماتك في الخانات أسفله
-                  </h3>
-
-                  <form
-                    className="single-product-order-form"
-                    onSubmit={handleSubmit}
-                  >
-                    <div className="single-product-form-grid">
-                      <div className="form-group">
-                        <input
-                          ref={fullNameRef}
-                          type="text"
-                          placeholder="الاسم بالكامل"
-                          required
-                          name="fullName"
-                          onChange={handleInputChange}
-                          className={errors.fullName ? "error" : ""}
-                          autoComplete="none"
-                        />
-                        {errors.fullName && (
-                          <span className="error-message">
-                            {errors.fullName}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="form-group">
-                        <input
-                          type="tel"
-                          placeholder="رقم الهاتف"
-                          required
-                          dir="rtl"
-                          name="tel"
-                          onChange={handleInputChange}
-                          className={errors.tel ? "error" : ""}
-                          autoComplete="none"
-                        />
-                        {errors.tel && (
-                          <span className="error-message">{errors.tel}</span>
-                        )}
-                      </div>
-
-                      <div className="form-group">
-                        <input
-                          type="text"
-                          placeholder="المدينة"
-                          required
-                          name="city"
-                          onChange={handleInputChange}
-                          className={errors.city ? "error" : ""}
-                          autoComplete="none"
-                        />
-                        {errors.city && (
-                          <span className="error-message">{errors.city}</span>
-                        )}
-                      </div>
-
-                      <div className="form-group">
-                        <input
-                          type="text"
-                          placeholder="العنوان"
-                          required
-                          name="address"
-                          onChange={handleInputChange}
-                          className={errors.address ? "error" : ""}
-                          autoComplete="none"
-                        />
-                        {errors.address && (
-                          <span className="error-message">
-                            {errors.address}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="single-product-submit-button"
-                    >
-                      <span>لتأكيد الطلب اضغط هنا</span>
-                      <FaCartPlus className="single-product-cart-icon" />
-                    </button>
-                  </form>
-                </div>
+                {!loading && <CheckoutForm />}
 
                 {/* Product Stats */}
                 <div className="single-product-stats">
@@ -348,7 +175,7 @@ function ProductPage() {
                   </p>
                   <p className="single-product-stats-item">
                     👁‍🗨 يشاهده{" "}
-                    <span className="single-product-highlight">48</span> زبون في
+                    <span className="single-product-highlight"> {randomVisitors} </span> زبون في
                     الوقت الحالي
                   </p>
                 </div>

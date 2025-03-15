@@ -1,0 +1,152 @@
+/* ======== Form Validation Styles ======== */
+
+/* Form Group Styling */
+.form-group {
+    position: relative;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .form-group input {
+    width: 100%;
+    height: 2.8rem;
+    padding: 0 var(--spacing-md);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+    background: #f9fafb;
+  }
+
+  /* ======== Order Form ======== */
+
+
+.single-product-order-title {
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    margin-bottom: var(--spacing-md);
+    color: var(--text-primary);
+    font-weight: 600;
+    text-align: center;
+  }
+  
+  /* تحسين التفاعل عند التحويم والتركيز */
+  .form-group input:hover:not(.error),
+  .form-group input:focus {
+    border-color: var(--main-color);
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 2px var(--border-focus);
+  }
+  
+  /* أخطاء الإدخال */
+  .form-group input.error {
+    border-color: #ef4444;
+    background: #fff1f2;
+    padding-right: calc(var(--spacing-md) + 1rem);
+  }
+  
+  .error-message {
+    position: absolute;
+    bottom: -1.4rem;
+    right: 0;
+    color: #ef4444;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: opacity var(--transition-fast);
+  }
+  
+  /* ======== Order Form Section ======== */
+  
+  /* تصميم عام للقسم */
+  .single-product-order-section {
+    background: var(--bg-white);
+    padding: calc(var(--spacing-lg) * 1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+  }
+  
+  /* شبكة الحقول */
+  .single-product-form-grid {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 15px;
+    margin-bottom: 10px;
+  }
+  
+  /* تقليل المسافات بين العناصر */
+  .single-product-form-grid.active {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  /* مدخلات النموذج */
+  .single-product-form-grid input {
+    width: 100%;
+    padding: var(--spacing-xs);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+    background: #f8fafc;
+  }
+  
+  /* تحسين مظهر الإدخال عند التركيز */
+  .single-product-form-grid input:focus {
+    border-color: var(--main-color);
+    background: var(--bg-white);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--border-focus);
+  }
+  
+  /* زر الإرسال */
+  .single-product-submit-button {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--main-color);
+    color: var(--bg-white);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out, transform 0.1s ease-in-out;
+  }
+  
+  /* تحسين التأثير عند تمرير الفأرة */
+  .single-product-submit-button:hover {
+    background-color: var(--main-color-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(242, 69, 71, 0.15);
+  }
+  
+  /* تحسين التأثير عند الضغط */
+  .single-product-submit-button:active {
+    transform: scale(0.98);
+  }
+  
+  .single-product-cart-icon {
+    font-size: 1rem;
+  }
+  
+  /* ======== تحسين استجابة النموذج ======== */
+  @media (max-width: 768px) {
+    .single-product-form-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+  
+    .single-product-order-section {
+      padding: var(--spacing-lg);
+    }
+  
+    
+  }
+  

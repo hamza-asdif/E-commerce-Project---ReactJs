@@ -8,7 +8,8 @@ import { useNavigate } from "react-router-dom";
 function ProductCard2() {
   const JSONBIN_BASE_URL ="https://api.jsonbin.io/v3/b/67c54486e41b4d34e49fc194";
   const MASTER_KEY ="$2a$10$JSduiJIAxlAAiB5UQSJ9n.rCUN94IKEeZ8QwNDmKsxfCuURp/m3Xe";
-  
+  const SUPABASE_URL = "https://tbllwzcqhdgztsqybfwg.supabase.co"
+  const SUPABASE_APIKEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibGx3emNxaGRnenRzcXliZndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMDY4NzQsImV4cCI6MjA1NzU4Mjg3NH0.xAfedGGwK7595FJ5rk1tbePdPdOk1W-Wr12e-mLvjIM"
   const [productCard2, setProductCard2] = useState([]);
   const [randomProducts, setRandomProducts] = useState([]);
 
@@ -26,16 +27,19 @@ function ProductCard2() {
   }, [productCard2]);
 
   const fetchData = async () => {
-    try {
-      const res = await axios.get(JSONBIN_BASE_URL, {
-        headers: { "X-Master-Key": MASTER_KEY },
-      });
+    try{
+      const response = await axios.get(`${SUPABASE_URL}/rest/v1/products`, {
+        headers: {
+          apikey: SUPABASE_APIKEY,
+          Authorization: `bearer ${SUPABASE_APIKEY}`
+        }
+      })
 
-      if (res) {
-        setProductCard2(res.data.record.Products); // تخزين المنتجات المسترجعة من الـ API
-      }
-    } catch (err) {
-      console.error(err);
+      console.log("تم تحميل المنتجات بنجاح CART ------", response.data)
+      setProductCard2(response.data)
+    }
+    catch(err) {
+      console.error(err)
     }
   };
 

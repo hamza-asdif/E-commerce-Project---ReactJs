@@ -7,11 +7,14 @@ import alertify from "alertifyjs";
 // استيراد الثيم الافتراضي // استيراد ملف الـ CSS الخاص بـ AlertifyJS
 import { CAlert } from "@coreui/react";
 import SearchForProducts from "../Components/SearchForProducts/SearchForProducts";
+import supabase from "../supabaseClient";
 
 // تحديد URLs و المعلومات الضرورية للـ API
-const JSONBIN_BASE_URL = "https://67c919230acf98d07088c32f.mockapi.io/products"; // رابط ملف المنتجات
-const MASTER_KEY =
-  "$2a$10$JSduiJIAxlAAiB5UQSJ9n.rCUN94IKEeZ8QwNDmKsxfCuURp/m3Xe";
+
+const Supabase_APIURL =
+  "https://tbllwzcqhdgztsqybfwg.supabase.co/rest/v1/products";
+const supabase_APIKEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibGx3emNxaGRnenRzcXliZndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMDY4NzQsImV4cCI6MjA1NzU4Mjg3NH0.xAfedGGwK7595FJ5rk1tbePdPdOk1W-Wr12e-mLvjIM";
 
 const GlobalContext = createContext();
 
@@ -29,10 +32,6 @@ export const GlobalProvider = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-
-  const API_URL = 'http://localhost:1337/api';
-  const TOKEN = '20c532f89bb0f0520e494a15fbe8025076035ac07a9b9b555618ae1cbc54ea22c7c3114da16c6f34da7451cdcf14e135e7917770624c8ec1a20b313ecce3899063fdc6f60406a14bf5761788c5788124bf45f981ddad4949642f43615972aebd69a7dfa41eac4937ef2db1d7ffd01875137f5adb3ab33ac4575c5666b2a06442';
-  
 
   useEffect(() => {
     console.log("GlobalProvider mounted");
@@ -60,14 +59,18 @@ export const GlobalProvider = ({ children }) => {
   // جلب بيانات المنتجات من jsonbin.io
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(JSONBIN_BASE_URL);
+      const response = await axios.get(Supabase_APIURL, {
+        headers: {
+          apikey: supabase_APIKEY,
+          Authorization: `bearer ${supabase_APIKEY}`,
+        },
+      });
       setAllProducts(response.data);
       console.log("تم تحميل المنتجات بنجاح:", response.data);
     } catch (error) {
       console.error("خطأ في تحميل المنتجات:", error);
     }
   };
-
 
   // const fetchProducts = async () => {
   //   try {
@@ -79,14 +82,14 @@ export const GlobalProvider = ({ children }) => {
   //         populate: '*'
   //       }
   //     });
-      
+
   //     const requestData = response.data.data;
   //     console.log("All Products here: ", requestData);
   //     // Log images specifically
   //     requestData.forEach(product => {
   //       console.log("Product images: ", product.Image);
   //     });
-      
+
   //     setAllProducts(requestData);
   //   }
   //   catch (err) {
@@ -267,24 +270,21 @@ export const GlobalProvider = ({ children }) => {
   // الانتقال إلى صفحة المنتج
 
   const NavigateToProduct = async (product) => {
-    // تعريف المتغيرات الأساسية
-
-    const BIN_ID = "67c54486e41b4d34e49fc194";
-    const ACCESS_KEY =
-      "$2a$10$lHC6.TYTGJdHEzvNt8D6DOCWIDRJHjfUUWMBzLBRfhQGlEBEIK6oa";
-    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
     const productId = parseInt(product.id);
+    const productPage_API = `${Supabase_APIURL}?id=eq.${productId}`;
+
 
     try {
-      const response = await axios.get(API_URL, {
+      const response = await axios.get(productPage_API, {
         headers: {
-          "X-Access-Key": ACCESS_KEY,
+          apikey: supabase_APIKEY,
+          Authorization: `bearer ${supabase_APIKEY}`,
         },
       });
-
-      const productData = await response.data.record.Products.find(
-        (product) => product.id === productId
-      );
+ 
+      const productData = response.data
+      console.log("PRODUCTDATA :", response.data)
+      
       if (productData) {
         setproductPage_Product(productData);
         localStorage.setItem(
@@ -310,7 +310,6 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-
   return (
     <GlobalContext.Provider
       value={{
@@ -330,7 +329,6 @@ export const GlobalProvider = ({ children }) => {
         toggleCart,
         NavigateToProduct,
         // الثوابت
-        MASTER_KEY,
         ProductsByNumber,
         displayedProducts,
         setDisplayedProducts,

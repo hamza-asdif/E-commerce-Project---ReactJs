@@ -1,0 +1,245 @@
+/* General Styles */
+.admin-panel {
+    padding: 20px;
+    background-color: #f4f6f9;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Header */
+  .admin-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .admin-header h1 {
+    font-size: 2rem;
+    color: #1a202c;
+    margin-bottom: 10px;
+  }
+  
+  .admin-header p {
+    color: #4a5568;
+    font-size: 1rem;
+  }
+  
+  /* Quick Stats */
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .stat-card h3 {
+    font-size: 1rem;
+    color: #4a5568;
+    margin-bottom: 10px;
+  }
+  
+  .stat-card p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a202c;
+  }
+  
+  /* Recent Orders */
+  .recent-orders {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+  
+  .recent-orders h2 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin-bottom: 20px;
+  }
+  
+  .recent-orders table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .recent-orders th,
+  .recent-orders td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .recent-orders th {
+    font-weight: 600;
+    color: #4a5568;
+  }
+  
+  .recent-orders td {
+    color: #1a202c;
+  }
+  
+  .status {
+    font-weight: 600;
+  }
+  
+  .status.delivered {
+    color: #10b981;
+  }
+  
+  .status.pending {
+    color: #f59e0b;
+  }
+  
+  .status.cancelled {
+    color: #ef4444;
+  }
+  
+  /* Product Management */
+  .product-management {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+  
+  .product-management h2 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin-bottom: 20px;
+  }
+  
+  .product-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .product-actions input {
+    width: 70%;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  .product-actions button {
+    padding: 10px 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .product-actions button:hover {
+    background: #2563eb;
+  }
+  
+  .product-management table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .product-management th,
+  .product-management td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .product-management th {
+    font-weight: 600;
+    color: #4a5568;
+  }
+  
+  .product-management td {
+    color: #1a202c;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  
+  .edit-btn {
+    background: #3b82f6;
+    color: white;
+    margin-right: 8px;
+  }
+  
+  .edit-btn:hover {
+    background: #2563eb;
+  }
+  
+  .delete-btn {
+    background: #ef4444;
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background: #dc2626;
+  }
+  
+  /* User Analytics */
+  .user-analytics {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+  }
+  
+  .user-analytics h2 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin-bottom: 20px;
+  }
+  
+  .chart-placeholder {
+    height: 300px;
+    background: #e2e8f0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a5568;
+  }
+  
+  /* Notifications */
+  .notifications {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .notifications h2 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin-bottom: 20px;
+  }
+  
+  .notifications ul {
+    list-style: none;
+  }
+  
+  .notifications li {
+    font-size: 1rem;
+    color: #4a5568;
+    margin-bottom: 10px;
+  }

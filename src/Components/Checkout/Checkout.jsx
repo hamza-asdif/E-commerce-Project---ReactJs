@@ -1,33 +1,22 @@
-import React from 'react';
-import { FaShoppingCart, FaMapMarkerAlt, FaCreditCard, FaLock, FaBox } from 'react-icons/fa';
-import './Checkout.css';
+import React from "react";
+import {
+  FaShoppingCart,
+  FaMapMarkerAlt,
+  FaCreditCard,
+  FaLock,
+  FaBox,
+} from "react-icons/fa";
+import "./Checkout.css";
+import CheckoutForm from "./CheckoutForm/CheckoutForm";
 
 function Checkout() {
   return (
     <div className="checkout-page">
       <div className="checkout-container">
         {/* Enhanced Steps Indicator */}
-        <div className="checkout-steps">
-          <div className="step active">
-            <div className="step-icon">
-              <FaShoppingCart />
-              <div className="step-line"></div>
-            </div>
-            <span>تأكيد الطلب</span>
-          </div>
-          <div className="step">
-            <div className="step-icon">
-              <FaMapMarkerAlt />
-              <div className="step-line"></div>
-            </div>
-            <span>معلومات التوصيل</span>
-          </div>
-          <div className="step">
-            <div className="step-icon">
-              <FaCreditCard />
-            </div>
-            <span>الدفع</span>
-          </div>
+        <div className="checkout-header">
+          <h1> إتمام الطلب </h1>
+          <p>مراجعة وإكمال عملية الشراء</p>
         </div>
 
         <div className="checkout-content">
@@ -58,7 +47,8 @@ function Checkout() {
           </div>
 
           {/* Shipping Form - Right Side */}
-          <div className="checkout-form">
+          <CheckoutForm checkoutStyle={true}/>
+          {/* <div className="checkout-form">
             <h2 className="checkout-title">
               <FaMapMarkerAlt className="section-icon" />
               معلومات التوصيل
@@ -67,24 +57,20 @@ function Checkout() {
               <div className="form-grid">
                 <div className="form-group">
                   <label>الاسم الكامل</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     placeholder="أدخل اسمك الكامل"
                     name="fullName"
                   />
                 </div>
                 <div className="form-group">
                   <label>رقم الهاتف</label>
-                  <input 
-                    type="tel" 
-                    placeholder="05xxxxxxxx"
-                    name="phone"
-                  />
+                  <input type="tel" placeholder="05xxxxxxxx" name="phone" dir="rtl"/>
                 </div>
                 <div className="form-group">
                   <label>البريد الإلكتروني</label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     placeholder="example@domain.com"
                     name="email"
                   />
@@ -92,7 +78,9 @@ function Checkout() {
                 <div className="form-group">
                   <label>المدينة</label>
                   <select name="city" defaultValue="">
-                    <option value="" disabled>اختر المدينة</option>
+                    <option value="" disabled>
+                      اختر المدينة
+                    </option>
                     <option value="riyadh">الرياض</option>
                     <option value="jeddah">جدة</option>
                     <option value="dammam">الدمام</option>
@@ -100,7 +88,7 @@ function Checkout() {
                 </div>
                 <div className="form-group full-width">
                   <label>العنوان التفصيلي</label>
-                  <textarea 
+                  <textarea
                     placeholder="أدخل العنوان التفصيلي"
                     name="address"
                     rows="4"
@@ -111,7 +99,7 @@ function Checkout() {
                 متابعة الطلب
               </button>
             </form>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

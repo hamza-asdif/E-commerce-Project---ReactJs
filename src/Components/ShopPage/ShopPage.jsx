@@ -4,6 +4,7 @@ import { useGlobalContext } from "../../Context/GlobalContext";
 import ProductCard from "../ProductLayout/ProductCard/ProductCard";
 import "./ShopPage.css";
 import axios from "axios";
+import { GoTrueAdminApi } from "@supabase/supabase-js";
 
 function ShopPage() {
   // States needed for shop functionality
@@ -17,6 +18,7 @@ function ShopPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [categoryProducts, setCategoryProducts] = useState([]);
   const [restorAllProducts, setRestorAllProducts] = useState(null);
+  const [shopPage_AllProducts, setShopPageAllProducts] = useState([]);
   const [filterPrice, setFiltterPrice] = useState({
     min: 0,
     max: 1000,
@@ -25,29 +27,15 @@ function ShopPage() {
   const filterSideBarRef_Mobile = useRef(null);
   const Min_PriceRef = useRef(null);
   const Max_PriceRef = useRef(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginatedProducts, setPaginatedProducts] = useState([]);
+  const [itemsPerPage] = useState(6);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Get products from context
   const { allProducts } = useGlobalContext();
 
   // Remove or modify this useEffect
-
-  useEffect(() => {
-    const initializePage = async () => {
-      if (allProducts.length) {
-        try {
-          handleDrawCategory();
-          // Wait a bit for smooth transition
-          await new Promise((resolve) => setTimeout(resolve, 500));
-        } catch (error) {
-          console.error("Error initializing shop:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    initializePage();
-  }, [allProducts]);
 
   // Functions you'll need to implement:
   // 1. handleFilterByCategory - Filter products by category
@@ -56,8 +44,33 @@ function ShopPage() {
   // 4. handleSearch - Search products by name
   // 5. handlePagination - Implement pagination for products
 
+  useEffect(() => {
+    const pageInitialize = async () => {
+      if (allProducts && allProducts.length) {
+        setLoading(false);
+        setShopPageAllProducts(allProducts);
+
+        setTimeout(() => {
+          console.log(shopPage_AllProducts);
+        }, 1000);
+      }
+    };
+
+    pageInitialize();
+  }, [allProducts]);
+
+  useEffect(() => {
+    console.log(shopPage_AllProducts);
+    handleDrawCategory();
+  }, [shopPage_AllProducts]);
+
+  useEffect(() => {
+    handlePagination();
+  }, []);
+
+  // Modified handleSortProducts
   const handleSortProducts = (e) => {
-    if (allProducts && allProducts.length) {
+    if (allProducts.length) {
       setLoading(true);
       setLoadingText("جاري تصفية المنتجات...");
 
@@ -71,9 +84,15 @@ function ShopPage() {
         return;
       }
 
-      // Choose which products array to sort - category products or all products
-      const productsToSort =
-        activeCategory === "all" ? [...allProducts] : [...categoryProducts];
+      // Get the correct source of products to sort
+      let productsToSort;
+      if (isSortActive) {
+        productsToSort = [...sortedProducts];
+      } else if (activeCategory === "all") {
+        productsToSort = [...shopPage_AllProducts];
+      } else {
+        productsToSort = [...categoryProducts];
+      }
 
       const cloneProducts_Sorted = productsToSort.sort((a, b) => {
         switch (Targetoption) {
@@ -92,46 +111,66 @@ function ShopPage() {
 
       setSortedProducts(cloneProducts_Sorted);
       setIsSortActive(true);
+
       setTimeout(() => {
         setLoading(false);
-      }, 500); // Add this line
+      }, 500);
     }
   };
 
   // Fix the handleDrawCategory function
   const handleDrawCategory = () => {
-    const allCategories = allProducts.map((p) => p.category);
-    const uniqueCategories = [...new Set(allCategories.slice(0, 10))];
-    setCategory(uniqueCategories);
+    if (shopPage_AllProducts && shopPage_AllProducts.length) {
+      const getCategories = shopPage_AllProducts.map((product) => {
+        return product.category;
+      });
+
+      const uniqueCategories = [...new Set(getCategories)];
+      setCategory(uniqueCategories);
+      console.log("CATEGORY", getCategories, uniqueCategories);
+    }
   };
 
+  const handlePriceInput_reset = () => {
+    Min_PriceRef.current.value = "";
+    Max_PriceRef.current.value = "";
+  };
+
+  // Modified handleFilterByCategory
   const handleFilterByCategory = (categoryName) => {
     setLoading(true);
+
     if (allProducts.length) {
+      // Clear sorting state
+      const select = document.querySelector(".sort-select");
+      if (select) select.value = "default";
+
+      // Reset all filters first
+      setIsSortActive(false);
+      setSortedProducts([]);
+
       if (categoryName === "all") {
         setActiveCategory("all");
-        setCategoryProducts([]); // Add this
-        setIsSortActive(false); // Add this
-        setSortedProducts([]); // Reset sort
+        setCategoryProducts([]);
         setLoading(false);
         return;
       }
 
-      const selectedCategory = [...allProducts].filter(
+      // Get fresh products from the main source
+      const selectedCategory = [...shopPage_AllProducts].filter(
         (product) => product.category === categoryName
       );
 
       setActiveCategory(categoryName);
       setCategoryProducts(selectedCategory);
-      setIsSortActive(false); // Reset sort state when changing category
-      setSortedProducts([]); // Reset sorted products
+      // Reset shopPage_AllProducts to original state
+      handlePriceInput_reset();
     }
 
     setTimeout(() => {
       setLoading(false);
     }, 1000);
 
-    // !!! function to handle filter sidebar on mobile devices
     handleFilterSideBar_Mobile();
   };
 
@@ -191,7 +230,9 @@ function ShopPage() {
 
       // Fix the condition to check for "all" instead of !activeCategory
       const getProductsFirst =
-        activeCategory === "all" ? [...allProducts] : [...categoryProducts];
+        activeCategory === "all"
+          ? [...shopPage_AllProducts]
+          : [...categoryProducts];
 
       const NewProducts = getProductsFirst.filter((product) => {
         const PriceMin = parseInt(filterPrice.min);
@@ -207,19 +248,17 @@ function ShopPage() {
 
       setTimeout(() => {
         setLoading(false);
-      }, 500);
+      }, 1000);
 
       handleFilterSideBar_Mobile();
     }
   };
 
-
   const handlekeyPress = (e) => {
-    if(e.key === "Enter") {
+    if (e.key === "Enter") {
       handleFilterByPrice();
     }
-  }
-
+  };
 
   const handlePriceInput = (e) => {
     const { name, value } = e.target;
@@ -243,6 +282,50 @@ function ShopPage() {
       setIsFilterOpen(false);
     }
   };
+
+  const handlePagination = () => {
+    // Get the correct products array based on current filters/sorts
+    const sourceProducts = isSortActive
+      ? sortedProducts
+      : activeCategory === "all"
+      ? allProducts
+      : categoryProducts;
+
+    if (sourceProducts?.length) {
+      // Calculate total pages
+      const pageCount = Math.ceil(sourceProducts.length / itemsPerPage);
+      setTotalPages(pageCount);
+
+      // Calculate slice indexes
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+
+      // Get current page products
+      const currentPageProducts = sourceProducts.slice(startIndex, endIndex);
+      setPaginatedProducts(currentPageProducts);
+    }
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handlePageClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  useEffect(() => {
+    setLoading(true)
+
+    setTimeout(() => {
+      handlePagination();
+      setLoading(false)
+    }, 800);
+  }, [currentPage, allProducts, activeCategory, isSortActive, sortedProducts]);
 
   return (
     <div className="shop-page">
@@ -369,6 +452,7 @@ function ShopPage() {
 
           {/* Products Grid */}
 
+          {/* Products Grid */}
           {loading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
@@ -376,18 +460,43 @@ function ShopPage() {
             </div>
           ) : (
             <div className="products-grid">
-              {ProductsFilters(
-                isSortActive
-                  ? sortedProducts
-                  : activeCategory === "all"
-                  ? allProducts
-                  : categoryProducts || []
-              )}
+              {ProductsFilters(paginatedProducts)}
             </div>
           )}
+
           {/* Pagination */}
           <div className="shop-pagination">
-            {/* Add pagination controls here */}
+            <div className="pagination-container">
+              <button
+                className="pagination-button"
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+              >
+                السابق
+              </button>
+
+              <div className="pagination-numbers">
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index + 1}
+                    className={`pagination-number ${
+                      currentPage === index + 1 ? "active" : ""
+                    }`}
+                    onClick={() => handlePageClick(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className="pagination-button"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                التالي
+              </button>
+            </div>
           </div>
         </main>
       </div>

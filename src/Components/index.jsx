@@ -14,3 +14,4 @@ export { default as Breadcrumb } from "./Breadcrumb/Breadcrumb";
 export { default as ShopPage } from "./ShopPage/ShopPage";
 export { default as FloatingBtn } from "./GoToShop_Buttons/FloatingBtn";
 export { default as ToShopSections } from "./GoToShop_Buttons/ToShopSection";
+export {default as AdminPanel} from "./AdminPanel/AdminPanel"

@@ -4,9 +4,10 @@ import "./SideBarWidget.css";
 import { FaRegCircleXmark } from "react-icons/fa6";
 import ProductInCart from "./ProductInCart/ProductInCart";
 import { useGlobalContext } from "../../Context/GlobalContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SideBarWidget() {
+  const Navigate = useNavigate()
   const {
     productsInCart,
     productsInCart_TotalPrice,
@@ -18,6 +19,15 @@ export default function SideBarWidget() {
   const handleOverlayClick = () => {
     toggleCart(false);
   };
+
+  const handleButtonPath = () => {
+    if(productsInCart && productsInCart.length){
+      Navigate("/cart")
+    }
+    else{
+      Navigate("/shop")
+    }
+  }
 
   return (
     <div dir="rtl">
@@ -66,9 +76,9 @@ export default function SideBarWidget() {
           </div>
 
           <div className="sidebar-middle-tab">
-            <Link to="/cart" className="middle-tab-btn">
+            <button to="/cart" className="middle-tab-btn" onClick={handleButtonPath}>
               شراء الآن
-            </Link>
+            </button>
           </div>
 
           <div className="sidebar-last-tab">
