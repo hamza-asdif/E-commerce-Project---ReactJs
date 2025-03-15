@@ -2,55 +2,19 @@
   "version": 2,
   "builds": [
     {
-      "src": "my-strapi-project/src/index.js",
-      "use": "@vercel/node"
+      "src": "package.json",
+      "use": "@vercel/static-build"
     }
   ],
   "routes": [
     {
-      "src": "^/assets/(.*)",
-      "headers": { "cache-control": "public, max-age=31536000, immutable" },
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "^/images/(.*)",
-      "headers": { "cache-control": "public, max-age=31536000, immutable" },
-      "dest": "/images/$1"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/favicon.ico"
-    },
-    {
-      "src": "/admin/(.*)",
-      "dest": "my-strapi-project/src/index.js"
-    },
-    {
-      "src": "/api/(.*)",
-      "dest": "my-strapi-project/src/index.js"
-    },
-    {
-      "src": "/uploads/(.*)",
-      "dest": "my-strapi-project/src/index.js"
-    },
-    {
-      "src": "/i18n/(.*)",
-      "dest": "my-strapi-project/src/index.js"
-    },
-    {
-      "src": "/content-manager/(.*)",
-      "dest": "my-strapi-project/src/index.js"
-    },
-    {
       "src": "/(.*)",
-      "dest": "my-strapi-project/src/index.js"
+      "dest": "/index.html"
     }
   ],
   "env": {
-    "NODE_ENV": "production",
-    "DATABASE_CLIENT": "mongodb",
-    "DATABASE_URI": "mongodb+srv://strapi-app-username:Hakirze12345098@@##@cluster0.l1fve.mongodb.net/strapi?retryWrites=true&w=majority&appName=Cluster0"
+    "NODE_ENV": "production"
   },
   "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "build"
 }
