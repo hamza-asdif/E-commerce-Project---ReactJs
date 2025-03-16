@@ -1,18 +1,17 @@
-import React from 'react'
-import HeroImg from '../../../public/images/slide.png'
-import './Heroimg.css'
+import React from "react";
+import HeroImg from "../../../public/images/slide.png";
+import "./Heroimg.css";
 
 function HeroImage() {
   return (
     <div>
       <div className="hero-img-container">
         <div className="image-container">
-            <img src={HeroImg} alt="Slide" />
+          <img src="images/slide.png" alt="Slide" />
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-
-export default HeroImage
+export default HeroImage;
