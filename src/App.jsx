@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Route, Routes, Navigate, Link, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  Navigate,
+  Link,
+  useLocation,
+} from "react-router-dom";
 import "./App.css";
 import { GlobalProvider, useGlobalContext } from "./Context/GlobalContext.jsx";
-
-
-
 
 import {
   Navbar,
@@ -23,13 +27,12 @@ import {
   ShopPage,
   FloatingBtn,
   ToShopSections,
-  AdminPanel
+  AdminPanel,
 } from "./Components";
-
+import Products from "./Components/AdminPanel/Products/Products.jsx";
+import Home_States from "./Components/AdminPanel/Home_States/Home_States.jsx";
 
 function AppContent() {
-  const pathname = useLocation()
-
   const {
     toggleCart,
     setSearchState,
@@ -56,10 +59,6 @@ function AppContent() {
   if (!toggleCart || !setSearchState) {
     console.error("GlobalContext values are missing");
     return <div>Loading...</div>;
-  }
-
-  const getpath = () => {
-    console.log("this is the page here : ",  pathname)
   }
 
   return (
@@ -114,14 +113,26 @@ const ShopPageBreadcrumb = () => {
   );
 };
 
+const HandleNavbar = () => {
+  let location = useLocation();
+  const isAdminPanel = location.pathname.startsWith("/admin");
 
+  return <>{!isAdminPanel && <Navbar />}</>;
+};
+
+const HandleFooter = () => {
+  let location = useLocation();
+  const isAdminPanel = location.pathname.startsWith("/admin");
+
+  return <>{!isAdminPanel && <Footer />}</>;
+};
 
 function App() {
   return (
     <BrowserRouter>
       <GlobalProvider>
         <div className="app-container">
-          <Navbar />
+          <HandleNavbar />
           <Routes>
             <Route path="/" element={<AppContent />} />
             <Route path="/cart" element={<CartBreadcrumb />} />
@@ -129,11 +140,15 @@ function App() {
             <Route path="/search" element={<SearchBreadcrumb />} />
             <Route path="/checkout" element={<CheckoutBreadcrumb />} />
             <Route path="/shop" element={<ShopPageBreadcrumb />} />
+            <Route path="/admin" element={<AdminPanel />}>
+              <Route path="products" element={<Products />} />
+              <Route path="" element={<Home_States />} />
+            </Route>
             {/* Add a catch-all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          <FloatingBtn />
-          <Footer />
+          {!window.location.pathname.startsWith("/admin") && <FloatingBtn />}
+          <HandleFooter />
         </div>
       </GlobalProvider>
     </BrowserRouter>

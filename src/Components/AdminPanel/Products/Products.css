@@ -1,0 +1,141 @@
+/* Products.css */
+
+.products-container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .products-header {
+    margin-bottom: 20px;
+  }
+  
+  .products-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  
+  .products-header p {
+    font-size: 14px;
+    color: #7f8c8d;
+  }
+  
+  .add-product-btn {
+    background-color: #F24547;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .add-product-btn:hover {
+    background-color: #e03a3c;
+  }
+  
+  .add-product-btn span {
+    font-size: 20px;
+  }
+  
+  .products-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table-header,
+  .table-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .table-header {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  
+  .table-item {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .product-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  
+  .status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .status.active {
+    background-color: #e6f4ea;
+    color: #34a853;
+  }
+  
+  .status.inactive {
+    background-color: #fce8e6;
+    color: #d93025;
+  }
+  
+  .action-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .action-btn.edit {
+    background-color: #f1f3f4;
+    color: #2c3e50;
+    margin-right: 10px;
+  }
+  
+  .action-btn.edit:hover {
+    background-color: #e2e8f0;
+  }
+  
+  .action-btn.delete {
+    background-color: #fce8e6;
+    color: #d93025;
+  }
+  
+  .action-btn.delete:hover {
+    background-color: #f5c6cb;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .table-header,
+    .table-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .table-item {
+      text-align: left;
+      width: 100%;
+    }
+  
+    .action-btn {
+      margin-top: 10px;
+    }
+  }

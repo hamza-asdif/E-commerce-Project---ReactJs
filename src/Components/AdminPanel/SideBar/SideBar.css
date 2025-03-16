@@ -1,45 +1,94 @@
+/* SideBar.css */
+
+:root {
+  --sidebar-width: 280px;
+  --sidebar-bg: #1a202c;
+  --sidebar-hover: #2d3748;
+  --sidebar-active: #F24547;
+  --sidebar-border: #2d3748;
+  --text-color: #ffffff;
+  --transition-speed: 0.3s;
+}
+
 .sidebar {
-    width: 250px;
-    height: 100vh;
-    background: #1a202c;
-    color: white;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--sidebar-bg);
+  color: var(--text-color);
+  padding: 1.25rem;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+  transition: all var(--transition-speed) ease;
+}
+
+.sidebar-header {
+  margin-bottom: 1.25rem;
+  padding: 0.9375rem 0;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.sidebar-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  text-align: center;
+  margin: 0;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.25rem;
+}
+
+.sidebar-menu li {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.625rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background var(--transition-speed) ease;
+}
+
+.sidebar-menu li:hover {
+  background: var(--sidebar-hover);
+}
+
+.sidebar-menu li.active {
+  background: var(--sidebar-active);
+}
+
+.sidebar-menu li span {
+  margin-right: 0.625rem;
+  font-size: 1.2rem;
+}
+
+.sidebar-menu li h6 {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 2rem;
+    height: auto;
+    position: relative;
+    padding: 0.625rem;
   }
-  
-  .sidebar-header {
-    margin-bottom: 30px;
+
+  .sidebar-menu li h6 {
+    display: none;
   }
-  
+
   .sidebar-header h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1.25rem;
   }
-  
-  .sidebar-menu {
-    list-style: none;
-    padding: 0;
-  }
-  
+
   .sidebar-menu li {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    padding: 0.625rem;
   }
-  
-  .sidebar-menu li:hover {
-    background: #2d3748;
-  }
-  
-  .sidebar-menu li.active {
-    background: #2d3748;
-  }
-  
-  .sidebar-menu li span {
-    margin-right: 10px;
-    font-size: 1.2rem;
-  }
+}
