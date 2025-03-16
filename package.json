@@ -19,17 +19,17 @@
     "@firebase/firestore": "^4.7.9",
     "@firebase/storage": "^0.13.7",
     "@supabase/supabase-js": "^2.49.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "alertifyjs": "^1.14.0",
     "axios": "^1.8.2",
     "bootstrap": "^5.3.3",
     "firebase": "^11.4.0",
     "formik": "^2.4.6",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.54.2",
     "react-icons": "^4.12.0",
-    "react-router-dom": "^6.22.1",
-    "strapi-plugin-import-export-content": "^0.4.2",
+    "react-router-dom": "^6.30.0",
     "yup": "^1.6.1"
   },
   "devDependencies": {
@@ -43,6 +43,11 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "gh-pages": "^6.3.0",
     "globals": "^15.15.0",
-    "vite": "^6.2.0"
-  }
+    "vite": "^6.2.2"
+  },
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "eslint.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

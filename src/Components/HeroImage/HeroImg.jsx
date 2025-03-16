@@ -7,7 +7,7 @@ function HeroImage() {
     <div>
       <div className="hero-img-container">
         <div className="image-container">
-            <img src="images/slide.png" alt="Slide" />
+            <img src={HeroImg} alt="Slide" />
         </div>
       </div>
     </div>

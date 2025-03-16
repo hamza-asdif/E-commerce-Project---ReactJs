@@ -129,7 +129,6 @@ function App() {
             <Route path="/search" element={<SearchBreadcrumb />} />
             <Route path="/checkout" element={<CheckoutBreadcrumb />} />
             <Route path="/shop" element={<ShopPageBreadcrumb />} />
-            <Route path="/admin" element={ <AdminPanel /> } />
             {/* Add a catch-all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

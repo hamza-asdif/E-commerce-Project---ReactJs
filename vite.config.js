@@ -1,13 +1,12 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
   build: {
-    sourcemap: true,
-    rollupOptions: {
-      external: [],  // إزالة external لأنه يسبب مشاكل مع react-icons
-    }
-  }
+    outDir: 'dist',
+  },
+  server: {
+    historyApiFallback: true, // هذا مهم لدعم React Router
+  },
 });
