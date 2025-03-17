@@ -31,6 +31,8 @@ import {
 } from "./Components";
 import Products from "./Components/AdminPanel/Products/Products.jsx";
 import Home_States from "./Components/AdminPanel/Home_States/Home_States.jsx";
+import Login from "./Components/Login/Login.jsx";
+import Register from './Components/Register/Register'
 
 function AppContent() {
   const {
@@ -135,6 +137,8 @@ function App() {
           <HandleNavbar />
           <Routes>
             <Route path="/" element={<AppContent />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register/> } />
             <Route path="/cart" element={<CartBreadcrumb />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/search" element={<SearchBreadcrumb />} />

@@ -14,7 +14,15 @@ import { useGlobalContext } from "../../Context/GlobalContext";
 import SearchBar from "../searchBar/SearchBar";
 
 export default function Navbar() {
-  const HeaderLinks = [ 'إنشاء حساب', 'تسجيل الدخول']
+  const HeaderLinks = [{
+    name : 'إنشاء حساب',
+    link: "register"
+  },
+  {
+    name: 'تسجيل الدخول',
+    link: "login"
+  }
+]
   const {
     productsInCart,
     productsInCart_TotalPrice,
@@ -77,9 +85,9 @@ export default function Navbar() {
               <ul>
                 {HeaderLinks.map((link, index) => (
                   <li className="header-li" key={index}>
-                    <a href="#" className="header-a">
-                      {link}
-                    </a>
+                    <Link to={link.link} className="header-a">
+                      {link.name}
+                    </Link>
                   </li>
                 ))}
 
