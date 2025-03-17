@@ -1,7 +1,6 @@
 import React from "react";
 import "./AdminPanel.css";
 import Sidebar from "./SideBar/SideBar";
-import Home_States from "./Home_States/Home_States";
 import { Outlet } from "react-router-dom";
 
 const AdminHeader = () => {
