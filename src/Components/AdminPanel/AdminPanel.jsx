@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./AdminPanel.css";
 import Sidebar from "./SideBar/SideBar";
 import { Outlet } from "react-router-dom";
+import MobileNavBar from "./MobileSticky_NavBar/MobileNavBar";
 
 const AdminHeader = () => {
   return (
@@ -14,20 +15,35 @@ const AdminHeader = () => {
   );
 };
 
-const AdminPanel = () => {
-  return (
-    <>
-      <div className="admin-panel-main">
-        {/* الشريط الجانبي */}
-        <Sidebar />
 
-        {/* المحتوى الرئيسي */}
-        <div className="admin-panel-container">
+
+
+const AdminPanel = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  const handleWindowResize = () => {
+    const getDeviceSize = window.outerWidth
+    getDeviceSize < 770 ? setIsMobile(true) : setIsMobile(false);
+  }
+
+  useEffect(() => {
+    const getDeviceSize = window.outerWidth;
+    setIsMobile(getDeviceSize < 768);
+
+    window.addEventListener("resize", handleWindowResize);
+
+  }, []);
+
+
+
+  return (
+    <div className="admin-panel-main">
+      {isMobile ? <MobileNavBar /> : <Sidebar />}
+      <div className="admin-panel-container">
         <AdminHeader />
-          <Outlet />
-        </div>
+        <Outlet />
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import "./Products.css";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./Products.css";
 
 const Products = () => {
   const Supabase_APIURL = import.meta.env.VITE_SUPABASE_APIURL;
@@ -8,125 +8,261 @@ const Products = () => {
   const [loadingText, setLoadingText] = useState("جاري تحميل المنتجات...");
   const [loading, setLoading] = useState(true);
   const [adminProducts, setAdminProducts] = useState([]);
+  const [paginatedProducts, setPaginatedProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginationButtons, setPaginationButtons] = useState([]);
+  const [priceCurrency, setPriceCurrency] = useState("ريال سعودي");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchAdminProductData();
   }, []);
 
   const fetchAdminProductData = async () => {
-    setLoading(true)
-    const response = await axios.get(Supabase_APIURL, {
-      headers: {
-        apikey: supabase_APIKEY,
-        Authorization: `bearer ${supabase_APIKEY}`,
-      },
-    });
+    setLoading(true);
+    try {
+      const response = await axios.get(Supabase_APIURL, {
+        headers: {
+          apikey: supabase_APIKEY,
+          Authorization: `bearer ${supabase_APIKEY}`,
+        },
+      });
 
-    setTimeout(() => {
-        setLoading(false)
-    }, 1000);
-    console.log("ADMIN PROODUCTS DATA :  ", response.data);
-    setAdminProducts(response.data);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1200);
+      console.log("ADMIN PRODUCTS DATA :  ", response.data);
+      setAdminProducts(response.data);
+    } catch (error) {
+      console.error("خطأ في جلب المنتجات:", error);
+      setLoading(false);
+      setLoadingText("حدث خطأ أثناء تحميل المنتجات");
+    }
+  };
+
+  const handlePagination = () => {
+    if (adminProducts.length) {
+      // تطبيق البحث على المنتجات
+      const filteredProducts = searchTerm 
+        ? adminProducts.filter(product => 
+            product.name.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        : adminProducts;
+        
+      const productsPerPage = 8;
+      const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+      const currentIndex = (currentPage - 1) * productsPerPage;
+      const endIndex = currentIndex + productsPerPage;
+
+      setPaginatedProducts(filteredProducts.slice(currentIndex, endIndex));
+      
+      // تحديث أزرار الترقيم
+      const buttons = Array.from({ length: totalPages }, (_, i) => i + 1);
+      setPaginationButtons(buttons);
+      
+      // إعادة تعيين الصفحة الحالية إذا كان المستخدم في صفحة غير موجودة بعد التصفية
+      if (currentPage > totalPages && totalPages > 0) {
+        setCurrentPage(1);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handlePagination();
+  }, [currentPage, adminProducts, searchTerm]);
+
+  const handleToggleExpressCheckout = (productId) => {
+    setAdminProducts(prevProducts =>
+      prevProducts.map(product =>
+        product.id === productId 
+          ? { ...product, isExpressCheckoutEnabled: !product.isExpressCheckoutEnabled }
+          : product
+      )
+    );
+    // هنا يمكن إضافة استدعاء API لتحديث حالة الدفع السريع في الخادم
+  };
+
+  const handleDelete = (productId) => {
+    // إضافة تأكيد قبل الحذف
+    if (window.confirm("هل أنت متأكد من رغبتك في حذف هذا المنتج؟")) {
+      console.log("حذف المنتج:", productId);
+      // هنا يمكن إضافة استدعاء API لحذف المنتج
+      // وبعد نجاح الحذف يمكن تحديث قائمة المنتجات
+    }
   };
 
   return (
-    <div className="products-container">
-      {/* عنوان الصفحة */}
-      <div className="products-header">
-        <h2>إدارة المنتجات</h2>
-        <p>قم بإدارة منتجاتك بسهولة من هنا.</p>
-      </div>
-
-      {/* زر إضافة منتج جديد */}
-      <button className="add-product-btn">
-        <span>+</span> إضافة منتج جديد
-      </button>
-
-      {/* جدول المنتجات */}
-      <div className="products-table">
-        <div className="table-header">
-          <div className="header-item">الصورة</div>
-          <div className="header-item">اسم المنتج</div>
-          <div className="header-item">السعر</div>
-          <div className="header-item">الكمية</div>
-          <div className="header-item">الحالة</div>
-          <div className="header-item">الإجراءات</div>
+    <div className="dashboard-container">
+      <div className="products-container">
+        <div className="header-section">
+          <h1>إدارة المنتجات</h1>
+          <div className="actions-bar">
+            <div className="search-box">
+              <input 
+                type="text" 
+                placeholder="بحث عن منتج..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+              <i className="search-icon">🔍</i>
+            </div>
+            <button className="add-product-btn">
+              <i className="plus-icon">+</i> إضافة منتج جديد
+            </button>
+          </div>
         </div>
 
         {loading ? (
           <div className="loading-container">
-            <div className="loading-spinner"></div>
+            <div className="loader"></div>
             <p>{loadingText}</p>
           </div>
-        ) : adminProducts.length ? (
-          adminProducts.map((product) => {
-            return (
-              <>
-                <div className="table-row">
-                  <div className="table-item">
-                    <img
-                      src={`/${product.Image}`}
-                      alt="Product"
-                      className="product-image"
-                    />
-                  </div>
-                  <div className="table-item"> {product.name} </div>
-                  <div className="table-item">{product.price} ريال</div>
-                  <div className="table-item">١٠٠</div>
-                  <div className="table-item">
-                    <span className="status active">متوفر</span>
-                  </div>
-                  <div className="table-item">
-                    <button className="action-btn edit">تعديل</button>
-                    <button className="action-btn delete">حذف</button>
-                  </div>
-                </div>
-              </>
-            );
-          })
+        ) : paginatedProducts.length === 0 ? (
+          <div className="no-products">
+            <p>لا توجد منتجات متاحة</p>
+          </div>
         ) : (
-          <div>none products</div>
+          <div className="table-responsive">
+            <table className="products-table">
+              <thead>
+                <tr>
+                  <th>التسلسل</th>
+                  <th>صورة المنتج</th>
+                  <th>اسم المنتج</th>
+                  <th>السعر</th>
+                  <th>الكمية</th>
+                  <th>الدفع السريع</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedProducts.map((product) => (
+                  <tr key={product.id}>
+                    <td>{product.id}</td>
+                    <td className="td-img">
+                      <div className="image-container">
+                        <img
+                          src={`/${product.Image}`}
+                          alt={product.name}
+                          className="product-image"
+                          loading="lazy"
+                        />
+                      </div>
+                    </td>
+                    <td className="product-name">{product.name}</td>
+                    <td className="product-price">
+                      <span className="price-amount">{product.price}</span>
+                      <span className="price-currency">{priceCurrency}</span>
+                    </td>
+                    <td>
+                      <span className={`stock-badge ${product.Stock > 0 ? 'in-stock' : 'out-stock'}`}>
+                        {product.Stock}
+                      </span>
+                    </td>
+                    <td>
+                      <label className="toggle-switch">
+                        <input
+                          type="checkbox"
+                          checked={product.isExpressCheckoutEnabled}
+                          onChange={() => handleToggleExpressCheckout(product.id)}
+                        />
+                        <span className="slider"></span>
+                      </label>
+                    </td>
+                    <td className="actions-cell">
+                      <div className="action-buttons">
+                        <button className="edit-btn" title="تعديل المنتج">
+                          <i className="edit-icon">✏️</i>
+                          <span>تعديل</span>
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={() => handleDelete(product.id)}
+                          title="حذف المنتج"
+                        >
+                          <i className="delete-icon">🗑️</i>
+                          <span>حذف</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
-        {/* صفوف المنتجات */}
-        <div className="table-row">
-          <div className="table-item">
-            <img
-              src="https://via.placeholder.com/50"
-              alt="Product"
-              className="product-image"
-            />
-          </div>
-          <div className="table-item">منتج 1</div>
-          <div className="table-item">٦٩ ريال</div>
-          <div className="table-item">١٠٠</div>
-          <div className="table-item">
-            <span className="status active">متوفر</span>
-          </div>
-          <div className="table-item">
-            <button className="action-btn edit">تعديل</button>
-            <button className="action-btn delete">حذف</button>
-          </div>
-        </div>
 
-        <div className="table-row">
-          <div className="table-item">
-            <img
-              src="https://via.placeholder.com/50"
-              alt="Product"
-              className="product-image"
-            />
+        {!loading && paginatedProducts.length > 0 && (
+          <div className="pagination-container">
+            <button
+              className="pagination-btn prev-btn"
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              disabled={currentPage === 1}
+            >
+              <i className="arrow-icon">◀</i>
+              <span>السابق</span>
+            </button>
+            <div className="pagination-numbers">
+              {paginationButtons.length > 5 ? (
+                <>
+                  {currentPage > 1 && (
+                    <button
+                      className={`pagination-number`}
+                      onClick={() => setCurrentPage(1)}
+                    >
+                      1
+                    </button>
+                  )}
+                  
+                  {currentPage > 3 && <span className="pagination-ellipsis">...</span>}
+                  
+                  {paginationButtons
+                    .filter(num => num >= currentPage - 1 && num <= currentPage + 1)
+                    .map(num => (
+                      <button
+                        key={num}
+                        onClick={() => setCurrentPage(num)}
+                        className={`pagination-number ${currentPage === num ? 'active' : ''}`}
+                      >
+                        {num}
+                      </button>
+                    ))
+                  }
+                  
+                  {currentPage < paginationButtons.length - 2 && <span className="pagination-ellipsis">...</span>}
+                  
+                  {currentPage < paginationButtons.length && (
+                    <button
+                      className={`pagination-number`}
+                      onClick={() => setCurrentPage(paginationButtons.length)}
+                    >
+                      {paginationButtons.length}
+                    </button>
+                  )}
+                </>
+              ) : (
+                paginationButtons.map((num) => (
+                  <button
+                    key={num}
+                    onClick={() => setCurrentPage(num)}
+                    className={`pagination-number ${currentPage === num ? 'active' : ''}`}
+                  >
+                    {num}
+                  </button>
+                ))
+              )}
+            </div>
+            <button
+              className="pagination-btn next-btn"
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              disabled={currentPage === paginationButtons.length}
+            >
+              <span>التالي</span>
+              <i className="arrow-icon">▶</i>
+            </button>
           </div>
-          <div className="table-item">منتج 2</div>
-          <div className="table-item">٩٩ ريال</div>
-          <div className="table-item">٥٠</div>
-          <div className="table-item">
-            <span className="status inactive">غير متوفر</span>
-          </div>
-          <div className="table-item">
-            <button className="action-btn edit">تعديل</button>
-            <button className="action-btn delete">حذف</button>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

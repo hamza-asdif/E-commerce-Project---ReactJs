@@ -99,9 +99,7 @@
     align-items: unset;
   }
 
-  .container {
-    width: 95%;
-  }
+  
 }
 
 @media screen and (max-width: 620px) {

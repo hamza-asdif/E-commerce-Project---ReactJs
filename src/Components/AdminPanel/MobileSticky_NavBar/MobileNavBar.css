@@ -60,6 +60,7 @@
   /* العنصر النشط */
   .nav-item.active {
     color: var(--navbar-active);
+    background: var(--navbar-hover)
   }
   
   /* تنسيق الأيقونات */

@@ -22,6 +22,7 @@
   right: 0;
   z-index: 1000;
   transition: all var(--transition-speed) ease;
+  display: block;
 }
 
 .sidebar-header {
@@ -58,7 +59,7 @@
   background: var(--sidebar-hover);
 }
 
-.sidebar-menu li.active {
+.sidebar-menu .sidebar-item.active {
   background: var(--sidebar-active);
 }
 
@@ -74,25 +75,6 @@
 
 @media (max-width: 768px) {
   .sidebar {
-    position: fixed;
-    bottom: 0;
-    top: calc(100% - 90px);
-    width: 100%;
-  }
-
-  .sidebar-header{
     display: none;
-  }
-
-  .sidebar-menu li h6 {
-    display: none;
-  }
-
-  .sidebar-header h2 {
-    font-size: 1.25rem;
-  }
-
-  .sidebar-menu li {
-    padding: 0.625rem;
   }
 }
