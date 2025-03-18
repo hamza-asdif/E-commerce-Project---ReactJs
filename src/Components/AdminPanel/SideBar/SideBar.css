@@ -74,10 +74,14 @@
 
 @media (max-width: 768px) {
   .sidebar {
-    width: 2rem;
-    height: auto;
-    position: relative;
-    padding: 0.625rem;
+    position: fixed;
+    bottom: 0;
+    top: calc(100% - 90px);
+    width: 100%;
+  }
+
+  .sidebar-header{
+    display: none;
   }
 
   .sidebar-menu li h6 {

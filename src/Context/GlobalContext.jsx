@@ -1,4 +1,12 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
 import axios from "axios";
 import "alertifyjs/build/css/alertify.rtl.css";
 import "alertifyjs/build/css/themes/default.rtl.css";
@@ -8,6 +16,11 @@ import alertify from "alertifyjs";
 import { CAlert } from "@coreui/react";
 import SearchForProducts from "../Components/SearchForProducts/SearchForProducts";
 import supabase from "../supabaseClient";
+
+
+
+
+// or via CommonJS
 
 // تحديد URLs و المعلومات الضرورية للـ API
 
@@ -32,6 +45,7 @@ export const GlobalProvider = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [adminStatus, setAdminStatus] = useState(true)
 
   useEffect(() => {
     console.log("GlobalProvider mounted");
@@ -71,31 +85,6 @@ export const GlobalProvider = ({ children }) => {
       console.error("خطأ في تحميل المنتجات:", error);
     }
   };
-
-  // const fetchProducts = async () => {
-  //   try {
-  //     const response = await axios.get(`${API_URL}/products`, {
-  //       headers: {
-  //         Authorization: `Bearer ${TOKEN}`
-  //       },
-  //       params: {
-  //         populate: '*'
-  //       }
-  //     });
-
-  //     const requestData = response.data.data;
-  //     console.log("All Products here: ", requestData);
-  //     // Log images specifically
-  //     requestData.forEach(product => {
-  //       console.log("Product images: ", product.Image);
-  //     });
-
-  //     setAllProducts(requestData);
-  //   }
-  //   catch (err) {
-  //     console.error(err);
-  //   }
-  // };
 
   // Fix the loading from localStorage function
   const loadCartFromLocalStorage = () => {
@@ -175,7 +164,7 @@ export const GlobalProvider = ({ children }) => {
     setProductsInCart_TotalPrice(totalPrice);
   };
 
-  const alertifyPopUp_Confirm = (id, set_Function, updatedData) => {
+  const alertifyPopUp_Confirm = useCallback((id, set_Function, updatedData) => {
     alertify
       .confirm(
         "تأكيد الحذف",
@@ -195,14 +184,14 @@ export const GlobalProvider = ({ children }) => {
           ok: "حذف",
           cancel: "إلغاء",
         },
-        transition: "slide",
+        transition: "pulse",
         movable: false,
         closableByDimmer: false,
         defaultFocusOn: "cancel",
         padding: 10,
         closable: false,
         rtl: true,
-        delay: 200,
+        
         pinnable: false,
         theme: {
           input: "alertify-input",
@@ -210,7 +199,9 @@ export const GlobalProvider = ({ children }) => {
           cancel: "alertify-cancel-button",
         },
       });
-  };
+  }, []);
+
+  
 
   // إزالة منتج من السلة
   const removeProductFromCart = async (productId) => {
@@ -273,7 +264,6 @@ export const GlobalProvider = ({ children }) => {
     const productId = parseInt(product.id);
     const productPage_API = `${Supabase_APIURL}?id=eq.${productId}`;
 
-
     try {
       const response = await axios.get(productPage_API, {
         headers: {
@@ -281,10 +271,10 @@ export const GlobalProvider = ({ children }) => {
           Authorization: `bearer ${supabase_APIKEY}`,
         },
       });
- 
-      const productData = response.data
-      console.log("PRODUCTDATA :", response.data)
-      
+
+      const productData = response.data;
+      console.log("PRODUCTDATA :", response.data);
+
       if (productData) {
         setproductPage_Product(productData);
         localStorage.setItem(
@@ -345,6 +335,8 @@ export const GlobalProvider = ({ children }) => {
         mobileMenuOpen,
         setMobileMenuOpen,
         resetAllStates,
+        adminStatus,
+        setAdminStatus
       }}
     >
       {children}

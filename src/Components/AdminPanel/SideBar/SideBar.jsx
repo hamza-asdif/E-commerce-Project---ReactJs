@@ -1,11 +1,13 @@
 import React from "react";
 import "./SideBar.css";
 import { useNavigate } from "react-router-dom";
+import MobileNavBar from "../MobileSticky_NavBar/MobileNavBar";
 
 const Sidebar = () => {
   const navigate = useNavigate()
   return (
-    <div className="sidebar">
+    <>
+      {/* <div className="sidebar">
       <div className="sidebar-header">
         <h2>لوحة التحكم</h2>
       </div>
@@ -31,7 +33,9 @@ const Sidebar = () => {
           <h6>الإشعارات</h6>
         </li>
       </ul>
-    </div>
+    </div> */}
+    <MobileNavBar />
+    </>
   );
 };
 

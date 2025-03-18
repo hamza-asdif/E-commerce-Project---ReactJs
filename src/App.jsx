@@ -32,7 +32,7 @@ import {
 import Products from "./Components/AdminPanel/Products/Products.jsx";
 import Home_States from "./Components/AdminPanel/Home_States/Home_States.jsx";
 import Login from "./Components/Login/Login.jsx";
-import Register from './Components/Register/Register'
+import Register from "./Components/Register/Register";
 
 function AppContent() {
   const {
@@ -130,6 +130,7 @@ const HandleFooter = () => {
 };
 
 function App() {
+  const { adminStatus, setAdminStatus } = useGlobalContext();
   return (
     <BrowserRouter>
       <GlobalProvider>
@@ -138,16 +139,20 @@ function App() {
           <Routes>
             <Route path="/" element={<AppContent />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register/> } />
+            <Route path="/register" element={<Register />} />
             <Route path="/cart" element={<CartBreadcrumb />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/search" element={<SearchBreadcrumb />} />
             <Route path="/checkout" element={<CheckoutBreadcrumb />} />
             <Route path="/shop" element={<ShopPageBreadcrumb />} />
-            <Route path="/admin" element={<AdminPanel />}>
-              <Route path="products" element={<Products />} />
-              <Route path="" element={<Home_States />} />
-            </Route>
+
+            {adminStatus && (
+              <Route path="/admin" element={<AdminPanel />}>
+                <Route path="products" element={<Products />} />
+                <Route path="" element={<Home_States />} />
+              </Route>
+            )}
+
             {/* Add a catch-all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

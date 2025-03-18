@@ -98,12 +98,12 @@ export default function Navbar() {
                   </li>
 
                 <li className="header-li" onClick={toggleSearch}>
-                  <a href="#" className="header-a">
+                  <Link to="/" className="header-a">
                     <IoSearch
                       className="header-search-icon"
                       id="header-search-icon"
                     />
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
