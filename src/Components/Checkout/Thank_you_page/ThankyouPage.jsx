@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FaCheckCircle, FaHome, FaShoppingCart } from "react-icons/fa";
-import './ThankyouPage.css'
+import './Thankyoupage.css'
 function ThankYouPage() {
   return (
     <div className="thank-you-page">
