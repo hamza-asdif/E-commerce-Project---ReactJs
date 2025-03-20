@@ -27,6 +27,7 @@ export default function ProductLayout({ Num }) {
         // اختيار عشوائي:
         let shuffled = [...allProducts].sort(() => 0.5 - Math.random());
         let selected = shuffled.slice(0, numberOfProducts);
+        console.log("selected products ------------", selected)
         setDisplayedProducts(selected);
         // أو إذا كنت تريد أخذ أول العناصر:
         // setDisplayedProducts(allProducts.slice(0, numberOfProducts));
@@ -99,6 +100,7 @@ export default function ProductLayout({ Num }) {
             ProductId={product.id}
             ProductPrice={product.price}
             ProductOldPrice={product.OldPrice}
+            addittional_Images={product.addittional_Images}
             key={product.id}
           />
         ))}

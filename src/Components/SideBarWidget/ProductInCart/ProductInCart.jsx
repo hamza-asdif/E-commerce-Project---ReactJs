@@ -10,7 +10,7 @@ export default function ProductInCart({ Cart_Products }) {
   return (
     <li className="cart-item">
       <div className="cart-item-image">
-        <img src={Cart_Products.Image} alt={Cart_Products.name} />
+        <img src={`/${Cart_Products.Image}`} alt={Cart_Products.name} />
       </div>
 
       <div className="cart-item-content">

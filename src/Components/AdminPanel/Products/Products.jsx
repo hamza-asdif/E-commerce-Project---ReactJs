@@ -18,6 +18,10 @@ const Products = () => {
     fetchAdminProductData();
   }, []);
 
+  useEffect(  () => {
+    handleLoading()
+  }, [currentPage])
+
   const fetchAdminProductData = async () => {
     setLoading(true);
     try {
@@ -43,23 +47,23 @@ const Products = () => {
   const handlePagination = () => {
     if (adminProducts.length) {
       // تطبيق البحث على المنتجات
-      const filteredProducts = searchTerm 
-        ? adminProducts.filter(product => 
+      const filteredProducts = searchTerm
+        ? adminProducts.filter((product) =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase())
           )
         : adminProducts;
-        
-      const productsPerPage = 8;
+
+      const productsPerPage = 5;
       const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
       const currentIndex = (currentPage - 1) * productsPerPage;
       const endIndex = currentIndex + productsPerPage;
 
       setPaginatedProducts(filteredProducts.slice(currentIndex, endIndex));
-      
+
       // تحديث أزرار الترقيم
       const buttons = Array.from({ length: totalPages }, (_, i) => i + 1);
       setPaginationButtons(buttons);
-      
+
       // إعادة تعيين الصفحة الحالية إذا كان المستخدم في صفحة غير موجودة بعد التصفية
       if (currentPage > totalPages && totalPages > 0) {
         setCurrentPage(1);
@@ -72,10 +76,13 @@ const Products = () => {
   }, [currentPage, adminProducts, searchTerm]);
 
   const handleToggleExpressCheckout = (productId) => {
-    setAdminProducts(prevProducts =>
-      prevProducts.map(product =>
-        product.id === productId 
-          ? { ...product, isExpressCheckoutEnabled: !product.isExpressCheckoutEnabled }
+    setAdminProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productId
+          ? {
+              ...product,
+              isExpressCheckoutEnabled: !product.isExpressCheckoutEnabled,
+            }
           : product
       )
     );
@@ -91,16 +98,37 @@ const Products = () => {
     }
   };
 
+  const handlepaginationBtn_Loading = (prevBtn, nextBtn) => {
+    if (prevBtn == true) {
+      return setCurrentPage((prev) => prev - 1);
+    } else if (nextBtn == true) {
+      return setCurrentPage((prev) => prev + 1);
+    } else {
+      setLoading(true);
+
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
+  };
+
+  const handleLoading = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+  };
   return (
     <div className="dashboard-container">
       <div className="products-container">
         <div className="header-section">
-          <h1>إدارة المنتجات</h1>
+          <h1 className="admin-h1">إدارة المنتجات</h1>
           <div className="actions-bar">
             <div className="search-box">
-              <input 
-                type="text" 
-                placeholder="بحث عن منتج..." 
+              <input
+                type="text"
+                placeholder="بحث عن منتج..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
@@ -115,7 +143,7 @@ const Products = () => {
 
         {loading ? (
           <div className="loading-container">
-            <div className="loader"></div>
+            <div className="loading-spinner"></div>
             <p>{loadingText}</p>
           </div>
         ) : paginatedProducts.length === 0 ? (
@@ -141,7 +169,7 @@ const Products = () => {
                   <tr key={product.id}>
                     <td>{product.id}</td>
                     <td className="td-img">
-                      <div className="image-container">
+                      <div className="image-container-admin">
                         <img
                           src={`/${product.Image}`}
                           alt={product.name}
@@ -156,7 +184,11 @@ const Products = () => {
                       <span className="price-currency">{priceCurrency}</span>
                     </td>
                     <td>
-                      <span className={`stock-badge ${product.Stock > 0 ? 'in-stock' : 'out-stock'}`}>
+                      <span
+                        className={`stock-badge ${
+                          product.Stock > 0 ? "in-stock" : "out-stock"
+                        }`}
+                      >
                         {product.Stock}
                       </span>
                     </td>
@@ -165,7 +197,9 @@ const Products = () => {
                         <input
                           type="checkbox"
                           checked={product.isExpressCheckoutEnabled}
-                          onChange={() => handleToggleExpressCheckout(product.id)}
+                          onChange={() =>
+                            handleToggleExpressCheckout(product.id)
+                          }
                         />
                         <span className="slider"></span>
                       </label>
@@ -214,24 +248,31 @@ const Products = () => {
                       1
                     </button>
                   )}
-                  
-                  {currentPage > 3 && <span className="pagination-ellipsis">...</span>}
-                  
+
+                  {currentPage > 3 && (
+                    <span className="pagination-ellipsis">...</span>
+                  )}
+
                   {paginationButtons
-                    .filter(num => num >= currentPage - 1 && num <= currentPage + 1)
-                    .map(num => (
+                    .filter(
+                      (num) => num >= currentPage - 1 && num <= currentPage + 1
+                    )
+                    .map((num) => (
                       <button
                         key={num}
                         onClick={() => setCurrentPage(num)}
-                        className={`pagination-number ${currentPage === num ? 'active' : ''}`}
+                        className={`pagination-number ${
+                          currentPage === num ? "active" : ""
+                        }`}
                       >
                         {num}
                       </button>
-                    ))
-                  }
-                  
-                  {currentPage < paginationButtons.length - 2 && <span className="pagination-ellipsis">...</span>}
-                  
+                    ))}
+
+                  {currentPage < paginationButtons.length - 2 && (
+                    <span className="pagination-ellipsis">...</span>
+                  )}
+
                   {currentPage < paginationButtons.length && (
                     <button
                       className={`pagination-number`}
@@ -246,7 +287,9 @@ const Products = () => {
                   <button
                     key={num}
                     onClick={() => setCurrentPage(num)}
-                    className={`pagination-number ${currentPage === num ? 'active' : ''}`}
+                    className={`pagination-number ${
+                      currentPage === num ? "active" : ""
+                    }`}
                   >
                     {num}
                   </button>

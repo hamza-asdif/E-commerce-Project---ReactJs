@@ -1,9 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaCartPlus } from "react-icons/fa";
 import "./CheckoutForm.css";
+import { useGlobalContext } from "../../../Context/GlobalContext";
+import supabase from "../../../supabaseClient";
+import { createClient } from "@supabase/supabase-js";
+import { v4 as uuidv4 } from "uuid"; // استيراد مكتبة uuid
+import { useNavigate } from "react-router-dom";
 
-function Checkout({ productPage_Product, checkoutStyle }) {
+function CheckoutForm({ productPage_Product, checkoutStyle }) {
+  const { productsInCart, productsInCart_TotalPrice } = useGlobalContext();
   const [isMainCheckout, setIsMainCheckout] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     tel: "",
@@ -13,11 +20,12 @@ function Checkout({ productPage_Product, checkoutStyle }) {
 
   const fullNameRef = useRef(null);
   const [errors, setErrors] = useState({});
+  const [order, setOrder] = useState({});
+  const navigate = useNavigate();
 
-  useEffect( () => {
-    handleFormStyle()
-  }, [] )
-
+  useEffect(() => {
+    handleFormStyle();
+  }, []);
 
   useEffect(() => {
     if (fullNameRef.current) {
@@ -25,13 +33,31 @@ function Checkout({ productPage_Product, checkoutStyle }) {
     }
   }, [productPage_Product]);
 
-  const handleFormStyle  = () => {
-    if(checkoutStyle == true){
-      setIsMainCheckout(true)
+  const handleFormStyle = () => {
+    if (checkoutStyle === true) {
+      setIsMainCheckout(true);
     }
-  }
+  };
 
-  const handleSubmit = (e) => {
+  const saveOrder = async (order) => {
+    if (Object.keys(order).length > 0) {
+      try {
+        const { data, error } = await supabase.from("orders").insert([order]);
+
+        if (error) {
+          console.error("خطأ في حفظ الطلب:", error);
+        } else {
+          console.log("تم حفظ الطلب بنجاح:", data);
+        }
+      } catch (err) {
+        console.error("A RANDOM ERROR:", err);
+      }
+    } else {
+      console.error("الطلب فارغ، لن يتم الإرسال.");
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let isValid = true;
     const newErrors = {};
@@ -41,8 +67,9 @@ function Checkout({ productPage_Product, checkoutStyle }) {
       isValid = false;
     }
 
-    if (!formData.tel || !/^(06)[0-9]{8}$/.test(formData.tel)) {
-      newErrors.tel = "يجب إدخال رقم هاتف مغربي صحيح يبدأ بـ 06";
+    const phoneRegex = /^(06|(\+212)|(00212))[0-9]{8}$/;
+    if (!formData.tel || !phoneRegex.test(formData.tel)) {
+      newErrors.tel = "يجب إدخال رقم هاتف صحيح (يبدأ بـ 06 أو +212)";
       isValid = false;
     }
 
@@ -59,8 +86,25 @@ function Checkout({ productPage_Product, checkoutStyle }) {
     setErrors(newErrors);
 
     if (isValid) {
+      setLoading(true);
+      const submittedOrder = {
+        user_id: uuidv4(), 
+        products: [...productsInCart],
+        total_price: productsInCart_TotalPrice,
+        status: "pending",
+      };
       console.log("Order submitted:", formData);
-      // يمكنك إرسال البيانات إلى السيرفر هنا
+      console.log("YOURE MADE A SALE", submittedOrder);
+      setOrder(submittedOrder);
+
+      try {
+        await saveOrder(submittedOrder); 
+      } catch (error) {
+        console.error("Error saving order:", error);
+      } finally {
+        setLoading(false);
+        navigate("/thank-you"); 
+      }
     }
   };
 
@@ -86,8 +130,11 @@ function Checkout({ productPage_Product, checkoutStyle }) {
         </h3>
 
         <form className="single-product-order-form" onSubmit={handleSubmit}>
-          <div className={`single-product-form-grid ${isMainCheckout ? "active" : ""}`}>
-            
+          <div
+            className={`single-product-form-grid ${
+              isMainCheckout ? "active" : ""
+            }`}
+          >
             <div className="form-group">
               <input
                 ref={fullNameRef}
@@ -97,19 +144,23 @@ function Checkout({ productPage_Product, checkoutStyle }) {
                 onChange={handleInputChange}
                 className={errors.fullName ? "error" : ""}
               />
-              {errors.fullName && <span className="error-message">{errors.fullName}</span>}
+              {errors.fullName && (
+                <span className="error-message">{errors.fullName}</span>
+              )}
             </div>
 
             <div className="form-group">
               <input
                 type="tel"
-                placeholder="رقم الهاتف"
+                placeholder="رقم الهاتف "
                 name="tel"
                 onChange={handleInputChange}
                 className={errors.tel ? "error" : ""}
                 dir="rtl"
               />
-              {errors.tel && <span className="error-message">{errors.tel}</span>}
+              {errors.tel && (
+                <span className="error-message">{errors.tel}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -120,7 +171,9 @@ function Checkout({ productPage_Product, checkoutStyle }) {
                 onChange={handleInputChange}
                 className={errors.city ? "error" : ""}
               />
-              {errors.city && <span className="error-message">{errors.city}</span>}
+              {errors.city && (
+                <span className="error-message">{errors.city}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -131,13 +184,21 @@ function Checkout({ productPage_Product, checkoutStyle }) {
                 onChange={handleInputChange}
                 className={errors.address ? "error" : ""}
               />
-              {errors.address && <span className="error-message">{errors.address}</span>}
+              {errors.address && (
+                <span className="error-message">{errors.address}</span>
+              )}
             </div>
           </div>
 
           <button type="submit" className="single-product-submit-button">
-            <span>لتأكيد الطلب اضغط هنا</span>
-            <FaCartPlus className="single-product-cart-icon" />
+            {loading ? (
+              <div className="loader"></div>
+            ) : (
+              <>
+                <span>لتأكيد الطلب اضغط هنا</span>
+                <FaCartPlus className="single-product-cart-icon" />
+              </>
+            )}
           </button>
         </form>
       </div>
@@ -145,4 +206,4 @@ function Checkout({ productPage_Product, checkoutStyle }) {
   );
 }
 
-export default Checkout;
+export default CheckoutForm;

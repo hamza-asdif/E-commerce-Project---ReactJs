@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../../Context/GlobalContext";
-import { FaCartPlus } from "react-icons/fa";
+import { FaCartPlus, FaMinus, FaPlus } from "react-icons/fa";
 import "./Productpage.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { useForm } from "react-hook-form";
 import CheckoutForm from "../Checkout/CheckoutForm/CheckoutForm";
+import { createClient } from "@supabase/supabase-js";
+import { FaCartArrowDown } from "react-icons/fa";
 
 function ProductPage() {
   const {
@@ -15,19 +17,60 @@ function ProductPage() {
     toggleCart,
     setSearchState,
     resetAllStates,
+    Supabase_APIURL,
+    supabase_APIKEY,
+    allProducts,
+    updateProductQuantity,
+    productsInCart,
+    setProductsInCart,
+    addProductToCart,
+    refreshCart,
   } = useGlobalContext();
   const [productPage_Storage, setProductPage_Storage] = useState([]);
   const [loading, setLoading] = useState(true);
   const [noProduct, setNoProduct] = useState(false);
   const { id } = useParams();
   const [randomVisitors, setRandomVisitors] = useState(0);
+  const [productPage, setProductPage] = useState([]);
+  const [productImages, setProductImages] = useState([]);
+  const [isExpressCheckoutEnable, setIsExpressCheckoutEnable] = useState(false);
+  const [ProductPage_Quantity, setProductPage_Quantity] = useState(1);
+  const [btnText, setBtnText] = useState("أضف إلى السلة");
+  const [btnLoader, setBtnLoader] = useState(false);
+  const [productPage_MainImage, setProductPage_MainImage] = useState("");
+  const [isActive, setIsActive] = useState(false);
+  const [imageIndex, setImageIndex] = useState(null)
+
+  const supabaseUrl = "https://tbllwzcqhdgztsqybfwg.supabase.co"; // URL الخاص بمشروعك في Supabase
+  const supabaseKey =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibGx3emNxaGRnenRzcXliZndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMDY4NzQsImV4cCI6MjA1NzU4Mjg3NH0.xAfedGGwK7595FJ5rk1tbePdPdOk1W-Wr12e-mLvjIM"; // مفتاح Supabase
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
   useEffect(() => {
-    resetAllStates();
-    return () => {
-      toggleCart(false);
-      setSearchState(false);
-    };
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  }, [productPage]);
+
+  useEffect(() => {
+    const data = productPage;
+    const thisData = data?.additional_images; // استخدام optional chaining للتأكد من الوصول الآمن
+
+    if (thisData) {
+      setProductImages(thisData);
+      const test = thisData.map((img) => {
+        console.log(img);
+        return img;
+      });
+    }
+
+    console.log(thisData);
+  }, [productPage]);
+
+  useEffect(() => {
+    handleVisitorsRandom();
+    fetchProductPage_Product(id);
   }, []);
 
   const handleVisitorsRandom = () => {
@@ -35,51 +78,34 @@ function ProductPage() {
     setInterval(() => {
       const randomNumber = Math.floor(Math.random() * (120 - 30 + 1)) + 30;
 
-      setRandomVisitors(randomNumber)
-      console.log(randomNumber);
+      setRandomVisitors(randomNumber);
     }, randomDelay);
   };
 
-  useEffect(() => {
-    handleVisitorsRandom();
-  }, []);
-
-  const getPoductById = async () => {
+  const fetchProductPage_Product = async (id) => {
+    const productPage_Api = `${Supabase_APIURL}?id=eq.${id}`;
     try {
-      const response = await axios.get(
-        `https://api.jsonbin.io/v3/b/67c54486e41b4d34e49fc194`,
-        {
-          headers: {
-            "X-Access-Key":
-              "$2a$10$lHC6.TYTGJdHEzvNt8D6DOCWIDRJHjfUUWMBzLBRfhQGlEBEIK6oa",
-          },
-        }
-      );
+      console.log("FETCH PRODUCT PAGE ID HERE :", id);
+      const response = await axios.get(productPage_Api, {
+        headers: {
+          apikey: supabase_APIKEY,
+          Authorization: `bearer ${supabase_APIKEY}`,
+        },
+      });
 
-      const product = response.data.record.Products.find(
-        (p) => p.id === parseInt(id)
-      );
+      console.log("FETCH PRODUCT PAGE ID HERE :", response.data);
+      setProductPage(response.data[0]);
 
-      if (product) {
-        setproductPage_Product(product);
-        setLoading(false);
-        setNoProduct(false);
-      } else {
-        // No product found with that ID
-        setproductPage_Product({});
-        setLoading(false);
-        setNoProduct(true);
+      setProductPage_MainImage(`/${response.data[0].Image}`);
+
+      if (response.data[0].isExpressCheckoutEnabled) {
+        setIsExpressCheckoutEnable(true);
+        return;
       }
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      setLoading(false);
-      setNoProduct(true);
+    } catch (err) {
+      console.error(err);
     }
   };
-
-  useEffect(() => {
-    getPoductById();
-  }, [id]); // Add id as dependency
 
   if (loading) {
     return (
@@ -101,16 +127,32 @@ function ProductPage() {
     );
   }
 
-  // Add debug logging
-  console.log("Product page data:", productPage_Product);
+  const handleBtnButton_Loading = async () => {
+    setBtnLoader(true);
 
-  // Simulated product images array (since we're not using an API)
-  const productImages = [
-    productPage_Product.Image,
-    productPage_Product.Image,
-    productPage_Product.Image,
-    productPage_Product.Image,
-  ];
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    setBtnLoader(false);
+
+    addProductToCart(productPage, ProductPage_Quantity);
+    toggleCart(true);
+    setProductPage_Quantity(1);
+  };
+
+  const handleAddToCart = async () => {
+    if (ProductPage_Quantity >= 1) {
+      const newProductsInCart = productsInCart.map((product) => {
+        return product.id === id
+          ? { ...product, quantity: product.quantity + ProductPage_Quantity }
+          : product;
+      });
+
+      setProductsInCart(newProductsInCart);
+      handleBtnButton_Loading();
+    } else {
+      handleBtnButton_Loading();
+    }
+  };
 
   return (
     <>
@@ -120,7 +162,6 @@ function ProductPage() {
       />
       <div className="single-product-page">
         {/* Breadcrumb Navigation */}
-
         {/* Product Content */}
         <div className="single-product-container">
           <div className="container">
@@ -129,16 +170,27 @@ function ProductPage() {
               <div className="single-product-gallery">
                 <div className="single-product-main-image">
                   <img
-                    src={`/${productPage_Product.Image}`}
-                    alt={productPage_Product.name}
+                    src={`${productPage_MainImage}`}
+                    alt={productPage.name}
                   />
                 </div>
                 <div className="single-product-thumbnails">
                   {productImages.map((image, index) => (
-                    <div key={index} className="single-product-thumbnail">
+                    <div
+                      key={index}
+                      className={`single-product-thumbnail ${
+                        imageIndex === index ? "active" : (index >= 4 ? "hidden" : "")
+                      }`}
+                      onClick={() => {
+                        setProductPage_MainImage(image), setImageIndex(index);
+                      }}
+                    >
                       <img
-                        src={`/${image}`}
-                        alt={`${productPage_Product.name} - ${index + 1}`}
+                        src={`${image}`}
+                        alt={`${productPage.name} - ${index + 1}`}
+                        className={`image-thumbnail ${
+                          index >= 4 ? "hidden" : ""
+                        }`}
                       />
                     </div>
                   ))}
@@ -147,23 +199,61 @@ function ProductPage() {
 
               {/* Product Details */}
               <div className="single-product-details">
-                <h1 className="single-product-title">
-                  {productPage_Product.name}
-                </h1>
+                <h1 className="single-product-title">{productPage.name}</h1>
 
                 <div className="single-product-pricing">
                   <span className="single-product-current-price">
-                    {productPage_Product.price} ريال سعودي
+                    {productPage.price} ريال سعودي
                   </span>
-                  {productPage_Product.OldPrice && (
+                  {productPage.OldPrice && (
                     <span className="single-product-old-price">
-                      {productPage_Product.OldPrice} ريال سعودي
+                      {productPage.OldPrice} ريال سعودي
                     </span>
                   )}
                 </div>
 
                 {/* Order Form */}
-                {!loading && <CheckoutForm />}
+
+                {!loading && isExpressCheckoutEnable ? (
+                  <CheckoutForm />
+                ) : (
+                  <div className="checkout-btn-product-page">
+                    {/* اختيار الكمية */}
+                    <div className="checkout-btn-product-page-quantitySelect">
+                      <button
+                        className="quantity-btn minus-btn"
+                        onClick={() =>
+                          ProductPage_Quantity > 1 &&
+                          setProductPage_Quantity((val) => val - 1)
+                        }
+                        disabled={ProductPage_Quantity <= 1}
+                      >
+                        <FaMinus />
+                      </button>
+                      <div className="quantity-number">
+                        {" "}
+                        {ProductPage_Quantity}{" "}
+                      </div>
+                      <button
+                        className="quantity-btn plus-btn"
+                        onClick={() =>
+                          ProductPage_Quantity < 10 &&
+                          setProductPage_Quantity((val) => val + 1)
+                        }
+                      >
+                        <FaPlus />
+                      </button>
+                    </div>
+
+                    {/* زر "شراء الآن" */}
+                    <div className="checkout-btn-product-page-button">
+                      <button className="buy-now-btn" onClick={handleAddToCart}>
+                        {btnLoader ? <div className="loader"></div> : btnText}
+                        <FaCartArrowDown id="buy-now-btn-icon" />
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Product Stats */}
                 <div className="single-product-stats">
@@ -175,8 +265,11 @@ function ProductPage() {
                   </p>
                   <p className="single-product-stats-item">
                     👁‍🗨 يشاهده{" "}
-                    <span className="single-product-highlight"> {randomVisitors} </span> زبون في
-                    الوقت الحالي
+                    <span className="single-product-highlight">
+                      {" "}
+                      {randomVisitors}{" "}
+                    </span>{" "}
+                    زبون في الوقت الحالي
                   </p>
                 </div>
               </div>

@@ -122,7 +122,7 @@ export const GlobalProvider = ({ children }) => {
   };
 
   // Update the addProductToCart function
-  const addProductToCart = async (product) => {
+  const addProductToCart = async (product, quantity = 1) => {
     try {
       const productId = parseInt(product.id);
       const existingProductIndex = productsInCart.findIndex(
@@ -134,13 +134,13 @@ export const GlobalProvider = ({ children }) => {
       if (existingProductIndex !== -1) {
         updatedCart[existingProductIndex] = {
           ...updatedCart[existingProductIndex],
-          quantity: updatedCart[existingProductIndex].quantity + 1,
+          quantity: updatedCart[existingProductIndex].quantity + quantity,
         };
       } else {
         updatedCart.push({
           ...product,
           id: productId,
-          quantity: 1,
+          quantity: quantity,
         });
       }
 
@@ -273,7 +273,7 @@ export const GlobalProvider = ({ children }) => {
       });
 
       const productData = response.data;
-      console.log("PRODUCTDATA :", response.data);
+      console.log("PRODUCTDATA :", productData);
 
       if (productData) {
         setproductPage_Product(productData);
@@ -336,7 +336,9 @@ export const GlobalProvider = ({ children }) => {
         setMobileMenuOpen,
         resetAllStates,
         adminStatus,
-        setAdminStatus
+        setAdminStatus,
+        supabase_APIKEY,
+        Supabase_APIURL
       }}
     >
       {children}

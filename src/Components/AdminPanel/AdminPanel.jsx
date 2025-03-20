@@ -20,6 +20,7 @@ const AdminHeader = () => {
 
 const AdminPanel = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   const handleWindowResize = () => {
     const getDeviceSize = window.outerWidth
@@ -33,6 +34,18 @@ const AdminPanel = () => {
     window.addEventListener("resize", handleWindowResize);
 
   }, []);
+
+  const handleLoading = () => {
+    setLoading(true)
+
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000);
+  }
+
+  useEffect( () =>  {
+    handleLoading()
+  }, [] )
 
 
 

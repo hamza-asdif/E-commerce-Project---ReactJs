@@ -33,6 +33,7 @@ import Products from "./Components/AdminPanel/Products/Products.jsx";
 import Home_States from "./Components/AdminPanel/Home_States/Home_States.jsx";
 import Login from "./Components/Login/Login.jsx";
 import Register from "./Components/Register/Register";
+import ThankYouPage from "./Components/Checkout/Thank_you_page/ThankyouPage.jsx";
 
 function AppContent() {
   const {
@@ -145,6 +146,7 @@ function App() {
             <Route path="/search" element={<SearchBreadcrumb />} />
             <Route path="/checkout" element={<CheckoutBreadcrumb />} />
             <Route path="/shop" element={<ShopPageBreadcrumb />} />
+            <Route path="/thank-you" element={<ThankYouPage />} />
 
             {adminStatus && (
               <Route path="/admin" element={<AdminPanel />}>

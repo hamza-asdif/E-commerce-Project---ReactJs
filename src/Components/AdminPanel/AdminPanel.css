@@ -63,6 +63,9 @@
 
 
 @media (max-width: 770px) {
+  .admin-panel-main{
+    margin-bottom: 70px;
+  }
   .admin-panel-container {
     padding-right: 20px; /* Reset padding on mobile */
     min-width: 100%;

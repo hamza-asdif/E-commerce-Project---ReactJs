@@ -19,7 +19,7 @@
   margin-bottom: 24px;
 }
 
-h1 {
+.admin-h1 {
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 16px;
@@ -100,7 +100,7 @@ h1 {
 }
 
 /* ===== شاشة التحميل ===== */
-.loading-container {
+/* .loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -116,7 +116,7 @@ h1 {
   height: 40px;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
-}
+} */
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -175,7 +175,7 @@ h1 {
 }
 
 /* ===== خلية صورة المنتج ===== */
-.image-container {
+.image-container-admin {
   width: 60px;
   height: 60px;
   border-radius: 8px;
@@ -331,130 +331,81 @@ input:checked + .slider:before {
 /* ===== تصميم الترقيم ===== */
 .pagination-container {
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-top: 24px;
-  flex-wrap: wrap;
-  gap: 8px;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
 }
 
 .pagination-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background-color: #fff;
-  color: #334155;
-  border: 1px solid #e2e8f0;
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  color: #333;
+  border-radius: 4px;
   cursor: pointer;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.pagination-btn:disabled {
-  background-color: #f1f5f9;
-  color: #94a3b8;
-  cursor: not-allowed;
-  border-color: #e2e8f0;
+  transition: all 0.3s ease;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
+  background: #f0f0f0;
+  border-color: #999;
+}
+
+.pagination-btn:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
 }
 
 .pagination-numbers {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .pagination-number {
-  min-width: 36px;
-  height: 36px;
-  background-color: #fff;
-  color: #334155;
-  border: 1px solid #e2e8f0;
-  padding: 0;
-  cursor: pointer;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
+  width: 35px;
+  height: 35px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .pagination-number:hover {
-  background-color: #f1f5f9;
+  background: #f0f0f0;
+  border-color: #999;
 }
 
 .pagination-number.active {
-  background-color: #3b82f6;
+  background: #F24547; /* اللون الرئيسي */
   color: white;
-  border-color: #3b82f6;
+  border-color: #F24547;
 }
 
 .pagination-ellipsis {
-  color: #64748b;
-  padding: 0 4px;
+  color: #666;
+  letter-spacing: 2px;
 }
 
-/* ===== تصميم متجاوب للشاشات الصغيرة ===== */
-@media (max-width: 768px) {
-  .products-container {
-    padding: 16px;
-  }
-  
-  .actions-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .search-box {
-    max-width: 100%;
-  }
-  
-  .products-table th,
-  .products-table td {
-    padding: 12px 8px;
-    font-size: 14px;
-  }
-  
-  .action-buttons {
-    flex-direction: column;
-    gap: 6px;
-  }
-  
-  .edit-btn, .delete-btn {
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-  
-  .pagination-container {
-    margin-top: 16px;
-  }
-}
-
-/* ===== تحسينات إضافية للشاشات الصغيرة جداً ===== */
 @media (max-width: 480px) {
-  .pagination-numbers .pagination-number:not(.active):not(:first-child):not(:last-child) {
-    display: none;
+  .pagination-numbers {
+    gap: 0.25rem;
   }
-  
-  .image-container {
-    width: 40px;
-    height: 40px;
+
+  .pagination-number {
+    width: 30px;
+    height: 30px;
+    font-size: 0.875rem;
   }
-  
-  .edit-btn span, .delete-btn span {
-    display: none;
-  }
-  
-  .edit-btn, .delete-btn {
-    padding: 6px;
+
+  .pagination-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
   }
 }

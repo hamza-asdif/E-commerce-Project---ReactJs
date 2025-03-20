@@ -1,0 +1,132 @@
+.thank-you-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+.thank-you-container {
+  text-align: center;
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}
+
+.thank-you-icon {
+  font-size: 64px;
+  color: #28a745; /* لون أخضر للتأكيد */
+  margin-bottom: 20px;
+}
+
+.thank-you-title {
+  font-size: 32px;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+.thank-you-message {
+  font-size: 18px;
+  color: #64748b;
+  margin-bottom: 30px;
+}
+
+.order-details {
+  text-align: right;
+  margin-bottom: 30px;
+}
+
+.order-details h2 {
+  font-size: 24px;
+  color: #1e293b;
+  margin-bottom: 15px;
+}
+
+.order-details ul {
+  list-style: none;
+  padding: 0;
+}
+
+.order-details li {
+  font-size: 16px;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.thank-you-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.thank-you-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  color: #ffffff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.thank-you-button:hover {
+  background-color: #218838;
+}
+
+.home-button {
+  background-color: #007bff;
+  /* color: 007bff; */
+}
+
+.home-button:hover {
+  background-color: var(--main-color-hover);
+  /* color: 0056b3; */
+}
+
+.cart-button {
+  background-color: #6c757d;
+}
+
+.cart-button:hover {
+  background-color: #5a6268;
+}
+
+/* التجاوب للشاشات الصغيرة جدًا */
+@media (max-width: 480px) {
+  .thank-you-container {
+    padding: 15px;
+  }
+
+  .thank-you-icon {
+    font-size: 40px;
+  }
+
+  .thank-you-title {
+    font-size: 20px;
+  }
+
+  .thank-you-message {
+    font-size: 14px;
+  }
+
+  .order-details h2 {
+    font-size: 18px;
+  }
+
+  .order-details li {
+    font-size: 12px;
+  }
+
+  .thank-you-button {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+}
