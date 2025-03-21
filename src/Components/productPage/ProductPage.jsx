@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import { FaCartPlus, FaMinus, FaPlus } from "react-icons/fa";
 import "./Productpage.css";
@@ -39,7 +39,8 @@ function ProductPage() {
   const [btnLoader, setBtnLoader] = useState(false);
   const [productPage_MainImage, setProductPage_MainImage] = useState("");
   const [isActive, setIsActive] = useState(false);
-  const [imageIndex, setImageIndex] = useState(null)
+  const [imageIndex, setImageIndex] = useState(null);
+  const mainImageRef = useRef(null);
 
   const supabaseUrl = "https://tbllwzcqhdgztsqybfwg.supabase.co"; // URL الخاص بمشروعك في Supabase
   const supabaseKey =
@@ -95,8 +96,10 @@ function ProductPage() {
 
       console.log("FETCH PRODUCT PAGE ID HERE :", response.data);
       setProductPage(response.data[0]);
-
-      setProductPage_MainImage(`/${response.data[0].Image}`);
+      await new Promise((resolve) => {
+        setProductPage_MainImage(`/${response.data[0].Image}`);
+        resolve();
+      });
 
       if (response.data[0].isExpressCheckoutEnabled) {
         setIsExpressCheckoutEnable(true);
@@ -175,14 +178,35 @@ function ProductPage() {
                   />
                 </div>
                 <div className="single-product-thumbnails">
+                  <div
+                    ref={mainImageRef}
+                    className="single-product-thumbnail"
+                    onClick={() => {
+                      setProductPage_MainImage(`/${productPage.Image}`),
+                        setImageIndex(null),
+                        mainImageRef.current.classList.add("active");
+                    }}
+                  >
+                    <img
+                      src={`/${productPage.Image}`}
+                      alt={`${productPage.name}`}
+                      className="image-thumbnail"
+                    />
+                  </div>
                   {productImages.map((image, index) => (
                     <div
                       key={index}
                       className={`single-product-thumbnail ${
-                        imageIndex === index ? "active" : (index >= 4 ? "hidden" : "")
+                        imageIndex === index
+                          ? "active"
+                          : index >= 3
+                          ? "hidden"
+                          : ""
                       }`}
                       onClick={() => {
-                        setProductPage_MainImage(image), setImageIndex(index);
+                        setProductPage_MainImage(image),
+                          setImageIndex(index),
+                          mainImageRef.current.classList.remove("active");
                       }}
                     >
                       <img

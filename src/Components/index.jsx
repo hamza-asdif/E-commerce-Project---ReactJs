@@ -1,3 +1,5 @@
+import { lazy } from "react";
+
 export { default as Navbar } from "./Navbar/Navbar";
 export { default as HeroImage } from "./HeroImage/HeroImg";
 export { default as SectionTitle } from "./SectionTitle/SectionTitle";
@@ -6,7 +8,9 @@ export { default as ProductLayout } from "./ProductLayout/ProductLayout";
 export { default as ProductCard2 } from "./ProductLayout/productCard_2/ProductCard2";
 export { default as WhyUsSection } from "./WhyUsSection/WhyUs_Section";
 export { default as Footer } from "./footer/Footer";
-export { default as ProductPage } from "./productPage/ProductPage";
+const ProductPage = lazy(() => import("./productPage/ProductPage"));
+export { ProductPage };
+
 export { default as Cart } from "./Cart/Cart";
 export { default as SearchForProducts } from "./SearchForProducts/SearchForProducts";
 export { default as Checkout } from "./Checkout/Checkout";

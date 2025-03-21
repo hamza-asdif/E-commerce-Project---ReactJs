@@ -102,6 +102,7 @@ export default function ProductLayout({ Num }) {
             ProductOldPrice={product.OldPrice}
             addittional_Images={product.addittional_Images}
             key={product.id}
+            Rating={product.Rating}
           />
         ))}
       </div>

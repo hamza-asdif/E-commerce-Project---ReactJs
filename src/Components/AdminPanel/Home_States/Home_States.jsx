@@ -3,29 +3,48 @@ import "./Home_States.css";
 import { BsBoxSeam } from "react-icons/bs";
 import { BsBoxSeamFill } from "react-icons/bs";
 import { FaDollarSign } from "react-icons/fa6";
+import { useAdminGlobalContext } from "../AdminGlobalContext";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 function Home_States() {
-  const statesTimes = [
-    "جميع الأوقات",
-    "هذه السنة",
-    "هذا الشهر",
-    "هذا الأسبوع",
-    "أمس",
-    "اليوم",
-  ];
-  const [loadingText, setLoadingText] = useState("جاري تحميل المنتجات...");
+  const {
+    productsData,
+    orders,
+    earnings,
+    currency,
+    activeUsers,
+    filterOrders,
+    filterOrdersByDate,
+    statesTimes,
+    ordersByTime,
+    earningsByTime,
+  } = useAdminGlobalContext();
+  const [dataLoading, setDataLoading] = useState(true);
+
+  const [loadingText, setLoadingText] = useState("تحميل البيانات...");
   const [loading, setLoading] = useState(true);
 
-  useLayoutEffect( () => {
-    handleLoading()
-  }, [] )
+  useLayoutEffect(() => {
+    handleLoading();
+  }, []);
 
-  const handleLoading  = () => {
-
+  const handleLoading = () => {
     setTimeout(() => {
-      setLoading(false)
+      setLoading(false);
     }, 1500);
-  }
+  };
+
+  const manageDataLoading = (data) => {
+    setTimeout(() => {
+      setDataLoading(false);
+    }, 2500);
+    if (dataLoading) {
+      return <div className="loader"></div>;
+    } else {
+      return <p> {data} </p>;
+    }
+  };
 
   return (
     <>
@@ -39,19 +58,19 @@ function Home_States() {
           <div className="quick-stats">
             <div className="stat-card">
               <h3>إجمالي الإيرادات</h3>
-              <p>٦٩,٧٣٨.٠٠ ريال</p>
+              {manageDataLoading(`${earnings} ${currency}`)}
             </div>
             <div className="stat-card">
               <h3>إجمالي الطلبات</h3>
-              <p>٣٨٠</p>
+              {manageDataLoading(orders.length)}
             </div>
             <div className="stat-card">
               <h3>المستخدمون النشطون</h3>
-              <p>١,٢٣٤</p>
+              {manageDataLoading(activeUsers.length)}
             </div>
             <div className="stat-card">
               <h3>المنتجات</h3>
-              <p>٥٦</p>
+              {manageDataLoading(productsData.length)}
             </div>
           </div>
           <div className="home-state-container">
@@ -72,7 +91,9 @@ function Home_States() {
                         return (
                           <div className="home-state-box-data" key={index}>
                             <h5> {timeName} </h5>
-                            <span>0</span>
+                            <span>{ordersByTime?.[timeName] ?? 0}</span>
+
+                            {/* استخدام nullish coalescing operator لمنع الأخطاء */}
                           </div>
                         );
                       })}

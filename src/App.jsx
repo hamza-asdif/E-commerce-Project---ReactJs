@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
   BrowserRouter,
   Route,
@@ -34,6 +34,7 @@ import Home_States from "./Components/AdminPanel/Home_States/Home_States.jsx";
 import Login from "./Components/Login/Login.jsx";
 import Register from "./Components/Register/Register";
 import ThankYouPage from "./Components/Checkout/Thank_you_page/ThankyouPage.jsx";
+import AdminProvider from "./Components/AdminPanel/AdminGlobalContext.jsx";
 
 function AppContent() {
   const {
@@ -130,6 +131,14 @@ const HandleFooter = () => {
   return <>{!isAdminPanel && <Footer />}</>;
 };
 
+const AdminPanel_GlobalContext = () => {
+  return (
+    <AdminProvider>
+      <AdminPanel />
+    </AdminProvider>
+  );
+};
+
 function App() {
   const { adminStatus, setAdminStatus } = useGlobalContext();
   return (
@@ -142,14 +151,21 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/cart" element={<CartBreadcrumb />} />
-            <Route path="/product/:id" element={<ProductPage />} />
+            <Route
+              path="/product/:id"
+              element={
+                <Suspense>
+                  <ProductPage />
+                </Suspense>
+              }
+            />
             <Route path="/search" element={<SearchBreadcrumb />} />
             <Route path="/checkout" element={<CheckoutBreadcrumb />} />
             <Route path="/shop" element={<ShopPageBreadcrumb />} />
             <Route path="/thank-you" element={<ThankYouPage />} />
 
             {adminStatus && (
-              <Route path="/admin" element={<AdminPanel />}>
+              <Route path="/admin" element={<AdminPanel_GlobalContext />}>
                 <Route path="products" element={<Products />} />
                 <Route path="" element={<Home_States />} />
               </Route>

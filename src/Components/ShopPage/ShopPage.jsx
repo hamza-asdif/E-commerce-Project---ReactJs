@@ -4,7 +4,6 @@ import { useGlobalContext } from "../../Context/GlobalContext";
 import ProductCard from "../ProductLayout/ProductCard/ProductCard";
 import "./ShopPage.css";
 import axios from "axios";
-import { GoTrueAdminApi } from "@supabase/supabase-js";
 
 function ShopPage() {
   // States needed for shop functionality
@@ -192,6 +191,7 @@ function ShopPage() {
         ProductImage={product.Image}
         ProductPrice={product.price}
         ProductOldPrice={product.oldPrice}
+        Rating={product.Rating}
       />
     ));
   };

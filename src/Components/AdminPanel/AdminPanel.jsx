@@ -3,29 +3,18 @@ import "./AdminPanel.css";
 import Sidebar from "./SideBar/SideBar";
 import { Outlet } from "react-router-dom";
 import MobileNavBar from "./MobileSticky_NavBar/MobileNavBar";
-
-const AdminHeader = () => {
-  return (
-    <div className="admin-panel-header">
-      <h1>لوحة تحكم المسؤول</h1>
-      <p>
-        مرحباً بعودتك يا <strong> حمزة.</strong> هذه نظرة عامة على متجرك
-      </p>
-    </div>
-  );
-};
-
-
-
+import AdminHeader from "./AdminHeader/AdminHeader";
+import { useAdminGlobalContext } from "./AdminGlobalContext";
+import AdminProvider from "./AdminGlobalContext";
 
 const AdminPanel = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true);
 
   const handleWindowResize = () => {
-    const getDeviceSize = window.outerWidth
+    const getDeviceSize = window.innerWidth;
     getDeviceSize < 770 ? setIsMobile(true) : setIsMobile(false);
-  }
+  };
 
   useEffect(() => {
     const getDeviceSize = window.outerWidth;
@@ -33,30 +22,25 @@ const AdminPanel = () => {
 
     window.addEventListener("resize", handleWindowResize);
 
+    const handleLoading = () => {
+      setLoading(true);
+
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    };
+
+    handleLoading();
   }, []);
 
-  const handleLoading = () => {
-    setLoading(true)
-
-    setTimeout(() => {
-      setLoading(false)
-    }, 1000);
-  }
-
-  useEffect( () =>  {
-    handleLoading()
-  }, [] )
-
-
-
   return (
-    <div className="admin-panel-main">
-      {isMobile ? <MobileNavBar /> : <Sidebar />}
-      <div className="admin-panel-container">
-        <AdminHeader />
-        <Outlet />
+      <div className="admin-panel-main">
+        {isMobile ? <MobileNavBar /> : <Sidebar />}
+        <div className="admin-panel-container">
+          <AdminHeader />
+          <Outlet />
+        </div>
       </div>
-    </div>
   );
 };
 

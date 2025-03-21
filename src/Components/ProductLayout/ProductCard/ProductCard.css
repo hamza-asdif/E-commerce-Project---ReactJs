@@ -137,6 +137,80 @@
   color: var(--white);
 }
 
+/* ==== rating styles ==== */
+.favorite-a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.favorite-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.heart-icon-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.favorite-icon {
+  color: #ff4757;
+  transition: color 0.3s ease;
+}
+
+.favorite-icon:hover {
+  color: #ff6b81;
+}
+
+/* ProductCard.css */
+
+.rating-container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.rating-box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rating-box span {
+  font-size: 14px;
+  color: #333;
+  font-weight: bold;
+  margin-right: 12px;
+}
+
+/* ProductCard.css */
+
+.rating-stars {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.star-icon {
+  font-size: 18px; 
+}
+
+.full-star {
+  color: #ffd700; 
+}
+
+.half-star {
+  color: #ffd700;
+  transform: rotateY(180deg);
+}
+
+.empty-star {
+  color: #d3d3d3; 
+}
+
 /* Favorite Button */
 
 .heart-icon-toggle {

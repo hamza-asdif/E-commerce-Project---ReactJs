@@ -88,22 +88,24 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
     if (isValid) {
       setLoading(true);
       const submittedOrder = {
-        user_id: uuidv4(), 
+        user_id: uuidv4(),
         products: [...productsInCart],
         total_price: productsInCart_TotalPrice,
         status: "pending",
+        Customer_Infos: formData
       };
       console.log("Order submitted:", formData);
       console.log("YOURE MADE A SALE", submittedOrder);
       setOrder(submittedOrder);
 
       try {
-        await saveOrder(submittedOrder); 
+        await saveOrder(submittedOrder);
       } catch (error) {
         console.error("Error saving order:", error);
       } finally {
-        setLoading(false);
-        navigate("/thank-you"); 
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        setLoading(false)
+        navigate("/thank-you");
       }
     }
   };
