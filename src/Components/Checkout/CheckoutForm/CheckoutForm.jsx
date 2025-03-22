@@ -8,7 +8,8 @@ import { v4 as uuidv4 } from "uuid"; // استيراد مكتبة uuid
 import { useNavigate } from "react-router-dom";
 
 function CheckoutForm({ productPage_Product, checkoutStyle }) {
-  const { productsInCart, productsInCart_TotalPrice } = useGlobalContext();
+  const { productsInCart, productsInCart_TotalPrice, resetall_OrderSubmited } =
+    useGlobalContext();
   const [isMainCheckout, setIsMainCheckout] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -92,7 +93,7 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
         products: [...productsInCart],
         total_price: productsInCart_TotalPrice,
         status: "pending",
-        Customer_Infos: formData
+        Customer_Infos: formData,
       };
       console.log("Order submitted:", formData);
       console.log("YOURE MADE A SALE", submittedOrder);
@@ -103,9 +104,10 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
       } catch (error) {
         console.error("Error saving order:", error);
       } finally {
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        setLoading(false)
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        setLoading(false);
         navigate("/thank-you");
+        resetall_OrderSubmited();
       }
     }
   };

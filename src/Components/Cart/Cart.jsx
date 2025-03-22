@@ -31,24 +31,41 @@ function Cart() {
   const Alertify_Prompt_Quanity_edit = (product) => {
     const activeProduct = productsInCart.find((item) => item.id == product.id);
     console.log(activeProduct);
+
     alertify
       .prompt(
         "تعديل الكمية",
         "الرجاء إدخال الكمية الجديدة",
         product.quantity,
         function (evt, value) {
-          if (activeProduct) {
-            activeProduct.quantity = parseInt(value);
-            const updatedProductsInCart = productsInCart.map((item) => {
-              return item.id === activeProduct.id
-                ? { ...item, quantity: activeProduct.quantity }
-                : item;
-            });
-
-            setProductsInCart(updatedProductsInCart);
-            console.log(updatedProductsInCart);
+          const newQuantity = parseInt(value); 
+          if (isNaN(newQuantity) || newQuantity < 1) {
+            alertify.error("الرجاء إدخال قيمة صحيحة أكبر من 1");
+            return;
           }
-          alertify.success("تم تحديث الكمية إلى: " + value);
+
+          if (!activeProduct) {
+            alertify.error("حدث خطأ: المنتج غير موجود في السلة");
+            return;
+          }
+
+          if (activeProduct.quantity === newQuantity) {
+            alertify.error(
+              "الكمية لم تتغير، القيمة المدخلة هي نفس الكمية الحالية"
+            );
+            return;
+          }
+
+         
+          const updatedProductsInCart = productsInCart.map((item) =>
+            item.id === activeProduct.id
+              ? { ...item, quantity: newQuantity }
+              : item
+          );
+
+          setProductsInCart(updatedProductsInCart);
+          console.log(updatedProductsInCart);
+          alertify.success("تم تحديث الكمية إلى: " + newQuantity);
         },
         function () {
           alertify.error("تم إلغاء التعديل");

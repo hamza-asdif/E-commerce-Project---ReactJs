@@ -109,6 +109,12 @@ export const GlobalProvider = ({ children }) => {
     setMobileMenuOpen(false);
   };
 
+  const resetall_OrderSubmited = () => {
+    setProductsInCart([])
+    setProductsInCart_TotalPrice(0)
+    localStorage.setItem("ProductsInCart2", [])
+  }
+
   // Fix the saving to localStorage function
   const saveCartToLocalStorage = () => {
     try {
@@ -158,9 +164,11 @@ export const GlobalProvider = ({ children }) => {
 
   // حساب إجمالي سعر المنتجات في السلة
   const calculateTotalPrice = () => {
-    const totalPrice = productsInCart.reduce((acc, product) => {
-      return acc + product.price * product.quantity;
-    }, 0);
+    const totalPrice = productsInCart.length ? (
+      productsInCart.reduce((acc, product) => {
+        return acc + product.price * product.quantity;
+      }, 0)
+    ) : 0
     setProductsInCart_TotalPrice(totalPrice);
   };
 
@@ -338,7 +346,8 @@ export const GlobalProvider = ({ children }) => {
         adminStatus,
         setAdminStatus,
         supabase_APIKEY,
-        Supabase_APIURL
+        Supabase_APIURL,
+        resetall_OrderSubmited
       }}
     >
       {children}

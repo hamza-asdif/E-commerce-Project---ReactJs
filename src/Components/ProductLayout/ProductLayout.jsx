@@ -45,7 +45,7 @@ export default function ProductLayout({ Num }) {
     } else {
       setError(null);
     }
-  }, [loading]);
+  }, [loading, allProducts]);
 
   const NoProduct = () => {
     if (displayedProducts.length === 0) {

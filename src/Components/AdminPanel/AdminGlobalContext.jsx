@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import supabase from "../../supabaseClient";
 
 const AdminContext = createContext();
@@ -11,7 +17,7 @@ const AdminProvider = ({ children }) => {
   const [activeUsers, setActiveUsers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [earnings, setEarnings] = useState(0);
-  const [currency, setCurrency] = useState("ريال");
+  const [currency, setCurrency] = useState("ر.س");
   const [filterOrders, setFiltredOrders] = useState([]);
   const [ordersByTime, setOrdersByTime] = useState({});
   const [earningsByTime, setEarningsByTime] = useState({});
@@ -127,7 +133,7 @@ const AdminProvider = ({ children }) => {
     setEarningsByTime(earningsResult);
   };
 
-  // سيتم استدعاؤها فقط عند تغيير `orders`
+
 
   useEffect(() => {
     const totalEraning = () => {
@@ -147,7 +153,7 @@ const AdminProvider = ({ children }) => {
     }
   }, [orders]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     fetchAdminInfos();
     handleProductsData();
     handletotalOrders();
@@ -155,7 +161,6 @@ const AdminProvider = ({ children }) => {
     // filterOrdersByDate("اليوم");
   }, []);
 
-  // في AdminProvider، عدّل القيمة المُرجعة من AdminContext.Provider لتشمل المتغيرات المفقودة:
   return (
     <AdminContext.Provider
       value={{

@@ -75,7 +75,6 @@ function ShopPage() {
 
       const Targetoption = e.target.value;
 
-      // Reset to default view
       if (Targetoption === "default") {
         setIsSortActive(false);
         setSortedProducts([]);
@@ -83,17 +82,12 @@ function ShopPage() {
         return;
       }
 
-      // Get the correct source of products to sort
-      let productsToSort;
-      if (isSortActive) {
-        productsToSort = [...sortedProducts];
-      } else if (activeCategory === "all") {
-        productsToSort = [...shopPage_AllProducts];
-      } else {
-        productsToSort = [...categoryProducts];
-      }
+      let productsToSort =
+        activeCategory === "all"
+          ? [...shopPage_AllProducts]
+          : [...categoryProducts];
 
-      const cloneProducts_Sorted = productsToSort.sort((a, b) => {
+      const sorted = productsToSort.sort((a, b) => {
         switch (Targetoption) {
           case "newest":
             return new Date(b.createdAt) - new Date(a.createdAt);
@@ -108,12 +102,8 @@ function ShopPage() {
         }
       });
 
-      setSortedProducts(cloneProducts_Sorted);
+      setSortedProducts(sorted);
       setIsSortActive(true);
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 500);
     }
   };
 
@@ -319,11 +309,11 @@ function ShopPage() {
   };
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
 
     setTimeout(() => {
       handlePagination();
-      setLoading(false)
+      setLoading(false);
     }, 800);
   }, [currentPage, allProducts, activeCategory, isSortActive, sortedProducts]);
 

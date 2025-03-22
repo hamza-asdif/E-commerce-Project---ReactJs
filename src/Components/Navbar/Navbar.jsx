@@ -14,15 +14,16 @@ import { useGlobalContext } from "../../Context/GlobalContext";
 import SearchBar from "../searchBar/SearchBar";
 
 export default function Navbar() {
-  const HeaderLinks = [{
-    name : 'إنشاء حساب',
-    link: "register"
-  },
-  {
-    name: 'تسجيل الدخول',
-    link: "login"
-  }
-]
+  const HeaderLinks = [
+    {
+      name: "إنشاء حساب",
+      link: "register",
+    },
+    {
+      name: "تسجيل الدخول",
+      link: "admin",
+    },
+  ];
   const {
     productsInCart,
     productsInCart_TotalPrice,
@@ -76,7 +77,6 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* عرض القائمة دائمًا ولكن مع تطبيق أنماط CSS المناسبة */}
             <div
               className={`header-links ${
                 isMobile && mobileMenuOpen ? "mobile-menu-active" : ""
@@ -91,19 +91,19 @@ export default function Navbar() {
                   </li>
                 ))}
 
-                  <li className="header-li shop-now">
-                    <Link to="/shop" className="header-a shop-now">
+                <li className="header-li shop-now">
+                  <Link to="/shop" className="header-a shop-now">
                     تسوق الآن
-                    </Link>
-                  </li>
+                  </Link>
+                </li>
 
                 <li className="header-li" onClick={toggleSearch}>
-                  <Link to="/" className="header-a">
+                  <span to="" className="header-a">
                     <IoSearch
                       className="header-search-icon"
                       id="header-search-icon"
                     />
-                  </Link>
+                  </span>
                 </li>
               </ul>
             </div>
@@ -118,9 +118,9 @@ export default function Navbar() {
               <div className="cart-box">
                 <div className="cart-box-div">
                   <div className="cart-content">
-                    <a
-                      href="#"
+                    <span
                       className="cart-link"
+                      id="id-cart-span"
                       onClick={() => toggleCart(true)}
                     >
                       <span className="cart-span" dir="rtl">
@@ -132,7 +132,7 @@ export default function Navbar() {
                       <span className="cart-counter">
                         {productsInCart.length}
                       </span>
-                    </a>
+                    </span>
                   </div>
                 </div>
               </div>

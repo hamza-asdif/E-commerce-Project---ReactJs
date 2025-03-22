@@ -81,6 +81,7 @@
   
   .home-state-box-data span {
     font-size: 16px;
+    padding-left: 4px;
     font-weight: bold;
     color: #F24547;
   }
@@ -114,7 +115,7 @@
   }
   
   .stat-card p {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
     color: #F24547;
   }

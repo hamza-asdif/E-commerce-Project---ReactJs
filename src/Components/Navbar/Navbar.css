@@ -133,6 +133,12 @@ a {
     align-items: center;
 }
 
+#id-cart-span{
+    color: #F24547;
+    cursor: pointer;
+    font-weight: 600;
+}
+
 .cart-link {
     display: flex;
     justify-content: space-between;
@@ -152,6 +158,8 @@ a {
 
 #header-search-icon{
     font-size: 18px;
+    color: #F24547;
+    cursor: pointer;
 }
 
 .cart-span {

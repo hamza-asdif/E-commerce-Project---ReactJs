@@ -35,6 +35,8 @@ import Login from "./Components/Login/Login.jsx";
 import Register from "./Components/Register/Register";
 import ThankYouPage from "./Components/Checkout/Thank_you_page/ThankyouPage.jsx";
 import AdminProvider from "./Components/AdminPanel/AdminGlobalContext.jsx";
+import EditProduct_Modal from "./Components/AdminPanel/Products/EditProduct_Modal/EditProduct.jsx";
+import ProductEditPage from "./Components/AdminPanel/Products/EditProduct_Modal/EditProduct.jsx";
 
 function AppContent() {
   const {
@@ -167,6 +169,7 @@ function App() {
             {adminStatus && (
               <Route path="/admin" element={<AdminPanel_GlobalContext />}>
                 <Route path="products" element={<Products />} />
+                <Route path="edit-product/:id" element={<ProductEditPage />} />
                 <Route path="" element={<Home_States />} />
               </Route>
             )}

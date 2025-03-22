@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import { FaCartPlus, FaMinus, FaPlus } from "react-icons/fa";
 import "./Productpage.css";
@@ -9,6 +15,8 @@ import { useForm } from "react-hook-form";
 import CheckoutForm from "../Checkout/CheckoutForm/CheckoutForm";
 import { createClient } from "@supabase/supabase-js";
 import { FaCartArrowDown } from "react-icons/fa";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
 
 function ProductPage() {
   const {
@@ -42,7 +50,7 @@ function ProductPage() {
   const [imageIndex, setImageIndex] = useState(null);
   const mainImageRef = useRef(null);
 
-  const supabaseUrl = "https://tbllwzcqhdgztsqybfwg.supabase.co"; // URL الخاص بمشروعك في Supabase
+  const supabaseUrl = "https://tbllwzcqhdgztsqybfwg.supabase.co";
   const supabaseKey =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibGx3emNxaGRnenRzcXliZndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMDY4NzQsImV4cCI6MjA1NzU4Mjg3NH0.xAfedGGwK7595FJ5rk1tbePdPdOk1W-Wr12e-mLvjIM"; // مفتاح Supabase
 
@@ -175,6 +183,7 @@ function ProductPage() {
                   <img
                     src={`${productPage_MainImage}`}
                     alt={productPage.name}
+                    loading="lazy"
                   />
                 </div>
                 <div className="single-product-thumbnails">
@@ -191,6 +200,7 @@ function ProductPage() {
                       src={`/${productPage.Image}`}
                       alt={`${productPage.name}`}
                       className="image-thumbnail"
+                      loading="lazy"
                     />
                   </div>
                   {productImages.map((image, index) => (
@@ -242,7 +252,6 @@ function ProductPage() {
                   <CheckoutForm />
                 ) : (
                   <div className="checkout-btn-product-page">
-                    {/* اختيار الكمية */}
                     <div className="checkout-btn-product-page-quantitySelect">
                       <button
                         className="quantity-btn minus-btn"
@@ -269,7 +278,6 @@ function ProductPage() {
                       </button>
                     </div>
 
-                    {/* زر "شراء الآن" */}
                     <div className="checkout-btn-product-page-button">
                       <button className="buy-now-btn" onClick={handleAddToCart}>
                         {btnLoader ? <div className="loader"></div> : btnText}

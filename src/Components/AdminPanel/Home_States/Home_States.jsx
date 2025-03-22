@@ -25,20 +25,17 @@ function Home_States() {
   const [loadingText, setLoadingText] = useState("تحميل البيانات...");
   const [loading, setLoading] = useState(true);
 
-  useLayoutEffect(() => {
-    handleLoading();
-  }, []);
-
-  const handleLoading = () => {
+  useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 1500);
-  };
+      setLoadingText(false);
+    }, 1000);
+  }, [productsData, orders, activeUsers]);
 
   const manageDataLoading = (data) => {
     setTimeout(() => {
       setDataLoading(false);
-    }, 2500);
+    }, 2000);
     if (dataLoading) {
       return <div className="loader"></div>;
     } else {
@@ -112,7 +109,9 @@ function Home_States() {
                         return (
                           <div className="home-state-box-data" key={index}>
                             <h5> {timeName} </h5>
-                            <span>0</span>
+                            <span>
+                              {`${earningsByTime?.[timeName] ?? 0} ${currency}`}
+                            </span>
                           </div>
                         );
                       })}
