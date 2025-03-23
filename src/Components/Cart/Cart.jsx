@@ -7,7 +7,7 @@ import "alertifyjs/build/css/alertify.rtl.css";
 import "alertifyjs/build/css/themes/default.rtl.css";
 import "../../Context/alertify.custom.css";
 import alertify from "alertifyjs";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 function Cart() {
   const {
@@ -20,6 +20,7 @@ function Cart() {
     resetAllStates,
   } = useGlobalContext();
   const decs_Btn = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     resetAllStates();
@@ -38,7 +39,7 @@ function Cart() {
         "الرجاء إدخال الكمية الجديدة",
         product.quantity,
         function (evt, value) {
-          const newQuantity = parseInt(value); 
+          const newQuantity = parseInt(value);
           if (isNaN(newQuantity) || newQuantity < 1) {
             alertify.error("الرجاء إدخال قيمة صحيحة أكبر من 1");
             return;
@@ -56,7 +57,6 @@ function Cart() {
             return;
           }
 
-         
           const updatedProductsInCart = productsInCart.map((item) =>
             item.id === activeProduct.id
               ? { ...item, quantity: newQuantity }
@@ -109,11 +109,20 @@ function Cart() {
     }
   }, [productsInCart]);
 
+  // !!! handle if no products in cart && alertify error show
+  const handleNoProductInCart = () => {
+    if (!productsInCart.length) {
+      alertify.error("لا يوجد منتجات في السلة");
+    } else {
+      navigate("/checkout");
+    }
+  };
+
   // Cart Product Item Component
   const CartProductItem = ({ product, index }) => (
     <div className="main-cart-product-item" key={product.id}>
       <div className="main-cart-product-image">
-        <img src={`/${product.Image}`} alt={`${product.name}-${index}`} />
+        <img src={product.Image} alt={`${product.name}-${index}`} />
       </div>
 
       <div className="main-cart-product-details">
@@ -237,9 +246,12 @@ function Cart() {
                 </span>
               </div>
 
-              <Link to="/checkout" className="main-cart-checkout-btn">
+              <span
+                onClick={handleNoProductInCart}
+                className="main-cart-checkout-btn"
+              >
                 المتابعة لإتمام الطلب
-              </Link>
+              </span>
             </div>
           </div>
         </div>

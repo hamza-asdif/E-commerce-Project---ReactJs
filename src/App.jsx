@@ -35,8 +35,8 @@ import Login from "./Components/Login/Login.jsx";
 import Register from "./Components/Register/Register";
 import ThankYouPage from "./Components/Checkout/Thank_you_page/ThankyouPage.jsx";
 import AdminProvider from "./Components/AdminPanel/AdminGlobalContext.jsx";
-import EditProduct_Modal from "./Components/AdminPanel/Products/EditProduct_Modal/EditProduct.jsx";
-import ProductEditPage from "./Components/AdminPanel/Products/EditProduct_Modal/EditProduct.jsx";
+import EditProduct_Modal from "./Components/AdminPanel/Products/EditProductComponent/EditProduct.jsx";
+import ProductEditPage from "./Components/AdminPanel/Products/EditProductComponent/EditProduct.jsx";
 
 function AppContent() {
   const {
@@ -142,7 +142,7 @@ const AdminPanel_GlobalContext = () => {
 };
 
 function App() {
-  const { adminStatus, setAdminStatus } = useGlobalContext();
+  const { adminStatus, setAdminStatus, productsInCart } = useGlobalContext();
   return (
     <BrowserRouter>
       <GlobalProvider>
@@ -163,6 +163,7 @@ function App() {
             />
             <Route path="/search" element={<SearchBreadcrumb />} />
             <Route path="/checkout" element={<CheckoutBreadcrumb />} />
+            
             <Route path="/shop" element={<ShopPageBreadcrumb />} />
             <Route path="/thank-you" element={<ThankYouPage />} />
 

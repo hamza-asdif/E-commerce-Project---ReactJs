@@ -357,6 +357,24 @@
   object-fit: cover;
 }
 
+#mainImg-container{
+  margin-bottom: 2rem;
+}
+
+.pep-icon-trash{
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  text-align: center;
+  color: var(--color-text-primary);
+}
+
+
+.upload-error{
+  margin-top: 8px;
+  color: red;
+}
+
 .pep-image-actions {
   display: flex;
   align-items: center;

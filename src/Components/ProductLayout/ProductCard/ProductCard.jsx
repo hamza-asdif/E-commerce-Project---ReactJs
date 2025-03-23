@@ -160,15 +160,17 @@ function ProductCard({
     const fullStars = Math.floor(rating); // عدد النجوم الممتلئة
     const hasHalfStar = rating % 1 !== 0; // هل يوجد نصف نجمة؟
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0); // عدد النجوم الفارغة
-  
+
     return (
       <div className="rating-stars">
         {[...Array(fullStars)].map((_, i) => (
           <FaStar key={`full-${i}`} className="star-icon full-star" />
         ))}
-  
-        {hasHalfStar && <FaStarHalfAlt key="half" className="star-icon half-star" />}
-  
+
+        {hasHalfStar && (
+          <FaStarHalfAlt key="half" className="star-icon half-star" />
+        )}
+
         {[...Array(emptyStars)].map((_, i) => (
           <FaRegStar key={`empty-${i}`} className="star-icon empty-star" />
         ))}
@@ -181,7 +183,7 @@ function ProductCard({
       <div className="product-container">
         <div className="product-img-box" onClick={handleProductClick}>
           <img
-            src={`/${ProductImage}`}
+            src={ProductImage}
             alt={ProductTitle}
             className="product-img"
           />
@@ -204,7 +206,7 @@ function ProductCard({
           </button>
           <div className="rating-container">
             <div className="rating-box">
-            <RatingStars rating={rating} />
+              <RatingStars rating={rating} />
             </div>
           </div>
           <div className="favorite-a" onClick={handleFavoriteClick}>
