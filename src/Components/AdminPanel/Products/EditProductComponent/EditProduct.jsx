@@ -10,7 +10,12 @@ import "./EditProduct.css";
 import { useNavigate, useParams } from "react-router-dom";
 import supabase from "../../../../supabaseClient";
 import { ImImages } from "react-icons/im";
-import { FaCheckCircle, FaPlusCircle, FaRegTrashAlt, FaTrash } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaPlusCircle,
+  FaRegTrashAlt,
+  FaTrash,
+} from "react-icons/fa";
 import { BsTrash3 } from "react-icons/bs";
 import alertify from "alertifyjs";
 import { useAdminGlobalContext } from "../../AdminGlobalContext";
@@ -34,15 +39,10 @@ const ProductEditPage = ({ isAddProduct }) => {
   const [newCategory, setNewCategory] = useState("");
   const { productsData } = useAdminGlobalContext();
   const navigate = useNavigate();
-  const settingsText = [
-    "المعلومات الأساسية",
-    "التصنيفات",
-    "الصور"
-  ]
-  const [SettingIndex, setSettingIndex] = useState(0)
-  const categoryRef = useRef(null)
-  const ImagesRef = useRef(null)
-  const generalInfosRef = useRef(null)
+  const settingsText = ["المعلومات الأساسية", "التصنيفات", "الصور"];
+  const [SettingIndex, setSettingIndex] = useState(0);
+  const categoryRef = useRef(null);
+  const ImagesRef = useRef(null);
 
   const fetchProductDetails_Edit = async () => {
     if (!isAddProduct && id) {
@@ -58,7 +58,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     }
   };
 
-  // Handle the logic of: if the user adds a Product not changes the product
+  // !!! Handle the logic of: if the user adds a Product not changes the product
   const handleAddProductLogic_emptyEditProduct = () => {
     if (isAddProduct) {
       const emptyProduct = {
@@ -82,10 +82,12 @@ const ProductEditPage = ({ isAddProduct }) => {
     }
   };
 
+  // !!! use layout effect to handle isAddProduct
   useLayoutEffect(() => {
     handleAddProductLogic_emptyEditProduct();
   }, [isAddProduct]);
 
+  // !!! fetch product ccategories and make them unique
   const fetchCategories = async () => {
     try {
       const { data, error } = await supabase
@@ -152,6 +154,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     }
   }, [productDetails, isAddProduct]);
 
+  // !!! the logic of change product infos when user write somthing
   const handleInfosChange = (e) => {
     const { name, value } = e.target;
 
@@ -168,6 +171,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     }
   };
 
+  // !!! function to upload the main imageof the product
   const handleMainImageUpload = (e) => {
     const file = e.target.files[0];
 
@@ -200,6 +204,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     }
   };
 
+  // !!! function to handle the logic of add additional images
   const handleAdditionalImagesUpload = (e) => {
     const files = e.target.files;
     const validImages = [];
@@ -249,6 +254,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     }
   };
 
+  // !!! delete additional images function
   const handleDeleteAdditionalImage = (index) => {
     const updatedImages = additionalImages.filter((_, i) => i !== index);
 
@@ -259,6 +265,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     }));
   };
 
+  // !!! handle the logic of make an aditional image main imagge
   const handleMakeIt_MainImage = (index) => {
     const mainImage = additionalImages[index];
 
@@ -285,6 +292,7 @@ const ProductEditPage = ({ isAddProduct }) => {
         },
         defaultFocus: "cancel",
         reverseButtons: true,
+        rtl: true,
       });
   };
 
@@ -297,7 +305,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     }));
   };
 
-  // Validate the product data
+  // !!! validate the product data, before send it to the database && get the input that has the error
   const validateProductData = (productData) => {
     // Check required fields
     if (!productData.name || productData.name.trim() === "") {
@@ -329,6 +337,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     return true;
   };
 
+  // !!! main function of save product infos and send the product into supabase backend
   const handleSaveProduct_Backend = async () => {
     // Combine product details with new info
     const combinedData = {
@@ -342,7 +351,6 @@ const ProductEditPage = ({ isAddProduct }) => {
         : productDetails.createdAt,
     };
 
-    // Remove the id field if this is a new product
     if (isAddProduct && combinedData.id) {
       delete combinedData.id;
     }
@@ -352,7 +360,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     console.log("Final product data to save:", finalProductData);
 
     if (!validateProductData(finalProductData)) {
-      return; // Stop if validation fails
+      return;
     }
 
     try {
@@ -379,7 +387,6 @@ const ProductEditPage = ({ isAddProduct }) => {
         }
 
         alertify.success("تم تحديث المنتج بنجاح");
-        
       } else {
         // Add new product - make sure we're not sending an ID
         const productToInsert = { ...finalProductData };
@@ -431,6 +438,7 @@ const ProductEditPage = ({ isAddProduct }) => {
     }
   };
 
+  // !!! function to format data ( toggle between add product logic && edit product logic )
   const formatProductData = (productData) => {
     return {
       ...productData,
@@ -444,31 +452,24 @@ const ProductEditPage = ({ isAddProduct }) => {
     };
   };
 
-
- 
   const handlePrametersClick = (index) => {
     setSettingIndex(index);
-  
-    
-    const sections = [productNameRef, categoryRef, ImagesRef]; // مراجع للأقسام
-  
-    // التركيز على الحقل المناسب
+
+    const sections = [productNameRef, categoryRef, ImagesRef];
+
     sections.forEach((item, i) => {
-      if (i === index) { // استخدم index بدلاً من SettingIndex لأن التحديث قد لا يكون فوريًا
+      if (i === index) {
         item.current.focus();
-        
-        // التمرير إلى القسم
+
         if (sections[i] && sections[i].current) {
-          sections[i].current.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'nearest' 
+          sections[i].current.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
           });
         }
       }
     });
-  }
-  
-
+  };
 
   return (
     <>
@@ -478,7 +479,6 @@ const ProductEditPage = ({ isAddProduct }) => {
           <p>{loadingText}</p>
         </div>
       ) : (
-        // Main component here
         <div className="pep-container">
           <div className="pep-header">
             <div className="pep-header-content">
@@ -496,46 +496,44 @@ const ProductEditPage = ({ isAddProduct }) => {
                 إلغاء
               </button>
               <button
-  type="submit"
-  className="pep-btn pep-btn-save"
-  onClick={handleSaveProduct_Backend}
->
-  {isAddProduct ? (
-    <>
-      <FaPlusCircle /> إضافة المنتج
-    </>
-  ) : (
-    <>
-      <FaCheckCircle /> حفظ التغييرات
-    </>
-  )}
-</button>
+                type="submit"
+                className="pep-btn pep-btn-save"
+                onClick={handleSaveProduct_Backend}
+              >
+                {isAddProduct ? (
+                  <>
+                    <FaPlusCircle /> إضافة المنتج
+                  </>
+                ) : (
+                  <>
+                    <FaCheckCircle /> حفظ التغييرات
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
           <div className="pep-content">
             <div className="pep-sidebar">
               <div className="pep-nav">
-                
-                
-
-
-                {settingsText.map( (text,index) => {
+                {settingsText.map((text, index) => {
                   return (
                     <div
-                  className={`pep-nav-item ${SettingIndex == index ? "pep-nav-item-active" : ""}`}
-                  onClick={() => handlePrametersClick(index)}
-                  key={index}
-                >
-                  <span className="pep-nav-icon">
-                    {
-                      index === 0 && <i className="pep-icon-info"></i> || index === 1 && <i className="pep-icon-image"></i> || index === 2 &&  <i className="pep-icon-tag"></i>
-                    }
-                  </span>
-                  <span className="pep-nav-text"> {text} </span>
-                </div>
-                  )
-                } )}
+                      className={`pep-nav-item ${
+                        SettingIndex == index ? "pep-nav-item-active" : ""
+                      }`}
+                      onClick={() => handlePrametersClick(index)}
+                      key={index}
+                    >
+                      <span className="pep-nav-icon">
+                        {(index === 0 && <i className="pep-icon-info"></i>) ||
+                          (index === 1 && <i className="pep-icon-image"></i>) ||
+                          (index === 2 && <i className="pep-icon-tag"></i>)}
+                      </span>
+                      <span className="pep-nav-text"> {text} </span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
