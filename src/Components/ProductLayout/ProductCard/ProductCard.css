@@ -46,6 +46,7 @@
   border: 1px solid var(--border-light);
   transition: var(--transition-normal);
   overflow: hidden;
+  background: var(--white);
 }
 
 .product-container:hover {

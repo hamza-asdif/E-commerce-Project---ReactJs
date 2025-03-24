@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, {
   useCallback,
   useEffect,
@@ -105,7 +106,7 @@ function ProductPage() {
       console.log("FETCH PRODUCT PAGE ID HERE :", response.data);
       setProductPage(response.data[0]);
       await new Promise((resolve) => {
-        setProductPage_MainImage(`/${response.data[0].Image}`);
+        setProductPage_MainImage(`${response.data[0].Image}`);
         resolve();
       });
 
@@ -118,13 +119,17 @@ function ProductPage() {
     }
   };
 
+  // Define a memoized loading component
+  const LoadingComponent = React.memo(() => (
+    <div className="loading-container">
+      <div className="loading-spinner"></div>
+      <p>جاري تحميل المنتج...</p>
+    </div>
+  ));
+
+  // Then use it in your conditional
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>جاري تحميل المنتج...</p>
-      </div>
-    );
+    return <LoadingComponent />;
   }
 
   if (noProduct) {
@@ -191,16 +196,15 @@ function ProductPage() {
                     ref={mainImageRef}
                     className="single-product-thumbnail"
                     onClick={() => {
-                      setProductPage_MainImage(`/${productPage.Image}`),
+                      setProductPage_MainImage(`${productPage.Image}`),
                         setImageIndex(null),
                         mainImageRef.current.classList.add("active");
                     }}
                   >
                     <img
-                      src={`/${productPage.Image}`}
+                      src={`${productPage.Image}`}
                       alt={`${productPage.name}`}
                       className="image-thumbnail"
-                      loading="lazy"
                     />
                   </div>
                   {productImages.map((image, index) => (

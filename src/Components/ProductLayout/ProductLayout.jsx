@@ -7,17 +7,17 @@ import { Link } from "react-router-dom";
 export default function ProductLayout({ Num }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { allProducts, setDisplayedProducts, displayedProducts } = useGlobalContext(); // نستخدم فقط القراءة هنا
+  const { allProducts, setDisplayedProducts, displayedProducts } =
+    useGlobalContext();
 
-  // محاكاة تأخير التحميل
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (allProducts.length > 0) {
       setLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+    } else if (!loading && allProducts.length === 0) {
+      setError("تعذر تحميل المنتجات. يرجى المحاولة مرة أخرى لاحقاً.");
+    }
+  }, [allProducts]);
 
-  // تحديث المنتجات المعروضة بناءً على allProducts ووجود prop Num
   useEffect(() => {
     if (allProducts.length > 0) {
       if (Num) {
@@ -27,7 +27,7 @@ export default function ProductLayout({ Num }) {
         // اختيار عشوائي:
         let shuffled = [...allProducts].sort(() => 0.5 - Math.random());
         let selected = shuffled.slice(0, numberOfProducts);
-        console.log("selected products ------------", selected)
+        console.log("selected products ------------", selected);
         setDisplayedProducts(selected);
         // أو إذا كنت تريد أخذ أول العناصر:
         // setDisplayedProducts(allProducts.slice(0, numberOfProducts));
@@ -39,14 +39,15 @@ export default function ProductLayout({ Num }) {
   }, [allProducts, Num]);
 
   // التحقق من وجود خطأ في التحميل
-  useEffect(() => {
-    if (!loading && allProducts.length === 0) {
-      setError("تعذر تحميل المنتجات. يرجى المحاولة مرة أخرى لاحقاً.");
-    } else {
-      setError(null);
-    }
-  }, [loading, allProducts]);
+  // useEffect(() => {
+  //   if (!loading && allProducts.length === 0) {
+  //     setError("تعذر تحميل المنتجات. يرجى المحاولة مرة أخرى لاحقاً.");
+  //   } else {
+  //     setError(null);
+  //   }
+  // }, [loading, allProducts]);
 
+  // Properly defined component that always returns something
   const NoProduct = () => {
     if (displayedProducts.length === 0) {
       return (
@@ -59,21 +60,31 @@ export default function ProductLayout({ Num }) {
         </div>
       );
     }
-  }
+    return null; // Return null when the condition is not met
+  };
 
+  // Memoize the component (outside of any other component or hook)
+  const MemoizedNoProduct = React.memo(NoProduct);
 
-  useEffect( () => {
-    NoProduct()
-  }, [loading] )
+  // Proper useEffect usage
+  useEffect(() => {
+    // Effect logic here if needed
+    NoProduct();
 
+    // If you need cleanup, return a cleanup function
+    return () => {
+      NoProduct();
+      // Cleanup logic here if needed
+    };
+  }, [displayedProducts, loading]);
 
   if (loading) {
     return (
       <div className="container">
-      <div className="loading-container">
-      <div className="loading-spinner"></div>
-      <p>جاري تحميل المنتجات...</p>
-      </div>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>جاري تحميل المنتجات...</p>
+        </div>
       </div>
     );
   }
@@ -88,23 +99,23 @@ export default function ProductLayout({ Num }) {
     );
   }
 
-  
-
   return (
     <div className="container">
       <div className="product-data-section">
-        {displayedProducts.map((product) => (
-          <ProductCard
-            ProductTitle={product.name}
-            ProductImage={product.Image}
-            ProductId={product.id}
-            ProductPrice={product.price}
-            ProductOldPrice={product.OldPrice}
-            addittional_Images={product.addittional_Images}
-            key={product.id}
-            Rating={product.Rating}
-          />
-        ))}
+        {displayedProducts.length
+          ? displayedProducts.map((product) => (
+              <ProductCard
+                ProductTitle={product.name}
+                ProductImage={product.Image}
+                ProductId={product.id}
+                ProductPrice={product.price}
+                ProductOldPrice={product.OldPrice}
+                addittional_Images={product.addittional_Images}
+                key={product.id}
+                Rating={product.Rating}
+              />
+            ))
+          : MemoizedNoProduct()}
       </div>
     </div>
   );
