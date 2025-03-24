@@ -128,6 +128,7 @@ function SearchForProducts() {
                 ProductImage={product.Image}
                 ProductPrice={product.price}
                 ProductOldPrice={product.oldPrice}
+                Rating={product.Rating}
               />
             ))}
           </div>

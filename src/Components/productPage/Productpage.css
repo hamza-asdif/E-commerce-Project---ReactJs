@@ -444,9 +444,7 @@
     font-size: 1rem;
   }
 
-  .form-group {
-    margin-bottom: calc(var(--spacing-md) + 0.5rem);
-  }
+  
 
   .form-group input {
     height: 3.25rem;

@@ -163,15 +163,22 @@ function App() {
             />
             <Route path="/search" element={<SearchBreadcrumb />} />
             <Route path="/checkout" element={<CheckoutBreadcrumb />} />
-            
+
             <Route path="/shop" element={<ShopPageBreadcrumb />} />
             <Route path="/thank-you" element={<ThankYouPage />} />
 
             {adminStatus && (
               <Route path="/admin" element={<AdminPanel_GlobalContext />}>
                 <Route path="products" element={<Products />} />
-                <Route path="edit-product/:id" element={<ProductEditPage />} />
+                <Route
+                  path="edit-product/:id"
+                  element={<ProductEditPage isAddProduct={false} />}
+                />
                 <Route path="" element={<Home_States />} />
+                <Route
+                  path="add-product"
+                  element={<ProductEditPage isAddProduct={true} />}
+                />
               </Route>
             )}
 

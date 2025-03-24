@@ -12,6 +12,7 @@ import "./navBar-mobile.css";
 
 import { useGlobalContext } from "../../Context/GlobalContext";
 import SearchBar from "../searchBar/SearchBar";
+import { useRef } from "react";
 
 export default function Navbar() {
   const HeaderLinks = [
@@ -37,10 +38,29 @@ export default function Navbar() {
     mobileMenuOpen,
     setMobileMenuOpen,
   } = useGlobalContext();
+  const [scrollTop, setScrollTop] = useState(0);
+  const navBarRef = useRef(null);
 
   const toggleSearch = () => {
     setSearchState((val) => !val);
   };
+
+  // التحقق من حجم الشاشة
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 1280);
+    };
+
+    checkScreenSize();
+
+    // إضافة مستمع للتغيير في حجم النافذة
+    window.addEventListener("resize", checkScreenSize);
+
+    // تنظيف المستمع عند إزالة المكون
+    return () => {
+      window.removeEventListener("resize", checkScreenSize);
+    };
+  }, []);
 
   // التحقق من حجم الشاشة
   useEffect(() => {
@@ -60,6 +80,29 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    console.log(window.location.pathname.endsWith("/"));
+
+    if (window.location.pathname.endsWith("/")) {
+      const handleScroll = () => {
+        const scroll = window.scrollY;
+        setScrollTop(scroll);
+
+        if (scroll > 200) {
+          navBarRef.current.classList.add("scrolled");
+        } else {
+          navBarRef.current.classList.remove("scrolled");
+        }
+      };
+
+      window.addEventListener("scroll", handleScroll);
+
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }
+  }, [scrollTop]);
+
   // تبديل حالة قائمة الجوال
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -69,7 +112,7 @@ export default function Navbar() {
     <>
       <div>
         <Topbar />
-        <header className="header" dir="ltr">
+        <header className="header" dir="ltr" ref={navBarRef}>
           <div className="header-container">
             {isMobile && (
               <div className="mobile-menu-box">

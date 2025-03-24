@@ -200,7 +200,7 @@ const Products = () => {
                 <td className="td-img">
                   <div className="image-container-admin">
                     <img
-                      src={`/${product.Image}`}
+                      src={product.Image}
                       alt={product.name}
                       className="product-image"
                       loading="lazy"
@@ -277,7 +277,10 @@ const Products = () => {
               />
               <ImSearch className="search-icon" />
             </div>
-            <button className="add-product-btn">
+            <button
+              className="add-product-btn"
+              onClick={() => navigateTo("/admin/add-product")}
+            >
               <i className="plus-icon">+</i> إضافة منتج جديد
             </button>
           </div>
