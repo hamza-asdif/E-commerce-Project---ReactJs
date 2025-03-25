@@ -26,11 +26,13 @@ function Home_States() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-      setLoadingText(false);
-    }, 1000);
-  }, [productsData, orders, activeUsers]);
+    if(productsData && orders && activeUsers) {
+      setTimeout(() => {
+        setLoading(false);
+        setLoadingText(false);
+      }, 1000);
+    }
+  }, [productsData, orders, activeUsers, earnings, earningsByTime]);
 
   const manageDataLoading = (data) => {
     setTimeout(() => {

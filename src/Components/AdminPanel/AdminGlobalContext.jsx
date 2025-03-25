@@ -148,17 +148,14 @@ const AdminProvider = ({ children }) => {
     };
 
     totalEraning();
-    if (orders.length > 0) {
-      calculateStats();
-    }
+    calculateStats();
   }, [orders]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     fetchAdminInfos();
     handleProductsData();
     handletotalOrders();
     handleActiveUser();
-    // filterOrdersByDate("اليوم");
   }, []);
 
   return (

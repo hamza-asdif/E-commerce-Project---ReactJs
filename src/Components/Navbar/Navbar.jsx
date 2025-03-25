@@ -39,6 +39,9 @@ export default function Navbar() {
     setMobileMenuOpen,
   } = useGlobalContext();
   const [scrollTop, setScrollTop] = useState(0);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
   const navBarRef = useRef(null);
 
   const toggleSearch = () => {
@@ -81,27 +84,36 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    console.log(window.location.pathname.endsWith("/"));
-
     if (window.location.pathname.endsWith("/")) {
       const handleScroll = () => {
-        const scroll = window.scrollY;
-        setScrollTop(scroll);
+        const scrollY = window.scrollY;
 
-        if (scroll > 200) {
-          navBarRef.current.classList.add("scrolled");
+        if (scrollY > 200) {
+          if (scrollY > lastScrollY) {
+            setIsVisible(true);
+            navBarRef.current.classList.add("scrolled");
+          } else {
+            setIsVisible(false);
+          }
         } else {
+          setIsVisible(true);
           navBarRef.current.classList.remove("scrolled");
         }
+
+        setLastScrollY(scrollY);
       };
 
       window.addEventListener("scroll", handleScroll);
 
-      
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
     }
-  }, [scrollTop]);
+  }, [lastScrollY]);
 
-  // تبديل حالة قائمة الجوال
+
+
+  
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
@@ -110,7 +122,11 @@ export default function Navbar() {
     <>
       <div>
         <Topbar />
-        <header className="header" dir="ltr" ref={navBarRef}>
+        <header
+          className={`header ${isVisible ? "visible" : "hidden"}`}
+          dir="ltr"
+          ref={navBarRef}
+        >
           <div className="header-container">
             {isMobile && (
               <div className="mobile-menu-box">

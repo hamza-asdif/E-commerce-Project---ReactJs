@@ -1,15 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FaCartPlus } from "react-icons/fa";
-import "./CheckoutForm.css";
 import { useGlobalContext } from "../../../Context/GlobalContext";
 import supabase from "../../../supabaseClient";
-import { createClient } from "@supabase/supabase-js";
-import { v4 as uuidv4 } from "uuid"; // استيراد مكتبة uuid
+import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
+import alertify from "alertifyjs";
+import './CheckoutForm.css';
 
 function CheckoutForm({ productPage_Product, checkoutStyle }) {
-  const { productsInCart, productsInCart_TotalPrice, resetall_OrderSubmited } =
-    useGlobalContext();
+  const { 
+    productsInCart, 
+    productsInCart_TotalPrice, 
+    resetall_OrderSubmited 
+  } = useGlobalContext();
+
   const [isMainCheckout, setIsMainCheckout] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,22 +28,26 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
   const [order, setOrder] = useState({});
   const navigate = useNavigate();
 
-  useEffect(() => {
+
+  useLayoutEffect(() => {
     handleFormStyle();
   }, []);
 
+  // التركيز على حقل الاسم الكامل
   useEffect(() => {
     if (fullNameRef.current) {
       fullNameRef.current.focus();
     }
   }, [productPage_Product]);
 
+  // معالجة نمط النموذج
   const handleFormStyle = () => {
     if (checkoutStyle === true) {
       setIsMainCheckout(true);
     }
   };
 
+  // حفظ الطلب في قاعدة البيانات
   const saveOrder = async (order) => {
     if (Object.keys(order).length > 0) {
       try {
@@ -47,38 +55,47 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
 
         if (error) {
           console.error("خطأ في حفظ الطلب:", error);
+          alertify.error("حدث خطأ أثناء إرسال الطلب");
         } else {
           console.log("تم حفظ الطلب بنجاح:", data);
+          alertify.success("تم إرسال الطلب بنجاح");
         }
       } catch (err) {
-        console.error("A RANDOM ERROR:", err);
+        console.error("خطأ غير متوقع:", err);
+        alertify.error("حدث خطأ غير متوقع");
       }
     } else {
       console.error("الطلب فارغ، لن يتم الإرسال.");
+      alertify.error("لا يمكن إرسال طلب فارغ");
     }
   };
 
+  // معالجة إرسال النموذج
   const handleSubmit = async (e) => {
     e.preventDefault();
     let isValid = true;
     const newErrors = {};
 
+    // التحقق من صحة الاسم الكامل
     if (!formData.fullName || formData.fullName.length < 3) {
       newErrors.fullName = "الاسم مطلوب ويجب أن يكون 3 أحرف على الأقل";
       isValid = false;
     }
 
+    // التحقق من صحة رقم الهاتف
     const phoneRegex = /^(06|(\+212)|(00212))[0-9]{8}$/;
     if (!formData.tel || !phoneRegex.test(formData.tel)) {
       newErrors.tel = "يجب إدخال رقم هاتف صحيح (يبدأ بـ 06 أو +212)";
       isValid = false;
     }
 
+    // التحقق من المدينة
     if (!formData.city) {
       newErrors.city = "المدينة مطلوبة";
       isValid = false;
     }
 
+    // التحقق من العنوان
     if (!formData.address || formData.address.length < 10) {
       newErrors.address = "يرجى إدخال عنوان تفصيلي (10 أحرف على الأقل)";
       isValid = false;
@@ -86,40 +103,62 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
 
     setErrors(newErrors);
 
-    if (isValid) {
-      setLoading(true);
-      const submittedOrder = {
-        user_id: uuidv4(),
-        products: [...productsInCart],
-        total_price: productsInCart_TotalPrice,
-        status: "pending",
-        Customer_Infos: formData,
-      };
-      console.log("Order submitted:", formData);
-      console.log("YOURE MADE A SALE", submittedOrder);
-      setOrder(submittedOrder);
+    // التحقق من وجود منتجات في سلة التسوق
+    
+    if (window.location.pathname.endsWith("/checkout") && productsInCart.length !== 0) {
+      if (isValid) {
+        setLoading(true);
 
-      try {
-        await saveOrder(submittedOrder);
-      } catch (error) {
-        console.error("Error saving order:", error);
-      } finally {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setLoading(false);
-        navigate("/thank-you");
-        resetall_OrderSubmited();
+        // إنشاء الطلب
+        const submittedOrder = {
+          user_id: uuidv4(),
+          products: [...productsInCart],
+          total_price: productsInCart_TotalPrice,
+          status: "pending",
+          Customer_Infos: formData,
+        };
+
+        console.log("Order submitted:", formData);
+        console.log("YOURE MADE A SALE", submittedOrder);
+        
+        setOrder(submittedOrder);
+
+        try {
+          // حفظ الطلب
+          await saveOrder(submittedOrder);
+
+          // انتظار ثانية واحدة قبل الانتقال
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          
+          // الانتقال لصفحة الشكر وإعادة تعيين الحالة
+          navigate("/thank-you");
+          resetall_OrderSubmited();
+        } catch (error) {
+          console.error("خطأ في حفظ الطلب:", error);
+          alertify.error("حدث خطأ أثناء معالجة طلبك");
+        } finally {
+          setLoading(false);
+        }
       }
+    } else {
+      // رسالة خطأ إذا كانت سلة التسوق فارغة
+      alertify.error(
+        "لا يمكن إرسال طلبك لأنك لا تمتلك أي منتجات في سلة التسوق"
+      );
     }
   };
 
+  // معالجة تغيير الإدخال
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
+    // مسح الأخطاء الخاصة بالحقل الحالي
     setErrors((prev) => ({
       ...prev,
       [name]: "",
     }));
 
+    // تحديث بيانات النموذج
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -127,80 +166,106 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
   };
 
   return (
-    <div>
-      <div className="single-product-order-section">
-        <h3 className="single-product-order-title">
+    <div 
+      className={`checkout-form ${
+        checkoutStyle 
+          ? 'checkout-form--page-checkout' 
+          : 'checkout-form--express'
+      }`}
+    >
+      <div className="checkout-form__order-section">
+        <h3 className="checkout-form__order-title">
           للطلب يرجى إدخال معلوماتك في الخانات أسفله
         </h3>
 
-        <form className="single-product-order-form" onSubmit={handleSubmit}>
-          <div
-            className={`single-product-form-grid ${
-              isMainCheckout ? "active" : ""
-            }`}
-          >
-            <div className="form-group">
+        <form 
+          className="checkout-form__form" 
+          onSubmit={handleSubmit}
+        >
+          <div className="checkout-form__grid">
+            {/* Input fields remain the same */}
+            <div className="checkout-form__form-group">
               <input
                 ref={fullNameRef}
                 type="text"
                 placeholder="الاسم بالكامل"
                 name="fullName"
                 onChange={handleInputChange}
-                className={errors.fullName ? "error" : ""}
+                className={`checkout-form__input ${
+                  errors.fullName ? "checkout-form__input--error" : ""
+                }`}
               />
               {errors.fullName && (
-                <span className="error-message">{errors.fullName}</span>
+                <span className="checkout-form__error-message">
+                  {errors.fullName}
+                </span>
               )}
             </div>
 
-            <div className="form-group">
+            <div className="checkout-form__form-group">
               <input
                 type="tel"
-                placeholder="رقم الهاتف "
+                placeholder="رقم الهاتف"
                 name="tel"
                 onChange={handleInputChange}
-                className={errors.tel ? "error" : ""}
+                className={`checkout-form__input ${
+                  errors.tel ? "checkout-form__input--error" : ""
+                }`}
                 dir="rtl"
               />
               {errors.tel && (
-                <span className="error-message">{errors.tel}</span>
+                <span className="checkout-form__error-message">
+                  {errors.tel}
+                </span>
               )}
             </div>
 
-            <div className="form-group">
+            <div className="checkout-form__form-group">
               <input
                 type="text"
                 placeholder="المدينة"
                 name="city"
                 onChange={handleInputChange}
-                className={errors.city ? "error" : ""}
+                className={`checkout-form__input ${
+                  errors.city ? "checkout-form__input--error" : ""
+                }`}
               />
               {errors.city && (
-                <span className="error-message">{errors.city}</span>
+                <span className="checkout-form__error-message">
+                  {errors.city}
+                </span>
               )}
             </div>
 
-            <div className="form-group">
+            <div className="checkout-form__form-group">
               <input
                 type="text"
                 placeholder="العنوان"
                 name="address"
                 onChange={handleInputChange}
-                className={errors.address ? "error" : ""}
+                className={`checkout-form__input ${
+                  errors.address ? "checkout-form__input--error" : ""
+                }`}
               />
               {errors.address && (
-                <span className="error-message">{errors.address}</span>
+                <span className="checkout-form__error-message">
+                  {errors.address}
+                </span>
               )}
             </div>
           </div>
 
-          <button type="submit" className="single-product-submit-button">
+          {/* Submit button remains the same */}
+          <button 
+            type="submit" 
+            className="checkout-form__submit-button"
+          >
             {loading ? (
-              <div className="loader"></div>
+              <div className="checkout-form__loader">جار التحميل...</div>
             ) : (
               <>
                 <span>لتأكيد الطلب اضغط هنا</span>
-                <FaCartPlus className="single-product-cart-icon" />
+                <FaCartPlus className="checkout-form__cart-icon" />
               </>
             )}
           </button>

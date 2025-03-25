@@ -36,30 +36,26 @@ const Products = () => {
   }, [currentPage, adminProducts]);
 
   const fetchAdminProductData = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(Supabase_APIURL, {
-        headers: {
-          apikey: supabase_APIKEY,
-          Authorization: `bearer ${supabase_APIKEY}`,
-        },
-      });
+    const { data, error } = await supabase.from("products").select("*");
 
-      setTimeout(() => {
-        setLoading(false);
-      }, 1200);
-      console.log("ADMIN PRODUCTS DATA :  ", response.data);
-      setAdminProducts(response.data);
-    } catch (error) {
-      console.error("خطأ في جلب المنتجات:", error);
+    if (error) {
+      console.error("Error fetching products:", error);
       setLoading(false);
       setLoadingText("حدث خطأ أثناء تحميل المنتجات");
+    }
+
+    if (data) {
+      console.log("ADMIN PRODUCTS DATA :  ", data);
+
+      setAdminProducts(data);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
     }
   };
 
   const handlePagination = () => {
     if (adminProducts.length) {
-      // تطبيق البحث على المنتجات
       const filteredProducts = searchTerm
         ? adminProducts.filter((product) =>
             product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -73,11 +69,9 @@ const Products = () => {
 
       setPaginatedProducts(filteredProducts.slice(currentIndex, endIndex));
 
-      // تحديث أزرار الترقيم
       const buttons = Array.from({ length: totalPages }, (_, i) => i + 1);
       setPaginationButtons(buttons);
 
-      // إعادة تعيين الصفحة الحالية إذا كان المستخدم في صفحة غير موجودة بعد التصفية
       if (currentPage > totalPages && totalPages > 0) {
         setCurrentPage(1);
       }
@@ -97,19 +91,7 @@ const Products = () => {
     }
   };
 
-  const handlepaginationBtn_Loading = (prevBtn, nextBtn) => {
-    if (prevBtn == true) {
-      return setCurrentPage((prev) => prev - 1);
-    } else if (nextBtn == true) {
-      return setCurrentPage((prev) => prev + 1);
-    } else {
-      setLoading(true);
 
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-    }
-  };
 
   const handleLoading = () => {
     setLoading(true);
@@ -175,8 +157,6 @@ const Products = () => {
         },
       });
   };
-
-  const handleEditProduct = (product) => {};
 
   const ProductsTableData = () => {
     return (

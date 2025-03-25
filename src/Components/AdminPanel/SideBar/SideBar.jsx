@@ -30,6 +30,9 @@ const Sidebar = () => {
             className={`sidebar-item ${
               handleActivePath("/admin/orders") ? "active" : ""
             }`}
+            onClick={() => {
+              navigate("orders"), console.log(location.pathname);
+            }}
           >
             <span>📦</span>
             <h6>الطلبات</h6>

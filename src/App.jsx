@@ -37,6 +37,7 @@ import ThankYouPage from "./Components/Checkout/Thank_you_page/ThankyouPage.jsx"
 import AdminProvider from "./Components/AdminPanel/AdminGlobalContext.jsx";
 import EditProduct_Modal from "./Components/AdminPanel/Products/EditProductComponent/EditProduct.jsx";
 import ProductEditPage from "./Components/AdminPanel/Products/EditProductComponent/EditProduct.jsx";
+import Orders from "./Components/AdminPanel/Orders/Orders.jsx";
 
 function AppContent() {
   const {
@@ -179,6 +180,7 @@ function App() {
                   path="add-product"
                   element={<ProductEditPage isAddProduct={true} />}
                 />
+                <Route path="orders" element={<Orders />} />
               </Route>
             )}
 
