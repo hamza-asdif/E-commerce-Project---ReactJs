@@ -45,7 +45,7 @@ export const GlobalProvider = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [adminStatus, setAdminStatus] = useState(true)
+  const [adminStatus, setAdminStatus] = useState(false)
 
   useEffect(() => {
     console.log("GlobalProvider mounted");
