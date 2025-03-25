@@ -152,7 +152,7 @@ function App() {
           <Routes>
             <Route path="/" element={<AppContent />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            {/* <Route path="/register" element={<Register />} /> */}
             <Route path="/cart" element={<CartBreadcrumb />} />
             <Route
               path="/product/:id"
