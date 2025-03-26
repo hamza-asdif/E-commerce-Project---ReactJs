@@ -38,7 +38,7 @@ export const GlobalProvider = ({ children }) => {
   const [isFav, setIsFav] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [adminStatus, setAdminStatus] = useState(true);
+  const [adminStatus, setAdminStatus] = useState(false);
 
   // تهيئة التطبيق عند التحميل
   useEffect(() => {
