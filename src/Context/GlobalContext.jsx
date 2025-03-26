@@ -1,82 +1,70 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  lazy,
-  Suspense,
-} from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "alertifyjs/build/css/alertify.rtl.css";
 import "alertifyjs/build/css/themes/default.rtl.css";
 import "./alertify.custom.css";
 import alertify from "alertifyjs";
-// استيراد الثيم الافتراضي // استيراد ملف الـ CSS الخاص بـ AlertifyJS
-import { CAlert } from "@coreui/react";
-import SearchForProducts from "../Components/SearchForProducts/SearchForProducts";
 import supabase from "../supabaseClient";
 
+// استخدام متغيرات بيئية أو ملف تكوين منفصل للمفاتيح السرية
+// في الإنتاج، يجب وضع هذه المفاتيح في متغيرات بيئية على الخادم
+const SUPABASE_API_URL = import.meta.env.VITE_SUPABASE_API_URL || "https://tbllwzcqhdgztsqybfwg.supabase.co/rest/v1/products";
+const SUPABASE_API_KEY = import.meta.env.VITE_SUPABASE_API_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibGx3emNxaGRnenRzcXliZndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMDY4NzQsImV4cCI6MjA1NzU4Mjg3NH0.xAfedGGwK7595FJ5rk1tbePdPdOk1W-Wr12e-mLvjIM";
 
-
-
-// or via CommonJS
-
-// تحديد URLs و المعلومات الضرورية للـ API
-
-const Supabase_APIURL =
-  "https://tbllwzcqhdgztsqybfwg.supabase.co/rest/v1/products";
-const supabase_APIKEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibGx3emNxaGRnenRzcXliZndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMDY4NzQsImV4cCI6MjA1NzU4Mjg3NH0.xAfedGGwK7595FJ5rk1tbePdPdOk1W-Wr12e-mLvjIM";
+// ثوابت للتخزين المحلي
+const CART_STORAGE_KEY = "ProductsInCart";
+const PRODUCT_PAGE_STORAGE_KEY = "productPage_Product";
 
 const GlobalContext = createContext();
 
 export const GlobalProvider = ({ children }) => {
+  // حالات المنتجات
   const [allProducts, setAllProducts] = useState([]);
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [productPage_Product, setproductPage_Product] = useState({});
+  
+  // حالات السلة
   const [productsInCart, setProductsInCart] = useState([]);
   const [productsInCart_TotalPrice, setProductsInCart_TotalPrice] = useState(0);
   const [addData_ToCart_State, setAddData_ToCart_State] = useState(false);
   const [cartSideBarToggle, setCartSideBarToggle] = useState(false);
+  
+  // حالات البحث
   const [searchState, setSearchState] = useState(false);
-  const [displayedProducts, setDisplayedProducts] = useState([]);
-  const [productPage_Product, setproductPage_Product] = useState({});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  
+  // حالات واجهة المستخدم
   const [isFav, setIsFav] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [adminStatus, setAdminStatus] = useState(false)
+  const [adminStatus, setAdminStatus] = useState(true);
 
+  // تهيئة التطبيق عند التحميل
   useEffect(() => {
     console.log("GlobalProvider mounted");
     try {
       fetchProducts();
       loadCartFromLocalStorage();
+      setCartSideBarToggle(false);
     } catch (error) {
-      console.error("Error in GlobalProvider:", error);
+      console.error("Error in GlobalProvider initialization:", error);
     }
   }, []);
 
-  // جلب بيانات المنتجات عند بدء التطبيق
-  useEffect(() => {
-    fetchProducts();
-    loadCartFromLocalStorage();
-    setCartSideBarToggle(false); // استرجاع بيانات السلة من التخزين المحلي عند بدء التطبيق
-  }, []);
-
-  // تحديث إجمالي السعر عندما تتغير المنتجات في السلة
+  // تحديث إجمالي السعر وحفظ السلة عند تغيير المنتجات
   useEffect(() => {
     calculateTotalPrice();
-    saveCartToLocalStorage(); // حفظ بيانات السلة في التخزين المحلي عند أي تغيير
+    saveCartToLocalStorage();
   }, [productsInCart]);
 
-  // جلب بيانات المنتجات من jsonbin.io
+  // جلب بيانات المنتجات من Supabase
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(Supabase_APIURL, {
+      const response = await axios.get(SUPABASE_API_URL, {
         headers: {
-          apikey: supabase_APIKEY,
-          Authorization: `bearer ${supabase_APIKEY}`,
+          apikey: SUPABASE_API_KEY,
+          Authorization: `bearer ${SUPABASE_API_KEY}`,
         },
       });
       setAllProducts(response.data);
@@ -86,10 +74,10 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-  // Fix the loading from localStorage function
+  // تحميل بيانات السلة من التخزين المحلي
   const loadCartFromLocalStorage = () => {
     try {
-      const savedCart = localStorage.getItem("ProductsInCart");
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart);
         if (Array.isArray(parsedCart) && parsedCart.length > 0) {
@@ -102,24 +90,11 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-  // !!!! Function to reset all states ----- navigate between components
-  const resetAllStates = () => {
-    toggleCart(false);
-    setSearchState(false);
-    setMobileMenuOpen(false);
-  };
-
-  const resetall_OrderSubmited = () => {
-    setProductsInCart([])
-    setProductsInCart_TotalPrice(0)
-    localStorage.setItem("ProductsInCart2", [])
-  }
-
-  // Fix the saving to localStorage function
+  // حفظ بيانات السلة في التخزين المحلي
   const saveCartToLocalStorage = () => {
     try {
       if (productsInCart) {
-        localStorage.setItem("ProductsInCart", JSON.stringify(productsInCart));
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(productsInCart));
         console.log("Cart saved to localStorage:", productsInCart);
       }
     } catch (error) {
@@ -127,7 +102,21 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-  // Update the addProductToCart function
+  // إعادة تعيين جميع الحالات - للتنقل بين المكونات
+  const resetAllStates = () => {
+    toggleCart(false);
+    setSearchState(false);
+    setMobileMenuOpen(false);
+  };
+
+  // إعادة تعيين السلة بعد إرسال الطلب
+  const resetall_OrderSubmited = () => {
+    setProductsInCart([]);
+    setProductsInCart_TotalPrice(0);
+    localStorage.removeItem(CART_STORAGE_KEY);
+  };
+
+  // إضافة منتج إلى السلة
   const addProductToCart = async (product, quantity = 1) => {
     try {
       const productId = parseInt(product.id);
@@ -150,11 +139,7 @@ export const GlobalProvider = ({ children }) => {
         });
       }
 
-      // Update state first
       setProductsInCart(updatedCart);
-
-      // Then save to localStorage
-      localStorage.setItem("ProductsInCart", JSON.stringify(updatedCart));
       return true;
     } catch (error) {
       console.error("Error adding product to cart:", error);
@@ -164,21 +149,21 @@ export const GlobalProvider = ({ children }) => {
 
   // حساب إجمالي سعر المنتجات في السلة
   const calculateTotalPrice = () => {
-    const totalPrice = productsInCart.length ? (
-      productsInCart.reduce((acc, product) => {
-        return acc + product.price * product.quantity;
-      }, 0)
-    ) : 0
+    const totalPrice = productsInCart.length
+      ? productsInCart.reduce((acc, product) => {
+          return acc + product.price * product.quantity;
+        }, 0)
+      : 0;
     setProductsInCart_TotalPrice(totalPrice);
   };
 
+  // تأكيد حذف منتج باستخدام alertify
   const alertifyPopUp_Confirm = useCallback((id, set_Function, updatedData) => {
     alertify
       .confirm(
         "تأكيد الحذف",
         "هل تريد حذف هذا المنتج من السلة؟",
         function () {
-          // استدعاء الدالة مباشرة مع البيانات المحدثة
           set_Function(updatedData);
           alertify.success("تم حذف المنتج بنجاح ✅");
           console.log("تمت إزالة المنتج من السلة، المعرف:", id);
@@ -199,7 +184,6 @@ export const GlobalProvider = ({ children }) => {
         padding: 10,
         closable: false,
         rtl: true,
-        
         pinnable: false,
         theme: {
           input: "alertify-input",
@@ -209,23 +193,15 @@ export const GlobalProvider = ({ children }) => {
       });
   }, []);
 
-  
-
   // إزالة منتج من السلة
   const removeProductFromCart = async (productId) => {
     try {
-      // تحويل المعرف إلى رقم
       const id = parseInt(productId);
-
-      // إنشاء نسخة جديدة من السلة بدون المنتج المحدد
       const updatedCart = productsInCart.filter(
         (item) => parseInt(item.id) !== id
       );
 
-      console.log(updatedCart.length);
-
       alertifyPopUp_Confirm(id, setProductsInCart, updatedCart);
-
       return true;
     } catch (error) {
       console.error(`خطأ في إزالة المنتج، المعرف ${productId}:`, error);
@@ -246,7 +222,6 @@ export const GlobalProvider = ({ children }) => {
 
       setProductsInCart(updatedCart);
       console.log(`تم تحديث كمية المنتج (${id}) إلى ${newQuantity}`);
-
       return true;
     } catch (error) {
       console.error(`خطأ في تحديث كمية المنتج (${productId}):`, error);
@@ -259,97 +234,111 @@ export const GlobalProvider = ({ children }) => {
     setCartSideBarToggle(val);
   };
 
+  // تحديث السلة
   const refreshCart = () => {
-    // التأكد من حفظ البيانات الحالية
     saveCartToLocalStorage();
-    // ثم تحديث الحالة
     setAddData_ToCart_State((prev) => !prev);
   };
 
   // الانتقال إلى صفحة المنتج
-
   const NavigateToProduct = async (product) => {
     const productId = parseInt(product.id);
-    const productPage_API = `${Supabase_APIURL}?id=eq.${productId}`;
+    const productPage_API = `${SUPABASE_API_URL}?id=eq.${productId}`;
 
     try {
       const response = await axios.get(productPage_API, {
         headers: {
-          apikey: supabase_APIKEY,
-          Authorization: `bearer ${supabase_APIKEY}`,
+          apikey: SUPABASE_API_KEY,
+          Authorization: `bearer ${SUPABASE_API_KEY}`,
         },
       });
 
       const productData = response.data;
-      console.log("PRODUCTDATA :", productData);
-
-      if (productData) {
-        setproductPage_Product(productData);
+      if (productData && productData.length > 0) {
+        setproductPage_Product(productData[0]);
         localStorage.setItem(
-          "productPage_Product",
-          JSON.stringify(productData)
+          PRODUCT_PAGE_STORAGE_KEY,
+          JSON.stringify(productData[0])
         );
-        console.log(true, "here's the product", productData);
+        console.log("تم تحميل بيانات المنتج بنجاح:", productData[0]);
+        return true;
       }
+      return false;
     } catch (error) {
-      console.error("Error fetching product data", error);
+      console.error("خطأ في تحميل بيانات المنتج:", error);
+      return false;
     }
   };
 
-  // Get Products Based on the Admin Number
+  // الحصول على المنتجات بناءً على رقم المسؤول
   const ProductsByNumber = (Num = allProducts.length) => {
-    if (Num < 8) {
-      let allData = allProducts;
-
-      allData = allData.splice(0, Num);
-      setAllProducts(allData);
+    if (Num < 8 && allProducts.length > 0) {
+      const limitedProducts = allProducts.slice(0, Num);
+      setDisplayedProducts(limitedProducts);
+      return limitedProducts;
     } else {
-      allProducts.length ? (Num = allProducts.length) : null;
+      setDisplayedProducts(allProducts);
+      return allProducts;
     }
+  };
+
+  // القيم المصدرة للسياق
+  const contextValue = {
+    // حالات المنتجات
+    allProducts,
+    setAllProducts,
+    displayedProducts,
+    setDisplayedProducts,
+    productPage_Product,
+    setproductPage_Product,
+    
+    // حالات السلة
+    productsInCart,
+    setProductsInCart,
+    productsInCart_TotalPrice,
+    setProductsInCart_TotalPrice,
+    addData_ToCart_State,
+    setAddData_ToCart_State,
+    cartSideBarToggle,
+    
+    // وظائف السلة
+    addProductToCart,
+    removeProductFromCart,
+    updateProductQuantity,
+    toggleCart,
+    refreshCart,
+    resetall_OrderSubmited,
+    
+    // وظائف التنقل
+    NavigateToProduct,
+    ProductsByNumber,
+    
+    // حالات البحث
+    searchState,
+    setSearchState,
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    setSearchResults,
+    
+    // حالات واجهة المستخدم
+    isMobile,
+    setIsMobile,
+    mobileMenuOpen,
+    setMobileMenuOpen,
+    resetAllStates,
+    
+    // حالات المسؤول
+    adminStatus,
+    setAdminStatus,
+    
+    // ثوابت API
+    supabase_APIKEY: SUPABASE_API_KEY,
+    Supabase_APIURL: SUPABASE_API_URL,
   };
 
   return (
-    <GlobalContext.Provider
-      value={{
-        allProducts,
-        setAllProducts,
-        productsInCart,
-        setProductsInCart,
-        productsInCart_TotalPrice,
-        setProductsInCart_TotalPrice,
-        refreshCart,
-        addData_ToCart_State,
-        setAddData_ToCart_State,
-        addProductToCart,
-        removeProductFromCart,
-        updateProductQuantity,
-        cartSideBarToggle,
-        toggleCart,
-        NavigateToProduct,
-        // الثوابت
-        ProductsByNumber,
-        displayedProducts,
-        setDisplayedProducts,
-        productPage_Product,
-        setproductPage_Product,
-        setSearchResults,
-        searchResults,
-        searchQuery,
-        setSearchQuery,
-        searchState,
-        setSearchState,
-        isMobile,
-        setIsMobile,
-        mobileMenuOpen,
-        setMobileMenuOpen,
-        resetAllStates,
-        adminStatus,
-        setAdminStatus,
-        supabase_APIKEY,
-        Supabase_APIURL,
-        resetall_OrderSubmited
-      }}
-    >
+    <GlobalContext.Provider value={contextValue}>
       {children}
     </GlobalContext.Provider>
   );

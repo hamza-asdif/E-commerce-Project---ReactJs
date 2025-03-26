@@ -48,9 +48,9 @@ const AdminProvider = ({ children }) => {
     const { data, error } = await supabase.from("products").select("*");
 
     if (error) console.error(error);
-    else {
-      console.log("DATA ----------------------", data);
-      setProductsData(data);
+    if(data && data.length > 0) {
+      setProductsData(data)
+
     }
   };
 
