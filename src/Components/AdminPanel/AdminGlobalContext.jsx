@@ -1,8 +1,10 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useState,
 } from "react";
 import supabase from "../../supabaseClient";
@@ -30,7 +32,7 @@ const AdminProvider = ({ children }) => {
     "اليوم",
   ];
 
-  const fetchAdminInfos = async () => {
+  const fetchAdminInfos = useCallback( async () => {
     const { data, error } = await supabase
       .from("users")
       .select("*")
@@ -42,7 +44,9 @@ const AdminProvider = ({ children }) => {
       setAdminInfo(data[0]);
     }
     setLoading(false);
-  };
+  }, [adminInfo] )
+
+
 
   const handleProductsData = async () => {
     const { data, error } = await supabase.from("products").select("*");
@@ -50,18 +54,17 @@ const AdminProvider = ({ children }) => {
     if (error) console.error(error);
     if(data && data.length > 0) {
       setProductsData(data)
-
     }
   };
 
-  const handletotalOrders = async () => {
+  const handletotalOrders = useCallback( async () => {
     const { data, error } = await supabase.from("orders").select("*");
 
     if (error) console.log(error);
     else {
       setOrders(data);
     }
-  };
+  }, [orders] )
 
   const handleActiveUser = async () => {
     const { data, error } = await supabase.from("users").select("*");
@@ -97,7 +100,7 @@ const AdminProvider = ({ children }) => {
 
         case "هذا الأسبوع":
           const weekStart = new Date();
-          weekStart.setDate(now.getDate() - now.getDay()); // بداية الأسبوع (الأحد)
+          weekStart.setDate(now.getDate() - now.getDay()); 
           return orderDate >= weekStart;
 
         case "هذا الشهر":
@@ -149,7 +152,7 @@ const AdminProvider = ({ children }) => {
 
     totalEraning();
     calculateStats();
-  }, [orders]);
+  }, [orders, ]);
 
   useEffect(() => {
     fetchAdminInfos();
@@ -178,6 +181,7 @@ const AdminProvider = ({ children }) => {
         // أضف هذين المتغيرين:
         ordersByTime,
         earningsByTime,
+        
       }}
     >
       {children}

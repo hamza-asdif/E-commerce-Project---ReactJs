@@ -53,7 +53,7 @@ function Home_States() {
           <p>{loadingText}</p>
         </div>
       ) : (
-        <>
+        <div className="quick-state-container">
           <div className="quick-stats">
             <div className="stat-card">
               <h3>إجمالي الإيرادات</h3>
@@ -123,7 +123,7 @@ function Home_States() {
               </div>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

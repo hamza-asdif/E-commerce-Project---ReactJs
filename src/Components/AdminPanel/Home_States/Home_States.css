@@ -7,6 +7,11 @@
     padding: 20px;
     margin-bottom: 20px;
   }
+
+  .quick-state-container{
+    padding: 20px;
+    margin-right: 20px;
+  }
   
   .home-state-header h4 {
     font-size: 20px;
@@ -146,6 +151,11 @@
   @media (max-width: 480px) {
     .home-state-container {
       padding: 15px;
+    }
+
+    .quick-state-container{
+      padding: 0px;
+      margin: 0px;
     }
   
     .home-state-header h4 {

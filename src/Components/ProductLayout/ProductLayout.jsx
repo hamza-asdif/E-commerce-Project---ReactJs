@@ -4,7 +4,7 @@ import "./ProductLayout.css";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import { Link } from "react-router-dom";
 
-export default function ProductLayout({ Num }) {
+function ProductLayout({ Num }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { allProducts, setDisplayedProducts, displayedProducts } =
@@ -120,3 +120,6 @@ export default function ProductLayout({ Num }) {
     </div>
   );
 }
+
+
+export default React.memo(ProductLayout);

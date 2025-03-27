@@ -6,17 +6,16 @@ import "./alertify.custom.css";
 import alertify from "alertifyjs";
 import supabase from "../supabaseClient";
 
-// استخدام متغيرات بيئية أو ملف تكوين منفصل للمفاتيح السرية
-// في الإنتاج، يجب وضع هذه المفاتيح في متغيرات بيئية على الخادم
-const SUPABASE_API_URL = import.meta.env.VITE_SUPABASE_API_URL || "https://tbllwzcqhdgztsqybfwg.supabase.co/rest/v1/products";
-const SUPABASE_API_KEY = import.meta.env.VITE_SUPABASE_API_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRibGx3emNxaGRnenRzcXliZndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMDY4NzQsImV4cCI6MjA1NzU4Mjg3NH0.xAfedGGwK7595FJ5rk1tbePdPdOk1W-Wr12e-mLvjIM";
+// import the supabase variables
+const SUPABASE_API_URL = import.meta.env.VITE_SUPABASE_API_URL;
+const SUPABASE_API_KEY = import.meta.env.VITE_SUPABASE_API_KEY;
 
-// ثوابت للتخزين المحلي
+
+
 const CART_STORAGE_KEY = "ProductsInCart";
 const PRODUCT_PAGE_STORAGE_KEY = "productPage_Product";
 
 const GlobalContext = createContext();
-
 export const GlobalProvider = ({ children }) => {
   // حالات المنتجات
   const [allProducts, setAllProducts] = useState([]);
@@ -39,6 +38,8 @@ export const GlobalProvider = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [adminStatus, setAdminStatus] = useState(false);
+  const [submittedOrder, setsubmittedOrder] = useState({})
+  const [allOrders, setAllOrders] = useState([])
 
   // تهيئة التطبيق عند التحميل
   useEffect(() => {
@@ -282,6 +283,20 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+
+  const getAllOrders_checkoutPageUse = async() =>  {
+    const {data, error} = await supabase
+    .from("orders")
+    .select("user_id")
+
+    if(data && data.length > 0) {
+      setAllOrders(data)
+      
+    }
+  }
+
+  
+
   // القيم المصدرة للسياق
   const contextValue = {
     // حالات المنتجات
@@ -331,6 +346,13 @@ export const GlobalProvider = ({ children }) => {
     // حالات المسؤول
     adminStatus,
     setAdminStatus,
+
+    // thank you page states neededs
+    submittedOrder,
+    setsubmittedOrder,
+    getAllOrders_checkoutPageUse,
+    allOrders,
+    setAllOrders,
     
     // ثوابت API
     supabase_APIKEY: SUPABASE_API_KEY,

@@ -3,15 +3,16 @@ import { FaCartPlus } from "react-icons/fa";
 import { useGlobalContext } from "../../../Context/GlobalContext";
 import supabase from "../../../supabaseClient";
 import { v4 as uuidv4 } from "uuid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import alertify from "alertifyjs";
-import './CheckoutForm.css';
+import "./CheckoutForm.css";
 
 function CheckoutForm({ productPage_Product, checkoutStyle }) {
-  const { 
-    productsInCart, 
-    productsInCart_TotalPrice, 
-    resetall_OrderSubmited 
+  const {
+    productsInCart,
+    productsInCart_TotalPrice,
+    resetall_OrderSubmited,
+    setsubmittedOrder,
   } = useGlobalContext();
 
   const [isMainCheckout, setIsMainCheckout] = useState(false);
@@ -28,26 +29,22 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
   const [order, setOrder] = useState({});
   const navigate = useNavigate();
 
-
   useLayoutEffect(() => {
     handleFormStyle();
   }, []);
 
-  // التركيز على حقل الاسم الكامل
   useEffect(() => {
     if (fullNameRef.current) {
       fullNameRef.current.focus();
     }
   }, [productPage_Product]);
 
-  // معالجة نمط النموذج
   const handleFormStyle = () => {
     if (checkoutStyle === true) {
       setIsMainCheckout(true);
     }
   };
 
-  // حفظ الطلب في قاعدة البيانات
   const saveOrder = async (order) => {
     if (Object.keys(order).length > 0) {
       try {
@@ -82,20 +79,17 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
       isValid = false;
     }
 
-    // التحقق من صحة رقم الهاتف
     const phoneRegex = /^(06|(\+212)|(00212))[0-9]{8}$/;
     if (!formData.tel || !phoneRegex.test(formData.tel)) {
       newErrors.tel = "يجب إدخال رقم هاتف صحيح (يبدأ بـ 06 أو +212)";
       isValid = false;
     }
 
-    // التحقق من المدينة
     if (!formData.city) {
       newErrors.city = "المدينة مطلوبة";
       isValid = false;
     }
 
-    // التحقق من العنوان
     if (!formData.address || formData.address.length < 10) {
       newErrors.address = "يرجى إدخال عنوان تفصيلي (10 أحرف على الأقل)";
       isValid = false;
@@ -103,10 +97,11 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
 
     setErrors(newErrors);
 
-    // التحقق من وجود منتجات في سلة التسوق
-    
-    if (window.location.pathname.endsWith("/checkout") && productsInCart.length !== 0) {
-      if (isValid) {
+    if (isValid) {
+      if (
+        window.location.pathname.endsWith("/checkout") &&
+        productsInCart.length !== 0
+      ) {
         setLoading(true);
 
         // إنشاء الطلب
@@ -120,8 +115,10 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
 
         console.log("Order submitted:", formData);
         console.log("YOURE MADE A SALE", submittedOrder);
-        
+
         setOrder(submittedOrder);
+        // set the state of submitted order to use it in thank you page
+        setsubmittedOrder(submittedOrder);
 
         try {
           // حفظ الطلب
@@ -129,7 +126,7 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
 
           // انتظار ثانية واحدة قبل الانتقال
           await new Promise((resolve) => setTimeout(resolve, 1000));
-          
+
           // الانتقال لصفحة الشكر وإعادة تعيين الحالة
           navigate("/thank-you");
           resetall_OrderSubmited();
@@ -139,12 +136,42 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
         } finally {
           setLoading(false);
         }
+      } else if (window.location.pathname !== "checkout") {
+        const product = JSON.parse(localStorage.getItem("productPage_Product"));
+
+        // إنشاء الطلب
+        const submittedOrder = {
+          user_id: uuidv4(),
+          products: [product],
+          total_price: product.price * product.quantity,
+          status: "pending",
+          Customer_Infos: formData,
+        };
+
+        setsubmittedOrder(submittedOrder);
+
+        try {
+          // حفظ الطلب
+          await saveOrder(submittedOrder);
+
+          // انتظار ثانية واحدة قبل الانتقال
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          // الانتقال لصفحة الشكر وإعادة تعيين الحالة
+          navigate("/thank-you");
+          resetall_OrderSubmited();
+        } catch (error) {
+          console.error("خطأ في حفظ الطلب:", error);
+          alertify.error("حدث خطأ أثناء معالجة طلبك");
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // رسالة خطأ إذا كانت سلة التسوق فارغة
+        alertify.error(
+          "لا يمكن إرسال طلبك لأنك لا تمتلك أي منتجات في سلة التسوق"
+        );
       }
-    } else {
-      // رسالة خطأ إذا كانت سلة التسوق فارغة
-      alertify.error(
-        "لا يمكن إرسال طلبك لأنك لا تمتلك أي منتجات في سلة التسوق"
-      );
     }
   };
 
@@ -166,11 +193,11 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
   };
 
   return (
-    <div 
+    <div
       className={`checkout-form ${
-        checkoutStyle 
-          ? 'checkout-form--page-checkout' 
-          : 'checkout-form--express'
+        checkoutStyle
+          ? "checkout-form--page-checkout"
+          : "checkout-form--express"
       }`}
     >
       <div className="checkout-form__order-section">
@@ -178,10 +205,7 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
           للطلب يرجى إدخال معلوماتك في الخانات أسفله
         </h3>
 
-        <form 
-          className="checkout-form__form" 
-          onSubmit={handleSubmit}
-        >
+        <form className="checkout-form__form" onSubmit={handleSubmit}>
           <div className="checkout-form__grid">
             {/* Input fields remain the same */}
             <div className="checkout-form__form-group">
@@ -256,10 +280,7 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
           </div>
 
           {/* Submit button remains the same */}
-          <button 
-            type="submit" 
-            className="checkout-form__submit-button"
-          >
+          <button type="submit" className="checkout-form__submit-button">
             {loading ? (
               <div className="checkout-form__loader">جار التحميل...</div>
             ) : (

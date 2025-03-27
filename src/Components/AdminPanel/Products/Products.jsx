@@ -10,6 +10,7 @@ import alertify from "alertifyjs";
 import supabase from "../../../supabaseClient";
 import { createClient } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
+import { useAdminGlobalContext } from "../AdminGlobalContext";
 
 const Products = () => {
   const Supabase_APIURL = import.meta.env.VITE_SUPABASE_APIURL;
@@ -24,6 +25,7 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isExpess, setIsExpress] = useState(false);
   const [open_EditProduct, setOpen_EditProduct] = useState(false);
+  const { productsData } = useAdminGlobalContext();
 
   const navigateTo = useNavigate();
 
@@ -35,22 +37,18 @@ const Products = () => {
     handleLoading();
   }, [currentPage, adminProducts]);
 
-  const fetchAdminProductData = async () => {
-    const { data, error } = await supabase.from("products").select("*");
+  const fetchAdminProductData = () => {
+    if (productsData && productsData.length > 0) {
+      console.log("ADMIN PRODUCTS DATA :  ", productsData);
 
-    if (error) {
-      console.error("Error fetching products:", error);
-      setLoading(false);
-      setLoadingText("حدث خطأ أثناء تحميل المنتجات");
-    }
-
-    if (data) {
-      console.log("ADMIN PRODUCTS DATA :  ", data);
-
-      setAdminProducts(data);
+      setAdminProducts(productsData);
       setTimeout(() => {
         setLoading(false);
       }, 1500);
+    } else {
+      console.error("Error fetching products:", productsData);
+      setLoading(false);
+      setLoadingText("حدث خطأ أثناء تحميل المنتجات"); 
     }
   };
 
@@ -90,8 +88,6 @@ const Products = () => {
       // وبعد نجاح الحذف يمكن تحديث قائمة المنتجات
     }
   };
-
-
 
   const handleLoading = () => {
     setLoading(true);

@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import { GlobalProvider, useGlobalContext } from "./Context/GlobalContext.jsx";
-import { YMInitializer } from 'react-yandex-metrika';
+import { YMInitializer } from "react-yandex-metrika";
 
 import {
   Navbar,
@@ -146,22 +146,7 @@ const AdminPanel_GlobalContext = () => {
 function App() {
   const { adminStatus, productsInCart } = useGlobalContext();
   return (
-    <div className="App">
-      {/* مكان كود Yandex Metrica */}
-      <YMInitializer 
-        accounts={[123456]} // استبدل برقم العداد الخاص بك
-        options={{
-          clickmap: true,
-          trackLinks: true,
-          accurateTrackBounce: true,
-          webvisor: true,
-          ecommerce: "dataLayer" // مهم للتجارة الإلكترونية
-        }}
-        version="2"
-      />
-      
-
-      <BrowserRouter>
+    <BrowserRouter>
       <GlobalProvider>
         <div className="app-container">
           <HandleNavbar />
@@ -208,8 +193,6 @@ function App() {
         </div>
       </GlobalProvider>
     </BrowserRouter>
-      {/* باقي مكونات تطبيقك */}
-    </div>
   );
 }
 
