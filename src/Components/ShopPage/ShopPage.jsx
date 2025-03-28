@@ -147,7 +147,7 @@ function ShopPage() {
 
       // Get fresh products from the main source
       const selectedCategory = [...shopPage_AllProducts].filter(
-        (product) => product.category === categoryName
+        (product) => product.category === categoryName,
       );
 
       setActiveCategory(categoryName);
@@ -278,8 +278,8 @@ function ShopPage() {
     const sourceProducts = isSortActive
       ? sortedProducts
       : activeCategory === "all"
-      ? allProducts
-      : categoryProducts;
+        ? allProducts
+        : categoryProducts;
 
     if (sourceProducts?.length) {
       // Calculate total pages

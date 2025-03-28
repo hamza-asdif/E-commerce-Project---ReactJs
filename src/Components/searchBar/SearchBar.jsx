@@ -13,7 +13,7 @@ function SearchBar() {
     setSearchQuery,
     searchQuery,
     setSearchResults,
-    searchResults
+    searchResults,
   } = useGlobalContext();
   const [showAlert, setShowAlert] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -28,35 +28,32 @@ function SearchBar() {
     "Beauty",
   ];
 
-
   const handleInputSearch = (e) => {
-    const value = e.target.value.trim()
-    setSearchQuery(value)
-  }
+    const value = e.target.value.trim();
+    setSearchQuery(value);
+  };
 
   const handleIconClick = () => {
-    if(searchQuery.length >= 3 && allProducts) {
-      const searchRes = allProducts.filter( (p) => {
-        return p.name.toLowerCase().includes(searchQuery.toLowerCase())
-      } )
+    if (searchQuery.length >= 3 && allProducts) {
+      const searchRes = allProducts.filter((p) => {
+        return p.name.toLowerCase().includes(searchQuery.toLowerCase());
+      });
 
-      setSearchResults(searchRes)
-      navigateToSearchNow("/search")
-    }
-    else{
-      setShowAlert(true)
+      setSearchResults(searchRes);
+      navigateToSearchNow("/search");
+    } else {
+      setShowAlert(true);
       setTimeout(() => {
-        setShowAlert(false)
+        setShowAlert(false);
       }, 3000);
     }
-  }
-
+  };
 
   const handleKeyUp = (e) => {
-    if(e.key === "Enter"){
-      handleIconClick()
+    if (e.key === "Enter") {
+      handleIconClick();
     }
-  }
+  };
 
   // Alert Component
   const AlertBox = () => (
@@ -91,7 +88,13 @@ function SearchBar() {
         </div>
 
         <div className="search-input-box">
-          <input type="text" placeholder="البحث عن منتج" id="seachBar" onChange={handleInputSearch} onKeyUp={handleKeyUp} />
+          <input
+            type="text"
+            placeholder="البحث عن منتج"
+            id="seachBar"
+            onChange={handleInputSearch}
+            onKeyUp={handleKeyUp}
+          />
           <IoIosSearch id="search-bar-icon" onClick={handleIconClick} />
         </div>
 

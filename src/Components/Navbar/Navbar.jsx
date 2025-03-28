@@ -111,9 +111,6 @@ export default function Navbar() {
     }
   }, [lastScrollY]);
 
-
-
-  
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };

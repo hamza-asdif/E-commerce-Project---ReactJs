@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import supabase from "../../../supabaseClient";
 
 function ProductCard2() {
-  
   const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
   const SUPABASE_APIKEY = import.meta.env.VITE_SUPABASE_API_KEY;
 
@@ -17,7 +16,6 @@ function ProductCard2() {
   const { NavigateToProduct } = useGlobalContext();
   const NavigateNow = useNavigate();
 
-  
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -73,7 +71,7 @@ function ProductCard2() {
       await NavigateToProduct(product);
       NavigateNow(`/product/${product.id}`);
     },
-    [NavigateToProduct, NavigateNow]
+    [NavigateToProduct, NavigateNow],
   );
 
   const LoadingProducts = useMemo(() => {

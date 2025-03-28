@@ -121,5 +121,4 @@ function ProductLayout({ Num }) {
   );
 }
 
-
 export default React.memo(ProductLayout);

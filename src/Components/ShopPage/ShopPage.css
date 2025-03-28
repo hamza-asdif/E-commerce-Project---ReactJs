@@ -196,8 +196,6 @@
   margin-bottom: 1.5rem;
 }
 
-
-
 /* Categories Section Styling */
 .filter-section {
   margin-bottom: 2rem;
@@ -276,8 +274,6 @@
     padding: 0.75rem;
   }
 }
-
-
 
 /* Price Range Section */
 .price-ranges {
@@ -383,7 +379,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-
 .no-products {
   text-align: center;
   padding: 3rem;
@@ -391,9 +386,6 @@
   border-radius: 12px;
   color: #64748b;
 }
-
-
-
 
 .pagination-container {
   display: flex;
@@ -449,9 +441,9 @@
 }
 
 .pagination-number.active {
-  background: #F24547;
+  background: #f24547;
   color: white;
-  border-color: #F24547;
+  border-color: #f24547;
 }
 
 .pagination-dots {
@@ -475,11 +467,6 @@
     font-size: 0.875rem;
   }
 }
-
-
-
-
-
 
 @keyframes spin {
   to {

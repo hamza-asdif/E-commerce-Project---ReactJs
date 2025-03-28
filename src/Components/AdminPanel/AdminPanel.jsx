@@ -18,7 +18,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     const getDeviceSize = window.outerWidth;
-    setIsMobile(getDeviceSize < 768); 
+    setIsMobile(getDeviceSize < 768);
 
     window.addEventListener("resize", handleWindowResize);
 
@@ -34,13 +34,13 @@ const AdminPanel = () => {
   }, []);
 
   return (
-      <div className="admin-panel-main">
-        {isMobile ? <MobileNavBar /> : <Sidebar />}
-        <div className="admin-panel-container">
-          <AdminHeader />
-          <Outlet />
-        </div>
+    <div className="admin-panel-main">
+      {isMobile ? <MobileNavBar /> : <Sidebar />}
+      <div className="admin-panel-container">
+        <AdminHeader />
+        <Outlet />
       </div>
+    </div>
   );
 };
 

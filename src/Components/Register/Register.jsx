@@ -1,12 +1,12 @@
-import React from 'react'
-import Login from '../Login/Login'
+import React from "react";
+import Login from "../Login/Login";
 
 function Register() {
   return (
     <div>
-      <Login isRegisterForm={true}/>
+      <Login isRegisterForm={true} />
     </div>
-  )
+  );
 }
 
-export default Register
+export default Register;

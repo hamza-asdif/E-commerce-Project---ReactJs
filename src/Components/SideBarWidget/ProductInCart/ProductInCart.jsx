@@ -27,7 +27,7 @@ export default function ProductInCart({ Cart_Products }) {
               onClick={() =>
                 updateProductQuantity(
                   Cart_Products.id,
-                  Cart_Products.quantity - 1
+                  Cart_Products.quantity - 1,
                 )
               }
               disabled={Cart_Products.quantity <= 1}
@@ -42,7 +42,7 @@ export default function ProductInCart({ Cart_Products }) {
               onClick={() =>
                 updateProductQuantity(
                   Cart_Products.id,
-                  Cart_Products.quantity + 1
+                  Cart_Products.quantity + 1,
                 )
               }
             >

@@ -48,7 +48,7 @@ const Products = () => {
     } else {
       console.error("Error fetching products:", productsData);
       setLoading(false);
-      setLoadingText("حدث خطأ أثناء تحميل المنتجات"); 
+      setLoadingText("حدث خطأ أثناء تحميل المنتجات");
     }
   };
 
@@ -56,7 +56,7 @@ const Products = () => {
     if (adminProducts.length) {
       const filteredProducts = searchTerm
         ? adminProducts.filter((product) =>
-            product.name.toLowerCase().includes(searchTerm.toLowerCase())
+            product.name.toLowerCase().includes(searchTerm.toLowerCase()),
           )
         : adminProducts;
 
@@ -144,7 +144,7 @@ const Products = () => {
         },
         function () {
           alertify.error("تم إلغاء العملية");
-        }
+        },
       )
       .set({
         labels: {
@@ -303,7 +303,7 @@ const Products = () => {
 
                   {paginationButtons
                     .filter(
-                      (num) => num >= currentPage - 1 && num <= currentPage + 1
+                      (num) => num >= currentPage - 1 && num <= currentPage + 1,
                     )
                     .map((num) => (
                       <button

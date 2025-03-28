@@ -1,5 +1,5 @@
-import React from 'react'
-import './Topbar.css'
+import React from "react";
+import "./Topbar.css";
 
 export default function Topbar() {
   return (
@@ -8,5 +8,5 @@ export default function Topbar() {
         <span>👈 توصيل مجاني لجميع ربوع المملكة 👉</span>
       </div>
     </div>
-  )
+  );
 }

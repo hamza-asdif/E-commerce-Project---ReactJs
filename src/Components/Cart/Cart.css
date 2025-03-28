@@ -179,21 +179,17 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-
 .main-cart-quantity-btn:disabled {
   background: #e2e2e2;
   opacity: 0.5;
   color: #666;
   cursor: not-allowed;
-
 }
 
 .main-cart-quantity-btn:disabled:hover {
   background: #e2e2e2;
   transform: none;
-
 }
-
 
 .main-cart-quantity-btn:hover {
   background: var(--main-color);

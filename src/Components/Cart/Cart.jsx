@@ -52,7 +52,7 @@ function Cart() {
 
           if (activeProduct.quantity === newQuantity) {
             alertify.error(
-              "الكمية لم تتغير، القيمة المدخلة هي نفس الكمية الحالية"
+              "الكمية لم تتغير، القيمة المدخلة هي نفس الكمية الحالية",
             );
             return;
           }
@@ -60,7 +60,7 @@ function Cart() {
           const updatedProductsInCart = productsInCart.map((item) =>
             item.id === activeProduct.id
               ? { ...item, quantity: newQuantity }
-              : item
+              : item,
           );
 
           setProductsInCart(updatedProductsInCart);
@@ -69,7 +69,7 @@ function Cart() {
         },
         function () {
           alertify.error("تم إلغاء التعديل");
-        }
+        },
       )
       .set({
         labels: {
@@ -104,7 +104,7 @@ function Cart() {
   useEffect(() => {
     if (decs_Btn.current) {
       decs_Btn.current.disabled = productsInCart.some(
-        (product) => product.quantity <= 1
+        (product) => product.quantity <= 1,
       );
     }
   }, [productsInCart]);

@@ -196,11 +196,11 @@
 }
 
 .star-icon {
-  font-size: 18px; 
+  font-size: 18px;
 }
 
 .full-star {
-  color: #ffd700; 
+  color: #ffd700;
 }
 
 .half-star {
@@ -209,7 +209,7 @@
 }
 
 .empty-star {
-  color: #d3d3d3; 
+  color: #d3d3d3;
 }
 
 /* Favorite Button */
@@ -267,12 +267,8 @@
   aspect-ratio: 1;
   display: grid;
   border-radius: 50%;
-  background: linear-gradient(
-        0deg,
-        rgb(0 0 0/50%) 30%,
-        #0000 0 70%,
-        rgb(0 0 0/100%) 0
-      )
+  background:
+    linear-gradient(0deg, rgb(0 0 0/50%) 30%, #0000 0 70%, rgb(0 0 0/100%) 0)
       50%/8% 100%,
     linear-gradient(90deg, rgb(0 0 0/25%) 30%, #0000 0 70%, rgb(0 0 0/75%) 0)
       50%/100% 8%;

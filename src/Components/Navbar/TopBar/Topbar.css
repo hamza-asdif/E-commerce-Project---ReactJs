@@ -1,16 +1,15 @@
-:root{
-    --main-color : #F24547;
-    --text-color : #fff;
+:root {
+  --main-color: #f24547;
+  --text-color: #fff;
 }
 
-
 .top-bar {
-    height: 50px;
-    width: 100%;
-    text-align: center;
-    background-color: var(--main-color);
-    color: white;
-    font-weight: bold;
-    line-height: 50px;
-    font-size:14px
+  height: 50px;
+  width: 100%;
+  text-align: center;
+  background-color: var(--main-color);
+  color: white;
+  font-weight: bold;
+  line-height: 50px;
+  font-size: 14px;
 }

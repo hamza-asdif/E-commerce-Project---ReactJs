@@ -13,12 +13,12 @@ function ThankYouPage() {
   const getOrderInfo = async () => {
     try {
       if (!submittedOrder?.user_id) return;
-      
+
       const { data, error } = await supabase
         .from("orders")
         .select("*")
         .eq("user_id", submittedOrder.user_id)
-        .order('created_at', { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(1);
 
       if (error) throw error;
@@ -46,13 +46,15 @@ function ThankYouPage() {
   const formatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleDateString('ar-SA', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+    return date
+      .toLocaleDateString("ar-SA", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+      .replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
   };
 
   return (

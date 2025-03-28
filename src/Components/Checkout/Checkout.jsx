@@ -11,7 +11,7 @@ import CheckoutForm from "./CheckoutForm/CheckoutForm";
 import { useGlobalContext } from "../../Context/GlobalContext";
 
 function Checkout() {
-  const {productsInCart_TotalPrice} = useGlobalContext()
+  const { productsInCart_TotalPrice } = useGlobalContext();
   return (
     <div className="checkout-page">
       <div className="checkout-container">
@@ -31,7 +31,9 @@ function Checkout() {
             <div className="checkout-summary-items">
               <div className="summary-row">
                 <span>المجموع الفرعي</span>
-                <span className="amount">{productsInCart_TotalPrice} ريال سعودي</span>
+                <span className="amount">
+                  {productsInCart_TotalPrice} ريال سعودي
+                </span>
               </div>
               <div className="summary-row">
                 <span>رسوم الشحن</span>
@@ -42,10 +44,12 @@ function Checkout() {
                 <span>خيار التوصيل</span>
                 <span className="cash-on-delivery">الدفع عند الاستلام</span>
               </div>
-              
+
               <div className="summary-total">
                 <span>الإجمالي</span>
-                <span className="total-amount">{productsInCart_TotalPrice} ريال سعودي</span>
+                <span className="total-amount">
+                  {productsInCart_TotalPrice} ريال سعودي
+                </span>
               </div>
             </div>
             <div className="checkout-secure">

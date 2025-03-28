@@ -79,7 +79,7 @@
   background: #f8fafc;
 }
 
-.checkout-form__input:hover, 
+.checkout-form__input:hover,
 .checkout-form__input:focus {
   border-color: var(--color-primary);
   background: var(--bg-white);
@@ -93,13 +93,10 @@
 }
 
 .checkout-form__error-message {
-  
   color: #ef4444;
   font-size: 0.7rem;
   font-weight: 500;
 }
-
-
 
 .checkout-form__submit-button {
   margin-top: var(--spacing-sm);
@@ -136,7 +133,7 @@
   .checkout-form--page-checkout .checkout-form__grid {
     grid-template-columns: 1fr;
   }
-  
+
   .checkout-form {
     padding: var(--spacing-md);
   }

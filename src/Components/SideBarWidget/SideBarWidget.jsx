@@ -7,7 +7,7 @@ import { useGlobalContext } from "../../Context/GlobalContext";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function SideBarWidget() {
-  const Navigate = useNavigate()
+  const Navigate = useNavigate();
   const {
     productsInCart,
     productsInCart_TotalPrice,
@@ -21,13 +21,12 @@ export default function SideBarWidget() {
   };
 
   const handleButtonPath = () => {
-    if(productsInCart && productsInCart.length){
-      Navigate("/cart")
+    if (productsInCart && productsInCart.length) {
+      Navigate("/cart");
+    } else {
+      Navigate("/shop");
     }
-    else{
-      Navigate("/shop")
-    }
-  }
+  };
 
   return (
     <div dir="rtl">
@@ -76,7 +75,11 @@ export default function SideBarWidget() {
           </div>
 
           <div className="sidebar-middle-tab">
-            <button to="/cart" className="middle-tab-btn" onClick={handleButtonPath}>
+            <button
+              to="/cart"
+              className="middle-tab-btn"
+              onClick={handleButtonPath}
+            >
               شراء الآن
             </button>
           </div>

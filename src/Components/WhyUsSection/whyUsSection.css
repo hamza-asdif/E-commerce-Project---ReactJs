@@ -62,7 +62,7 @@
     font-size: 1.5rem;
   }
 
-  .last-product-icon{
+  .last-product-icon {
     width: 30px;
     height: 30px;
   }
@@ -70,10 +70,8 @@
 
 /* الأجهزة اللوحية */
 @media (min-width: 768px) and (max-width: 1024px) {
-  
 }
 
 /* الشاشات الكبيرة (لابتوب وسطح المكتب) */
 @media (min-width: 1025px) {
-  
 }

@@ -5,7 +5,7 @@
   justify-content: center;
   align-items: center;
   padding: 20px;
-  font-family: 'Tajawal', sans-serif;
+  font-family: "Tajawal", sans-serif;
 }
 
 .thank-you-card {
@@ -15,7 +15,7 @@
   max-width: 500px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .success-icon {
@@ -66,7 +66,6 @@ h1 {
 .order-detail strong {
   color: #333;
   letter-spacing: 1px; /* Improves readability of UUID */
-
 }
 
 .action-buttons {
@@ -76,7 +75,8 @@ h1 {
   justify-content: center;
 }
 
-.home-btn, .orders-btn {
+.home-btn,
+.orders-btn {
   padding: 12px 20px;
   border-radius: 6px;
   font-weight: 500;
@@ -111,12 +111,13 @@ h1 {
   .thank-you-card {
     padding: 20px;
   }
-  
+
   .action-buttons {
     flex-direction: column;
   }
-  
-  .home-btn, .orders-btn {
+
+  .home-btn,
+  .orders-btn {
     justify-content: center;
   }
 }

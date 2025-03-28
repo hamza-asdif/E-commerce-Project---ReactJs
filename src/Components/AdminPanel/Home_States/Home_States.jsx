@@ -20,29 +20,24 @@ function Home_States() {
     ordersByTime,
     earningsByTime,
   } = useAdminGlobalContext();
-  const [dataLoading, setDataLoading] = useState(true);
-
   const [loadingText, setLoadingText] = useState("تحميل البيانات...");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if(productsData && orders && activeUsers) {
-      setTimeout(() => {
+    if (productsData?.length && orders?.length && activeUsers?.length) {
+      const timer = setTimeout(() => {
         setLoading(false);
-        setLoadingText(false);
+        setLoadingText("");
       }, 1000);
+      return () => clearTimeout(timer);
     }
-  }, [productsData, orders, activeUsers, earnings, earningsByTime]);
+  }, [productsData, orders, activeUsers]);
 
   const manageDataLoading = (data) => {
-    setTimeout(() => {
-      setDataLoading(false);
-    }, 2000);
-    if (dataLoading) {
+    if (loading) {
       return <div className="loader"></div>;
-    } else {
-      return <p> {data} </p>;
     }
+    return <p>{data}</p>;
   };
 
   return (

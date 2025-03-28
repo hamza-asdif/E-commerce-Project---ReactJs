@@ -6,7 +6,7 @@
 
 .products-container {
   padding: 24px;
-  font-family: 'Cairo', Arial, sans-serif;
+  font-family: "Cairo", Arial, sans-serif;
   max-width: 1280px;
   margin: 0 auto;
   direction: rtl;
@@ -97,7 +97,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: #64748b;
-  
+
   cursor: pointer;
 }
 
@@ -121,8 +121,12 @@
 } */
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .no-products {
@@ -299,7 +303,8 @@ input:checked + .slider:before {
   justify-content: center;
 }
 
-.edit-btn, .delete-btn {
+.edit-btn,
+.delete-btn {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -385,9 +390,9 @@ input:checked + .slider:before {
 }
 
 .pagination-number.active {
-  background: #F24547; /* اللون الرئيسي */
+  background: #f24547; /* اللون الرئيسي */
   color: white;
-  border-color: #F24547;
+  border-color: #f24547;
 }
 
 .pagination-ellipsis {

@@ -10,9 +10,9 @@
 
 .admin-panel-container {
   flex: 1;
-  margin-right: auto; 
+  margin-right: auto;
   padding: 20px;
-  max-width: calc(100% - 280px); 
+  max-width: calc(100% - 280px);
   box-sizing: border-box;
 }
 
@@ -53,17 +53,14 @@
   line-height: 1.6;
 }
 
-
 @media (max-width: 1024px) {
-  .admin-panel-header h1{
+  .admin-panel-header h1 {
     font-size: 1.9rem;
   }
 }
 
-
-
 @media (max-width: 770px) {
-  .admin-panel-main{
+  .admin-panel-main {
     margin-bottom: 70px;
   }
   .admin-panel-container {
@@ -74,7 +71,6 @@
   .admin-panel-header {
     padding: 2rem 1rem;
     font-size: 1.5rem;
-
   }
 
   .admin-panel-header h1 {

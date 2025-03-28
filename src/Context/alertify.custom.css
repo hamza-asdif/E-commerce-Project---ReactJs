@@ -1,63 +1,64 @@
 .alertify {
-    font-family: 'El Messiri', sans-serif;
-  }
-  
-  .alertify .ajs-header {
-    background: #f8f9fa;
-    color: #333;
-    font-weight: bold;
-    padding: 15px;
-    border-bottom: 1px solid #dee2e6;
-  }
-  
-  .alertify .ajs-body {
-    padding: 20px;
-    color: #495057;
-  }
-  
-  .alertify .ajs-footer {
-    padding: 15px;
-    background: #f8f9fa;
-    border-top: 1px solid #dee2e6;
-  }
-  
-  .alertify .ajs-button {
-    border-radius: 4px;
-    padding: 8px 16px;
-    margin: 0 5px;
-    transition: all 0.3s ease;
-  }
-  
-  .alertify .ajs-button.ajs-ok {
-    background: #dc3545;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .alertify .ajs-button.ajs-cancel {
-    background: #6c757d;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .alertify .ajs-dialog {
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .alertify-notifier .ajs-message.ajs-success {
-    background: #28a745;
-    color: white;
-  }
-  
-  .alertify-notifier .ajs-message.ajs-error {
-    background: #dc3545;
-    color: white;
-  }
-  .alertify .ajs-button.ajs-ok {
-    cursor: pointer !important;
-  }alertify-ok-button{
-    cursor: pointer !important
-  }
+  font-family: "El Messiri", sans-serif;
+}
+
+.alertify .ajs-header {
+  background: #f8f9fa;
+  color: #333;
+  font-weight: bold;
+  padding: 15px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.alertify .ajs-body {
+  padding: 20px;
+  color: #495057;
+}
+
+.alertify .ajs-footer {
+  padding: 15px;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+.alertify .ajs-button {
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin: 0 5px;
+  transition: all 0.3s ease;
+}
+
+.alertify .ajs-button.ajs-ok {
+  background: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.alertify .ajs-button.ajs-cancel {
+  background: #6c757d;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.alertify .ajs-dialog {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alertify-notifier .ajs-message.ajs-success {
+  background: #28a745;
+  color: white;
+}
+
+.alertify-notifier .ajs-message.ajs-error {
+  background: #dc3545;
+  color: white;
+}
+.alertify .ajs-button.ajs-ok {
+  cursor: pointer !important;
+}
+alertify-ok-button {
+  cursor: pointer !important;
+}

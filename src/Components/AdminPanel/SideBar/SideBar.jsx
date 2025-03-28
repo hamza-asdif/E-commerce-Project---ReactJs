@@ -6,7 +6,7 @@ import MobileNavBar from "../MobileSticky_NavBar/MobileNavBar";
 const Sidebar = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const location = useLocation(); 
+  const location = useLocation();
   const handleActivePath = (path) => {
     return location.pathname === path;
   };

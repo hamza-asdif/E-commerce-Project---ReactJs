@@ -5,15 +5,15 @@ import "./MobileNavBar.css";
 function MobileNavBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeRoute, setActiveRoute] = useState("")
+  const [activeRoute, setActiveRoute] = useState("");
 
   // Function to check active route
   const isActive = (path) => location.pathname === path;
-  const mypathname = location.pathname
+  const mypathname = location.pathname;
 
-  useEffect( () =>  {
-    console.log("aaaaaaaaaaaaaaaaaaaaa", mypathname)
-  }, [] )
+  useEffect(() => {
+    console.log("aaaaaaaaaaaaaaaaaaaaa", mypathname);
+  }, []);
 
   return (
     <div className="mobile-navbar">

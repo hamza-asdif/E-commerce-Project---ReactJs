@@ -214,8 +214,8 @@ function ProductPage() {
                         imageIndex === index
                           ? "active"
                           : index >= 3
-                          ? "hidden"
-                          : ""
+                            ? "hidden"
+                            : ""
                       }`}
                       onClick={() => {
                         setProductPage_MainImage(image),

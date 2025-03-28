@@ -40,7 +40,7 @@ function ProductCard({
     if (storedFavorites) {
       const favorites = JSON.parse(storedFavorites);
       const isProductFavorite = favorites.some(
-        (item) => item.id === ProductId && item.isFav === true
+        (item) => item.id === ProductId && item.isFav === true,
       );
       setIsFavorite(isProductFavorite);
       setIsAdded_ToFavorite(isProductFavorite);
@@ -103,7 +103,7 @@ function ProductCard({
 
       // التحقق مما إذا كان المنتج موجودًا بالفعل في المفضلة
       const existingIndex = favorites.findIndex(
-        (item) => item.id === ProductId
+        (item) => item.id === ProductId,
       );
 
       if (existingIndex !== -1) {
@@ -182,11 +182,7 @@ function ProductCard({
     <div className="product-card" key={productIdNumeric}>
       <div className="product-container">
         <div className="product-img-box" onClick={handleProductClick}>
-          <img
-            src={ProductImage}
-            alt={ProductTitle}
-            className="product-img"
-          />
+          <img src={ProductImage} alt={ProductTitle} className="product-img" />
         </div>
         <div className="product-infos-box">
           <h3 className="product-title">{ProductTitle}</h3>

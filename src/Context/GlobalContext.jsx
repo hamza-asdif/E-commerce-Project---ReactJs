@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import axios from "axios";
 import "alertifyjs/build/css/alertify.rtl.css";
 import "alertifyjs/build/css/themes/default.rtl.css";
@@ -10,8 +16,6 @@ import supabase from "../supabaseClient";
 const SUPABASE_API_URL = import.meta.env.VITE_SUPABASE_API_URL;
 const SUPABASE_API_KEY = import.meta.env.VITE_SUPABASE_API_KEY;
 
-
-
 const CART_STORAGE_KEY = "ProductsInCart";
 const PRODUCT_PAGE_STORAGE_KEY = "productPage_Product";
 
@@ -21,25 +25,25 @@ export const GlobalProvider = ({ children }) => {
   const [allProducts, setAllProducts] = useState([]);
   const [displayedProducts, setDisplayedProducts] = useState([]);
   const [productPage_Product, setproductPage_Product] = useState({});
-  
+
   // حالات السلة
   const [productsInCart, setProductsInCart] = useState([]);
   const [productsInCart_TotalPrice, setProductsInCart_TotalPrice] = useState(0);
   const [addData_ToCart_State, setAddData_ToCart_State] = useState(false);
   const [cartSideBarToggle, setCartSideBarToggle] = useState(false);
-  
+
   // حالات البحث
   const [searchState, setSearchState] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  
+
   // حالات واجهة المستخدم
   const [isFav, setIsFav] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [adminStatus, setAdminStatus] = useState(false);
-  const [submittedOrder, setsubmittedOrder] = useState({})
-  const [allOrders, setAllOrders] = useState([])
+  const [submittedOrder, setsubmittedOrder] = useState({});
+  const [allOrders, setAllOrders] = useState([]);
 
   // تهيئة التطبيق عند التحميل
   useEffect(() => {
@@ -122,7 +126,7 @@ export const GlobalProvider = ({ children }) => {
     try {
       const productId = parseInt(product.id);
       const existingProductIndex = productsInCart.findIndex(
-        (item) => parseInt(item.id) === productId
+        (item) => parseInt(item.id) === productId,
       );
 
       let updatedCart = [...productsInCart];
@@ -171,7 +175,7 @@ export const GlobalProvider = ({ children }) => {
         },
         function () {
           alertify.error("تم إلغاء العملية");
-        }
+        },
       )
       .set({
         labels: {
@@ -199,7 +203,7 @@ export const GlobalProvider = ({ children }) => {
     try {
       const id = parseInt(productId);
       const updatedCart = productsInCart.filter(
-        (item) => parseInt(item.id) !== id
+        (item) => parseInt(item.id) !== id,
       );
 
       alertifyPopUp_Confirm(id, setProductsInCart, updatedCart);
@@ -259,7 +263,7 @@ export const GlobalProvider = ({ children }) => {
         setproductPage_Product(productData[0]);
         localStorage.setItem(
           PRODUCT_PAGE_STORAGE_KEY,
-          JSON.stringify(productData[0])
+          JSON.stringify(productData[0]),
         );
         console.log("تم تحميل بيانات المنتج بنجاح:", productData[0]);
         return true;
@@ -283,19 +287,13 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  const getAllOrders_checkoutPageUse = async () => {
+    const { data, error } = await supabase.from("orders").select("user_id");
 
-  const getAllOrders_checkoutPageUse = async() =>  {
-    const {data, error} = await supabase
-    .from("orders")
-    .select("user_id")
-
-    if(data && data.length > 0) {
-      setAllOrders(data)
-      
+    if (data && data.length > 0) {
+      setAllOrders(data);
     }
-  }
-
-  
+  };
 
   // القيم المصدرة للسياق
   const contextValue = {
@@ -306,7 +304,7 @@ export const GlobalProvider = ({ children }) => {
     setDisplayedProducts,
     productPage_Product,
     setproductPage_Product,
-    
+
     // حالات السلة
     productsInCart,
     setProductsInCart,
@@ -315,7 +313,7 @@ export const GlobalProvider = ({ children }) => {
     addData_ToCart_State,
     setAddData_ToCart_State,
     cartSideBarToggle,
-    
+
     // وظائف السلة
     addProductToCart,
     removeProductFromCart,
@@ -323,11 +321,11 @@ export const GlobalProvider = ({ children }) => {
     toggleCart,
     refreshCart,
     resetall_OrderSubmited,
-    
+
     // وظائف التنقل
     NavigateToProduct,
     ProductsByNumber,
-    
+
     // حالات البحث
     searchState,
     setSearchState,
@@ -335,14 +333,14 @@ export const GlobalProvider = ({ children }) => {
     setSearchQuery,
     searchResults,
     setSearchResults,
-    
+
     // حالات واجهة المستخدم
     isMobile,
     setIsMobile,
     mobileMenuOpen,
     setMobileMenuOpen,
     resetAllStates,
-    
+
     // حالات المسؤول
     adminStatus,
     setAdminStatus,
@@ -353,7 +351,7 @@ export const GlobalProvider = ({ children }) => {
     getAllOrders_checkoutPageUse,
     allOrders,
     setAllOrders,
-    
+
     // ثوابت API
     supabase_APIKEY: SUPABASE_API_KEY,
     Supabase_APIURL: SUPABASE_API_URL,

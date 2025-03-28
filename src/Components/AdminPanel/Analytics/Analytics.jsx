@@ -1,5 +1,5 @@
 import React from "react";
-import './Analytics.css'
+import "./Analytics.css";
 
 function Analytics() {
   return (

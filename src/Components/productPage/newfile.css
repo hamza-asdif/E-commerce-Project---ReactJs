@@ -43,8 +43,6 @@
   padding-bottom: var(--spacing-xl);
 }
 
-
-
 /* ======== Product Gallery ======== */
 .single-product-gallery {
   position: sticky;
@@ -60,7 +58,6 @@
   background: var(--bg-white);
   box-shadow: var(--shadow-md);
   aspect-ratio: 1 / 1;
-  
 }
 
 .single-product-main-image img {
@@ -91,9 +88,7 @@
   background: var(--bg-white);
 }
 
-
-
-.image-thumbnail.hidden{
+.image-thumbnail.hidden {
   display: none;
 }
 
@@ -151,8 +146,6 @@
   color: var(--text-secondary);
   text-decoration: line-through;
 }
-
-
 
 /* ======== Stats Section ======== */
 .single-product-stats {
@@ -349,8 +342,6 @@
   .single-product-page {
     padding-top: var(--spacing-md);
   }
-
-  
 
   .single-product-thumbnails {
     gap: var(--spacing-xs);

@@ -28,7 +28,7 @@ const ProductEditPage = ({ isAddProduct }) => {
   const [productMainImage, setProductMainImage] = useState("");
   const [additionalImages, setAdditionalImages] = useState([]);
   const [loadingText, setLoadingText] = useState(
-    "جارٍ تحميل الصفحة، يرجى الانتظار..."
+    "جارٍ تحميل الصفحة، يرجى الانتظار...",
   );
   const productNameRef = useRef(null);
   const [newProductInfos, setnewProductInfos] = useState({});
@@ -199,7 +199,7 @@ const ProductEditPage = ({ isAddProduct }) => {
       reader.readAsDataURL(file);
     } else {
       setUploadError(
-        "صيغة الصورة غير مدعومة. الرجاء تحميل صورة بصيغة PNG أو JPEG."
+        "صيغة الصورة غير مدعومة. الرجاء تحميل صورة بصيغة PNG أو JPEG.",
       );
     }
   };
@@ -221,12 +221,12 @@ const ProductEditPage = ({ isAddProduct }) => {
             validImages.push(image);
           } else {
             setadditionalImagesError(
-              "حجم الصورة يجب أن يكون أقل من 5 ميغابايت"
+              "حجم الصورة يجب أن يكون أقل من 5 ميغابايت",
             );
           }
         } else {
           setadditionalImagesError(
-            "صيغة الصورة غير مدعومة. الرجاء تحميل صورة بصيغة PNG أو JPEG أو WEBP"
+            "صيغة الصورة غير مدعومة. الرجاء تحميل صورة بصيغة PNG أو JPEG أو WEBP",
           );
         }
       }
@@ -283,7 +283,7 @@ const ProductEditPage = ({ isAddProduct }) => {
         },
         function () {
           return;
-        }
+        },
       )
       .set({
         labels: {

@@ -82,8 +82,6 @@ function SearchForProducts() {
     );
   }
 
-
-
   return (
     <div className="search-results-page">
       <div className="search-header">
@@ -115,9 +113,9 @@ function SearchForProducts() {
       <div className="search-content">
         {filter_loading ? (
           <div className="filter-loading-overlay">
-          <div className="loading-spinner"></div>
-          <p>جاري تصفية المنتجات...</p>
-        </div>
+            <div className="loading-spinner"></div>
+            <p>جاري تصفية المنتجات...</p>
+          </div>
         ) : searchResults_InPage && searchResults_InPage.length ? (
           <div className="products-grid">
             {searchResults_InPage.map((product) => (

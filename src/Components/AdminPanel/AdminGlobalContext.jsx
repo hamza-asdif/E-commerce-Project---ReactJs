@@ -32,7 +32,7 @@ const AdminProvider = ({ children }) => {
     "اليوم",
   ];
 
-  const fetchAdminInfos = useCallback( async () => {
+  const fetchAdminInfos = useCallback(async () => {
     const { data, error } = await supabase
       .from("users")
       .select("*")
@@ -44,27 +44,25 @@ const AdminProvider = ({ children }) => {
       setAdminInfo(data[0]);
     }
     setLoading(false);
-  }, [adminInfo] )
-
-
+  }, [adminInfo]);
 
   const handleProductsData = async () => {
     const { data, error } = await supabase.from("products").select("*");
 
     if (error) console.error(error);
-    if(data && data.length > 0) {
-      setProductsData(data)
+    if (data?.length > 0) {
+      setProductsData(data);
     }
   };
 
-  const handletotalOrders = useCallback( async () => {
+  const handletotalOrders = useCallback(async () => {
     const { data, error } = await supabase.from("orders").select("*");
 
     if (error) console.log(error);
     else {
       setOrders(data);
     }
-  }, [orders] )
+  }, [orders]);
 
   const handleActiveUser = async () => {
     const { data, error } = await supabase.from("users").select("*");
@@ -100,7 +98,7 @@ const AdminProvider = ({ children }) => {
 
         case "هذا الأسبوع":
           const weekStart = new Date();
-          weekStart.setDate(now.getDate() - now.getDay()); 
+          weekStart.setDate(now.getDate() - now.getDay());
           return orderDate >= weekStart;
 
         case "هذا الشهر":
@@ -128,15 +126,13 @@ const AdminProvider = ({ children }) => {
       ordersResult[timeName] = filteredOrders.length;
       earningsResult[timeName] = filteredOrders.reduce(
         (total, order) => total + parseFloat(order.total_price),
-        0
+        0,
       );
     });
 
     setOrdersByTime(ordersResult);
     setEarningsByTime(earningsResult);
   };
-
-
 
   useEffect(() => {
     const totalEraning = () => {
@@ -152,7 +148,7 @@ const AdminProvider = ({ children }) => {
 
     totalEraning();
     calculateStats();
-  }, [orders, ]);
+  }, [orders]);
 
   useEffect(() => {
     fetchAdminInfos();
@@ -181,7 +177,6 @@ const AdminProvider = ({ children }) => {
         // أضف هذين المتغيرين:
         ordersByTime,
         earningsByTime,
-        
       }}
     >
       {children}

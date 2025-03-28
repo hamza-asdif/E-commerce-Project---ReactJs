@@ -1,6 +1,6 @@
-import React from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ConfirmPopup = ({ message, onConfirm, onCancel }) => {
   return (
@@ -31,7 +31,7 @@ const showConfirmPopup = (message, onConfirm, onCancel) => {
       closeButton: false, // إخفاء زر الإغلاق
       draggable: false, // منع السحب
       closeOnClick: false, // لا تغلق عند النقر خارجها
-    }
+    },
   );
 };
 
