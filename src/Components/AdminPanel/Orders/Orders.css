@@ -469,7 +469,7 @@
   transition: background-color var(--transition-fast);
 }
 
-.orders-table tbody tr:hover {
+.orders-table tbody tr:not(.selected):hover {
   background-color: var(--color-gray-50);
 }
 
@@ -478,6 +478,16 @@
   width: 40px;
   text-align: center;
 }
+
+
+.selected {
+  background-color: var(--main-color-light); /* Light version of the main color */
+  border-left: 4px solid var(--main-color); /* Highlight with the main color */
+  transition: background-color var(--transition-fast), border-color var(--transition-fast); /* Smooth transition */
+}
+
+
+
 
 .select-all-checkbox,
 .order-checkbox {

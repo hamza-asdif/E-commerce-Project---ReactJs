@@ -29,6 +29,8 @@
     "firebase": "^11.4.0",
     "flowbite-react": "^0.10.2",
     "formik": "^2.4.6",
+    "json2csv": "^6.0.0-alpha.2",
+    "papaparse": "^5.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",

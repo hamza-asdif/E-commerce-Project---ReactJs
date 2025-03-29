@@ -9,7 +9,6 @@ import {
 } from "react-router-dom";
 import "./App.css";
 import { GlobalProvider, useGlobalContext } from "./Context/GlobalContext.jsx";
-import { YMInitializer } from "react-yandex-metrika";
 
 import {
   Navbar,

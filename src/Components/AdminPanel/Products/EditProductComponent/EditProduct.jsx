@@ -2,24 +2,19 @@
 import React, {
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import "./EditProduct.css";
 import { useNavigate, useParams } from "react-router-dom";
 import supabase from "../../../../supabaseClient";
-import { ImImages } from "react-icons/im";
 import {
   FaCheckCircle,
   FaPlusCircle,
-  FaRegTrashAlt,
-  FaTrash,
 } from "react-icons/fa";
 import { BsTrash3 } from "react-icons/bs";
 import alertify from "alertifyjs";
 import { useAdminGlobalContext } from "../../AdminGlobalContext";
-import { useGlobalContext } from "../../../../Context/GlobalContext";
 
 const ProductEditPage = ({ isAddProduct }) => {
   const { id } = useParams();
