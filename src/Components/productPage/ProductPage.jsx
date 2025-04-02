@@ -54,14 +54,16 @@ function ProductPage() {
 
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+    if(productPage){
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
   }, [productPage]);
 
   useEffect(() => {
     const data = productPage;
-    const thisData = data?.additional_images; // استخدام optional chaining للتأكد من الوصول الآمن
+    const thisData = data?.additional_images;
 
     if (thisData) {
       setProductImages(thisData);
@@ -201,6 +203,7 @@ function ProductPage() {
                       src={`${productPage.Image}`}
                       alt={`${productPage.name}`}
                       className="image-thumbnail"
+                      loading="lazy"
                     />
                   </div>
                   {productImages.map((image, index) => (
@@ -225,6 +228,7 @@ function ProductPage() {
                         className={`image-thumbnail ${
                           index >= 4 ? "hidden" : ""
                         }`}
+                        loading="lazy"
                       />
                     </div>
                   ))}
@@ -281,7 +285,7 @@ function ProductPage() {
                     <div className="checkout-btn-product-page-button">
                       <button className="buy-now-btn" onClick={handleAddToCart}>
                         {btnLoader ? <div className="loader"></div> : btnText}
-                        <FaCartArrowDown id="buy-now-btn-icon" />
+                        {!btnLoader && <FaCartArrowDown id="buy-now-btn-icon" />}
                       </button>
                     </div>
                   </div>

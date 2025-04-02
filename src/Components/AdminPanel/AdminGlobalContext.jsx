@@ -47,10 +47,13 @@ const AdminProvider = ({ children }) => {
   }, [adminInfo]);
 
   const handleProductsData = async () => {
-    const { data, error } = await supabase.from("products").select("*");
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("id", { ascending: true });
 
     if (error) console.error(error);
-    if (data?.length > 0) {
+    if (data?.length) {
       setProductsData(data);
     }
   };
@@ -166,6 +169,7 @@ const AdminProvider = ({ children }) => {
         setAdminInfo,
         handleProductsData,
         productsData,
+        setProductsData,
         activeUsers,
         orders,
         earnings,

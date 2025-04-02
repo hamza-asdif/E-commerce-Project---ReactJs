@@ -490,6 +490,12 @@
 }
 
 @media (max-width: 480px) {
+
+  .container{
+    /* padding: var(--spacing-md); */
+    width: 99%;
+  }
+  
   .single-product-page {
     padding-top: var(--spacing-md);
   }

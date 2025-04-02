@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import "./Products.css";
 import { FcSearch } from "react-icons/fc";
@@ -8,9 +8,9 @@ import "alertifyjs/build/css/themes/default.rtl.css";
 import "../../../Context/alertify.custom.css";
 import alertify from "alertifyjs";
 import supabase from "../../../supabaseClient";
-import { createClient } from "@supabase/supabase-js";
 import { useNavigate } from "react-router-dom";
 import { useAdminGlobalContext } from "../AdminGlobalContext";
+import { downloadCSV } from "../../../Context/DownloadCsv";
 
 const Products = () => {
   const Supabase_APIURL = import.meta.env.VITE_SUPABASE_APIURL;
@@ -25,20 +25,20 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isExpess, setIsExpress] = useState(false);
   const [open_EditProduct, setOpen_EditProduct] = useState(false);
-  const { productsData } = useAdminGlobalContext();
+  const { productsData, setProductsData } = useAdminGlobalContext();
 
   const navigateTo = useNavigate();
 
   useEffect(() => {
     fetchAdminProductData();
-  }, []);
+  }, [productsData]);
 
   useEffect(() => {
     handleLoading();
   }, [currentPage, adminProducts]);
 
   const fetchAdminProductData = () => {
-    if (productsData && productsData.length > 0) {
+    if (productsData?.length) {
       console.log("ADMIN PRODUCTS DATA :  ", productsData);
 
       setAdminProducts(productsData);
@@ -54,9 +54,10 @@ const Products = () => {
 
   const handlePagination = () => {
     if (adminProducts.length) {
-      const filteredProducts = searchTerm
-        ? adminProducts.filter((product) =>
-            product.name.toLowerCase().includes(searchTerm.toLowerCase()),
+      const filteredProducts =
+        searchTerm ?
+          adminProducts.filter((product) =>
+            product.name.toLowerCase().includes(searchTerm.toLowerCase())
           )
         : adminProducts;
 
@@ -80,15 +81,69 @@ const Products = () => {
     handlePagination();
   }, [currentPage, adminProducts, searchTerm]);
 
-  const handleDelete = (productId) => {
-    // إضافة تأكيد قبل الحذف
-    if (window.confirm("هل أنت متأكد من رغبتك في حذف هذا المنتج؟")) {
-      console.log("حذف المنتج:", productId);
-      // هنا يمكن إضافة استدعاء API لحذف المنتج
-      // وبعد نجاح الحذف يمكن تحديث قائمة المنتجات
+  // !!! handle delete product from all products
+  const handleDelete = async (productId) => {
+    const { data, error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", productId)
+      .select();
+
+    if (error) {
+      console.error("error deleting product", error);
+    }
+    console.log(data);
+
+    setLoadingText("جاري تحميل المنتجات...");
+    const newProducts = productsData.filter((item) => item.id !== productId);
+    setProductsData(newProducts);
+  };
+
+  // !!! alertify popup function - optimize
+  const alertify_DeleteProduct = useCallback((deleteFunction, productId) => {
+    alertify
+      .confirm(
+        "تأكيد الحذف",
+        "هل أنت متأكد أنك تريد حذف هذا المنتج؟",
+        async function () {
+          // ---- download the data first then remove the selected product
+          await clone_RestoreProducts();
+          if (deleteFunction) {
+            await deleteFunction(productId);
+            alertify.success("تم حذف المنتج بنجاح ✅");
+          }
+        },
+        function () {
+          alertify.error("تم إلغاء العملية");
+        }
+      )
+      .set({
+        labels: {
+          ok: "حذف",
+          cancel: "إلغاء",
+        },
+      });
+  }, []);
+
+  // ??? clone and downlaod all product before delete the product
+  const clone_RestoreProducts = async () => {
+    try {
+      const { data: products, error } = await supabase
+        .from("products")
+        .select("*");
+
+      if (error) {
+        console.error("Error fetching products:", error);
+        return;
+      }
+
+      downloadCSV(products);
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
 
+  // !!! loading logic here
   const handleLoading = () => {
     setLoading(true);
 
@@ -97,14 +152,15 @@ const Products = () => {
     }, 1500);
   };
 
+  // !!! handle express checkout toggle function
   const expressCheckoutToggle = async (product) => {
     const productToUpdate = adminProducts.find((item) => {
       return item.id === product.id;
     });
 
     const newProducts = adminProducts.map((item) => {
-      return item.id === product.id
-        ? {
+      return item.id === product.id ?
+          {
             ...productToUpdate,
             isExpressCheckoutEnabled: !product.isExpressCheckoutEnabled,
           }
@@ -144,7 +200,7 @@ const Products = () => {
         },
         function () {
           alertify.error("تم إلغاء العملية");
-        },
+        }
       )
       .set({
         labels: {
@@ -208,24 +264,37 @@ const Products = () => {
                   </label>
                 </td>
                 <td className="actions-cell">
-                  <div className="action-buttons">
+                  <div className="action-buttons_2">
                     <button
-                      className="edit-btn"
+                      className="action-btn view-btn"
+                      title="عرض التفاصيل"
+                    >
+                      <a
+                        href={`/product/${product.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="open-product-link"
+                      >
+                        <i className="fas fa-eye"></i>
+                      </a>
+                    </button>
+                    <button
+                      className="action-btn print-btn"
                       title="تعديل المنتج"
                       onClick={() =>
                         navigateTo(`/admin/edit-product/${product.id}`)
                       }
                     >
-                      <i className="edit-icon">✏️</i>
-                      <span>تعديل</span>
+                      <i className="fas fa-edit"></i>
                     </button>
                     <button
-                      className="delete-btn"
-                      onClick={() => handleDelete(product.id)}
+                      className="action-btn more-btn"
+                      onClick={() =>
+                        alertify_DeleteProduct(handleDelete, product.id)
+                      }
                       title="حذف المنتج"
                     >
-                      <i className="delete-icon">🗑️</i>
-                      <span>حذف</span>
+                      <i className="fas fa-trash"></i>
                     </button>
                   </div>
                 </td>
@@ -262,18 +331,16 @@ const Products = () => {
           </div>
         </div>
 
-        {loading ? (
+        {loading ?
           <div className="loading-container">
             <div className="loading-spinner"></div>
             <p>{loadingText}</p>
           </div>
-        ) : paginatedProducts.length === 0 ? (
+        : paginatedProducts.length === 0 ?
           <div className="no-products">
             <p>لا توجد منتجات متاحة</p>
           </div>
-        ) : (
-          <ProductsTableData />
-        )}
+        : <ProductsTableData />}
 
         {!loading && paginatedProducts.length > 0 && (
           <div className="pagination-container">
@@ -286,7 +353,7 @@ const Products = () => {
               <span>السابق</span>
             </button>
             <div className="pagination-numbers">
-              {paginationButtons.length > 5 ? (
+              {paginationButtons.length > 5 ?
                 <>
                   {currentPage > 1 && (
                     <button
@@ -303,7 +370,7 @@ const Products = () => {
 
                   {paginationButtons
                     .filter(
-                      (num) => num >= currentPage - 1 && num <= currentPage + 1,
+                      (num) => num >= currentPage - 1 && num <= currentPage + 1
                     )
                     .map((num) => (
                       <button
@@ -330,8 +397,7 @@ const Products = () => {
                     </button>
                   )}
                 </>
-              ) : (
-                paginationButtons.map((num) => (
+              : paginationButtons.map((num) => (
                   <button
                     key={num}
                     onClick={() => setCurrentPage(num)}
@@ -342,7 +408,7 @@ const Products = () => {
                     {num}
                   </button>
                 ))
-              )}
+              }
             </div>
             <button
               className="pagination-btn next-btn"

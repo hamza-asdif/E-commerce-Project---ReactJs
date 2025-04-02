@@ -200,11 +200,26 @@ function Orders() {
       const isAllSelected =
         prevSelectedRows[currentPage]?.length === paginatedOrders.length;
 
+      const allPaginatedOrders = [...paginatedOrders];
+
+      setSelectedOrders((prevItems) => {
+        if (prevItems.length >  0) {
+          return [];
+        }
+        return [...allPaginatedOrders];
+      });
+
+      
+
       return {
         ...prevSelectedRows,
         [currentPage]: isAllSelected ? [] : currentPageSelection,
       };
+
     });
+
+      console.log(selectedOrders);
+
   };
 
   // !!! handle EXPORT ORDERS logic
@@ -266,11 +281,6 @@ function Orders() {
       console.error("Error exporting orders to CSV:", error);
     }
   };
-
-
-
-
-
 
   return (
     <div className="orders-dashboard">

@@ -37,8 +37,22 @@
   .section-content-title {
     padding: 10px 0px;
     color: #222;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
     text-transform: capitalize;
+  }
+
+  .section-content-span{
+    font-size: 0.9rem;
+  }
+}
+
+
+@media (max-width: 370px){
+  .section-content-title{
+    font-size: 0.8rem;
+  }
+  .section-content-span{
+    font-size: 0.6rem;
   }
 }

@@ -23,29 +23,20 @@ function ProductLayout({ Num }) {
       if (Num) {
         // إذا تم تمرير prop Num، نقوم بتحديد عدد المنتجات المطلوب
         const numberOfProducts = parseInt(Num, 10);
-        // هنا يمكنك الاختيار بين عشوائي أو أخذ العناصر من البداية:
         // اختيار عشوائي:
         let shuffled = [...allProducts].sort(() => 0.5 - Math.random());
         let selected = shuffled.slice(0, numberOfProducts);
         console.log("selected products ------------", selected);
         setDisplayedProducts(selected);
-        // أو إذا كنت تريد أخذ أول العناصر:
-        // setDisplayedProducts(allProducts.slice(0, numberOfProducts));
+        
       } else {
-        // إذا لم يتم تمرير prop Num، عرض جميع المنتجات
+        
         setDisplayedProducts(allProducts);
       }
     }
   }, [allProducts, Num]);
 
-  // التحقق من وجود خطأ في التحميل
-  // useEffect(() => {
-  //   if (!loading && allProducts.length === 0) {
-  //     setError("تعذر تحميل المنتجات. يرجى المحاولة مرة أخرى لاحقاً.");
-  //   } else {
-  //     setError(null);
-  //   }
-  // }, [loading, allProducts]);
+
 
   // Properly defined component that always returns something
   const NoProduct = () => {

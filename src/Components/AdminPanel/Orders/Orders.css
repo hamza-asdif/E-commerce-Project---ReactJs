@@ -444,6 +444,12 @@
   height: 56px;
 }
 
+
+.orders-table th:last-child{
+  text-align: center;
+}
+
+
 .orders-table th:hover {
   background-color: var(--color-gray-100);
 }
@@ -632,10 +638,10 @@
 .action-buttons_2 {
   display: flex;
   gap: var(--space-2);
-  justify-content: flex-end;
+  justify-content: center;
 }
 
-.action-btn {
+.action-btn, .action-btn > a {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-md);
@@ -881,6 +887,8 @@
     background-color: white;
     color: black;
   }
+
+
 
   .orders-table tr {
     page-break-inside: avoid;
