@@ -133,7 +133,7 @@ function ProductPage() {
   if (noProduct) {
     return (
       <div className="product-not-found">
-        <div className="container">
+        <div className="container-product-page">
           <h2>المنتج غير موجود</h2>
           <p>عذراً، لم يتم العثور على المنتج المطلوب.</p>
         </div>
@@ -178,7 +178,7 @@ function ProductPage() {
         {/* Breadcrumb Navigation */}
         {/* Product Content */}
         <div className="single-product-container">
-          <div className="container">
+          <div className="container-product-page">
             <div className="single-product-content">
               {/* Product Gallery */}
               <div className="single-product-gallery">
