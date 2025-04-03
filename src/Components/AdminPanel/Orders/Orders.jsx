@@ -7,7 +7,7 @@ function Orders() {
   const [orders, setOrders] = useState([]);
   const [currency] = useState("ر.س");
   const [currentPage, setCurrentPage] = useState(1);
-  const [ordersPerPage, setOrdersPerPage] = useState(5);
+  const [ordersPerPage, setOrdersPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
   const tableRowRef = useRef(null);
   const [checkbox, setCheckbox] = useState(false);
