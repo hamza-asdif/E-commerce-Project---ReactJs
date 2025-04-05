@@ -19,6 +19,9 @@ import { FaCartArrowDown } from "react-icons/fa";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
 function ProductPage() {
   const {
     productPage_Product,
@@ -51,10 +54,8 @@ function ProductPage() {
   const [imageIndex, setImageIndex] = useState(null);
   const mainImageRef = useRef(null);
 
-
-
   useEffect(() => {
-    if(productPage){
+    if (productPage) {
       setTimeout(() => {
         setLoading(false);
       }, 1000);
@@ -183,11 +184,15 @@ function ProductPage() {
               {/* Product Gallery */}
               <div className="single-product-gallery">
                 <div className="single-product-main-image">
-                  <img
-                    src={`${productPage_MainImage}`}
-                    alt={productPage.name}
-                    loading="lazy"
-                  />
+                  {!productPage_MainImage ? (
+                    <Skeleton height={"100%"} width={"100%"} />
+                  ) : (
+                    <img
+                      src={`${productPage_MainImage}`}
+                      alt={productPage.name}
+                      loading="lazy"
+                    />
+                  )}
                 </div>
                 <div className="single-product-thumbnails">
                   <div
@@ -237,8 +242,11 @@ function ProductPage() {
 
               {/* Product Details */}
               <div className="single-product-details">
-                <h1 className="single-product-title">{productPage.name}</h1>
-
+                {!productPage.name ? (
+                  <Skeleton height="50px" width="100%" />
+                ) : (
+                  <h1 className="single-product-title">{productPage.name}</h1>
+                )}
                 <div className="single-product-pricing">
                   <span className="single-product-current-price">
                     {productPage.price} ريال سعودي
@@ -285,7 +293,9 @@ function ProductPage() {
                     <div className="checkout-btn-product-page-button">
                       <button className="buy-now-btn" onClick={handleAddToCart}>
                         {btnLoader ? <div className="loader"></div> : btnText}
-                        {!btnLoader && <FaCartArrowDown id="buy-now-btn-icon" />}
+                        {!btnLoader && (
+                          <FaCartArrowDown id="buy-now-btn-icon" />
+                        )}
                       </button>
                     </div>
                   </div>
