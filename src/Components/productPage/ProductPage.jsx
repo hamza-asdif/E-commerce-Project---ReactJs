@@ -304,7 +304,7 @@ function ProductPage() {
                 {/* Product Stats */}
                 <div className="single-product-stats">
                   <p className="single-product-stats-item">
-                    🔥أكثر من 2500 زبون راض عن هذا المنتج🔥
+                    أكثر من 2500 زبون راض عن هذا المنتج 
                   </p>
                   <p className="single-product-stats-item">
                     📦 التوصيل مجاني داخل مدينة الرياض ومدن المملكة الكبرى
@@ -312,8 +312,9 @@ function ProductPage() {
                   <p className="single-product-stats-item">
                     👁‍🗨 يشاهده{" "}
                     <span className="single-product-highlight">
-                      {" "}
-                      {randomVisitors}{" "}
+                      <strong>
+                      {randomVisitors}
+                      </strong>
                     </span>{" "}
                     زبون في الوقت الحالي
                   </p>

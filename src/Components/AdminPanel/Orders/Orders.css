@@ -211,11 +211,11 @@
   align-items: center;
 }
 
-.search-box {
+.search-box_orders {
   display: flex;
   position: relative;
   flex: 1;
-  min-width: 200px;
+  min-width: 100%;
 }
 
 .search-input {
@@ -772,7 +772,7 @@
     align-items: stretch;
   }
 
-  .search-box {
+  .search-box_orders {
     width: 100%;
   }
 
@@ -858,6 +858,21 @@
   .pagination-number {
     min-width: 32px;
     height: 32px;
+  }
+  .pagination-options{
+    display: none
+  }
+
+  .pagination-info{
+    display: none
+  }
+
+  .pagination-btn.prev-btn{
+    display: none
+  }
+
+  .pagination-btn.next-btn{
+    display: none
   }
 }
 

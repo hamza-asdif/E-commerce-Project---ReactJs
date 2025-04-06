@@ -25,11 +25,13 @@ function Home_States() {
 
   useEffect(() => {
     if (productsData?.length && orders?.length && activeUsers?.length) {
-      const timer = setTimeout(() => {
-        setLoading(false);
+      setLoading(false);
         setLoadingText("");
-      }, 1000);
-      return () => clearTimeout(timer);
+      // const timer = setTimeout(() => {
+      //   setLoading(false);
+      //   setLoadingText("");
+      // }, 1000);
+      // return () => clearTimeout(timer);
     }
   }, [productsData, orders, activeUsers]);
 
@@ -124,4 +126,4 @@ function Home_States() {
   );
 }
 
-export default Home_States;
+export default React.memo(Home_States)

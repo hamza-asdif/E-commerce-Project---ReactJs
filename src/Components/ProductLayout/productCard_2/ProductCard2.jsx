@@ -13,36 +13,24 @@ function ProductCard2() {
   const [randomProducts, setRandomProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { NavigateToProduct } = useGlobalContext();
+  const { NavigateToProduct, allProducts } = useGlobalContext();
   const NavigateNow = useNavigate();
 
-  const fetchData = useCallback(async () => {
-    try {
-      setIsLoading(true);
 
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .limit(10);
 
-      if (data && data.length > 0) {
-        setProductCard2(data);
-        setIsLoading(false);
-      }
-    } catch (err) {
-      console.error("خطأ في تحميل المنتجات:", err);
-      setIsLoading(false);
+  useEffect( () => {
+    handleRandomProducts_main()
+  }, [allProducts] )
+
+
+  const handleRandomProducts_main = () => {
+    if(allProducts && allProducts.length) {
+      setProductCard2(allProducts);
+      setIsLoading(false)
     }
-  }, [SUPABASE_URL, SUPABASE_APIKEY]);
+  }
 
-  useEffect(() => {
-    fetchData();
 
-    return () => {
-      setProductCard2([]);
-      setRandomProducts([]);
-    };
-  }, [fetchData]);
 
   useEffect(() => {
     handleRandomProducts();

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect, Suspense } from "react";
 import {
   BrowserRouter,
@@ -38,6 +39,7 @@ import AdminProvider from "./Components/AdminPanel/AdminGlobalContext.jsx";
 import EditProduct_Modal from "./Components/AdminPanel/Products/EditProductComponent/EditProduct.jsx";
 import ProductEditPage from "./Components/AdminPanel/Products/EditProductComponent/EditProduct.jsx";
 import Orders from "./Components/AdminPanel/Orders/Orders.jsx";
+import supabase from "./supabaseClient.jsx";
 
 function AppContent() {
   const {
@@ -142,8 +144,16 @@ const AdminPanel_GlobalContext = () => {
   );
 };
 
+
+
+
+
+
+
+
 function App() {
-  const { adminStatus, productsInCart } = useGlobalContext();
+  const { adminStatus, productsInCart, allProducts } = useGlobalContext();
+
   return (
     <BrowserRouter>
       <GlobalProvider>

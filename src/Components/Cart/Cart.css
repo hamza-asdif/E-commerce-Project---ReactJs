@@ -141,6 +141,7 @@
   font-size: 0.875rem; /* Reduced from 1rem */
   color: #a0a0a0;
   text-decoration: line-through;
+  margin-right: 8px
 }
 
 /* Quantity Controls */

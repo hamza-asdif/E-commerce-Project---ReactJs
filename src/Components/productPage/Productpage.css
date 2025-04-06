@@ -307,6 +307,14 @@
   font-weight: 700;
 }
 
+.single-product-highlight strong{
+  background: var(--main-color);
+  color: white;
+  border-radius: 8px;
+  padding: 2px 15px;
+  margin: 0px 5px;
+}
+
 /* ======== Error & Loading States ======== */
 .product-not-found {
   min-height: calc(100vh - 80px);

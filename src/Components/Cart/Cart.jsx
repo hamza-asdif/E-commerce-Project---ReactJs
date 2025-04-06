@@ -151,7 +151,7 @@ function Cart() {
             </span>
             {product.OldPrice && (
               <span className="main-cart-old-price">
-                {product.OldPrice} ريال سعودي
+                {Number(product.OldPrice)} ريال سعودي
               </span>
             )}
           </div>

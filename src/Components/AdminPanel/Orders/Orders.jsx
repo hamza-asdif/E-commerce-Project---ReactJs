@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./Orders.css";
 import supabase from "../../../supabaseClient";
 import Papa from "papaparse";
+import alertify from "alertifyjs";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -17,14 +18,16 @@ function Orders() {
   const [clickedOrder, setClickedOrder] = useState({});
   const [rowsSelectedCount, setRowsSelectedCount] = useState(0);
   const [selectedOrders, setSelectedOrders] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearchActive, setIsSearchActive] = useState(false);
 
-  // *** state for the orders state in the page top *** //
+  // State for orders stats
   const [totalOrders, setTotalOrders] = useState(0);
   const [deliveredOrders, setDeliveredOrders] = useState(0);
   const [processingOrders, setProcessingOrders] = useState(0);
   const [cancelledOrders, setCancelledOrders] = useState(0);
 
-  // !!! Fetch orders from Supabase
+  // Fetch orders from Supabase
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -50,11 +53,10 @@ function Orders() {
     fetchOrders();
   }, []);
 
-  // !!! orders states and calculations
+  // Calculate order statistics
   useEffect(() => {
     const calculateOrders = async () => {
       try {
-        // Get all orders and their counts by status
         const { data: orderStats, error } = await supabase
           .from("orders")
           .select("status");
@@ -64,7 +66,6 @@ function Orders() {
           return;
         }
 
-        // Calculate totals for each status
         const stats = orderStats.reduce(
           (acc, order) => {
             switch (order.status) {
@@ -91,7 +92,6 @@ function Orders() {
           }
         );
 
-        // Update state with calculated values
         setTotalOrders(stats.total);
         setDeliveredOrders(stats.delivered);
         setProcessingOrders(stats.processing);
@@ -104,19 +104,59 @@ function Orders() {
     calculateOrders();
   }, [orders]);
 
-  // !!! Calculate currently displayed data
+  // Filter orders based on search term
+  const filteredOrders = useMemo(() => {
+    if (!searchTerm.trim()) return orders;
+
+    const searchValue = searchTerm.trim().toLowerCase();
+    return orders.filter((order) => {
+      const {
+        fullName = "",
+        tel = "",
+        address = "",
+        city = "",
+      } = order.Customer_Infos || {};
+      return (
+        fullName.toLowerCase().includes(searchValue) ||
+        tel.toLowerCase().includes(searchValue) ||
+        address.toLowerCase().includes(searchValue) ||
+        city.toLowerCase().includes(searchValue) ||
+        order.order_Id.toLowerCase().includes(searchValue)
+      );
+    });
+  }, [orders, searchTerm]);
+
+  // Pagination logic
   const { paginatedOrders, totalPages } = useMemo(() => {
     const startIndex = (currentPage - 1) * ordersPerPage;
     const endIndex = startIndex + ordersPerPage;
-    const totalPages = Math.ceil(orders.length / ordersPerPage);
+    const ordersToPaginate = isSearchActive ? filteredOrders : orders;
+    const totalPages = Math.ceil(ordersToPaginate.length / ordersPerPage);
 
     return {
-      paginatedOrders: orders.slice(startIndex, endIndex),
+      paginatedOrders: ordersToPaginate.slice(startIndex, endIndex),
       totalPages,
     };
-  }, [orders, currentPage, ordersPerPage]);
+  }, [orders, filteredOrders, currentPage, ordersPerPage, isSearchActive]);
 
-  // !!! Pagination buttons component
+  // Search function
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      setIsSearchActive(true);
+      setCurrentPage(1);
+    } else {
+      setIsSearchActive(false);
+    }
+  };
+
+  // Clear search
+  const clearSearch = () => {
+    setSearchTerm("");
+    setIsSearchActive(false);
+    setCurrentPage(1);
+  };
+
+  // PaginationButtons component
   const PaginationButtons = () => {
     return (
       <div className="pagination-container">
@@ -132,9 +172,7 @@ function Orders() {
         {Array.from({ length: totalPages }, (_, index) => (
           <button
             key={index + 1}
-            onClick={() => {
-              setCurrentPage(index + 1);
-            }}
+            onClick={() => setCurrentPage(index + 1)}
             className={`pagination-number ${
               currentPage === index + 1 ? "active" : ""
             }`}
@@ -157,7 +195,7 @@ function Orders() {
     );
   };
 
-  // !!! Display order status
+  // HandleOrderStatus component
   const HandleOrderStatus = ({ orderStatus }) => {
     const statusMap = {
       delivered: { text: "تم التسليم", className: "delivered" },
@@ -173,112 +211,313 @@ function Orders() {
     );
   };
 
-  // !!! Handle the checkbox click
+  // Handle checkbox click
   const handleCheckboxClick = (index, order) => {
-    const currentPageSellection = selectedRows[currentPage] || [];
+    const currentPageSelection = selectedRows[currentPage] || [];
+    const isSelected = currentPageSelection.includes(index);
 
     setSelectedRows((prevItems) => ({
       ...prevItems,
-      [currentPage]:
-        currentPageSellection.includes(index) ?
-          currentPageSellection.filter((rowIndex) => rowIndex !== index)
-        : [...currentPageSellection, index],
+      [currentPage]: isSelected
+        ? currentPageSelection.filter((rowIndex) => rowIndex !== index)
+        : [...currentPageSelection, index],
     }));
 
-    setSelectedOrders((prevItems) => [...prevItems, order]);
-
-    console.log(selectedOrders);
-
-    console.log(selectedRows);
-  };
-
-  // !!! Handle check all table rows in the table
-  const checkAllTableRows = () => {
-    setSelectedRows((prevSelectedRows) => {
-      const currentPageSelection = paginatedOrders.map((_, i) => i);
-
-      const isAllSelected =
-        prevSelectedRows[currentPage]?.length === paginatedOrders.length;
-
-      const allPaginatedOrders = [...paginatedOrders];
-
-      setSelectedOrders((prevItems) => {
-        if (prevItems.length >  0) {
-          return [];
-        }
-        return [...allPaginatedOrders];
-      });
-
-      
-
-      return {
-        ...prevSelectedRows,
-        [currentPage]: isAllSelected ? [] : currentPageSelection,
-      };
-
+    setSelectedOrders((prevOrders) => {
+      if (isSelected) {
+        return prevOrders.filter(
+          (selectedOrder) => selectedOrder.id !== order.id
+        );
+      } else {
+        const orderExists = prevOrders.some(
+          (selectedOrder) => selectedOrder.id === order.id
+        );
+        return orderExists ? prevOrders : [...prevOrders, order];
+      }
     });
-
-      console.log(selectedOrders);
-
   };
 
-  // !!! handle EXPORT ORDERS logic
+  // Check all table rows
+  const checkAllTableRows = () => {
+    const currentPageSelection = selectedRows[currentPage] || [];
+    const isAllSelected =
+      currentPageSelection.length === paginatedOrders.length &&
+      paginatedOrders.length > 0;
+
+    setSelectedRows((prevSelectedRows) => ({
+      ...prevSelectedRows,
+      [currentPage]: isAllSelected ? [] : paginatedOrders.map((_, i) => i),
+    }));
+
+    setSelectedOrders((prevOrders) => {
+      if (isAllSelected) {
+        const currentPageOrderIds = paginatedOrders.map((order) => order.id);
+        return prevOrders.filter(
+          (order) => !currentPageOrderIds.includes(order.id)
+        );
+      } else {
+        const newOrders = [...prevOrders];
+        paginatedOrders.forEach((order) => {
+          if (
+            !newOrders.some((selectedOrder) => selectedOrder.id === order.id)
+          ) {
+            newOrders.push(order);
+          }
+        });
+        return newOrders;
+      }
+    });
+  };
+
+  // Export to CSV
   const exportToCSV = async () => {
     try {
-      // التأكد من أن selectedOrders تحتوي على معرفات الطلبات الصحيحة
-      const selectedOrderIds = selectedOrders.map((order) => order.id);
+      if (selectedOrders.length === 0) {
+        alertify.error("الرجاء تحديد طلب واحد على الأقل للتصدير");
+        return;
+      }
 
-      // جلب الطلبات المحددة من Supabase باستخدام الاسم الصحيح للعمود
+      const notification = alertify.notify(
+        `جاري تصدير ${selectedOrders.length} طلب...`,
+        "custom",
+        0
+      );
+
+      setLoading(true);
+
+      const selectedOrderIds = selectedOrders.map((order) => order.id);
       const { data: orders, error } = await supabase
         .from("orders")
-        .select(
-          `
-        id,
-        created_at,
-        total_price,
-        Customer_Infos
-      `
-        )
+        .select(`id, created_at, total_price, Customer_Infos, status`)
         .in("id", selectedOrderIds);
 
       if (error) {
         console.error("Error fetching selected orders:", error);
+        notification.dismiss();
+        alertify.error("حدث خطأ أثناء جلب بيانات الطلبات");
         return;
       }
 
       if (!orders || orders.length === 0) {
         console.error("No orders found to export");
+        notification.dismiss();
+        alertify.error("لم يتم العثور على طلبات للتصدير");
         return;
       }
 
-      // تجهيز البيانات للتصدير بتنسيق CSV
+      notification.setContent(`جاري معالجة ${orders.length} طلب...`);
+
       const csvData = orders.map((order) => ({
         OrderID: order.id,
         Date: new Date(order.created_at).toLocaleDateString("en-SA"),
         Total: order.total_price,
+        Status: order.status,
         CustomerName: order.Customer_Infos?.fullName || "غير محدد",
         CustomerPhone: order.Customer_Infos?.tel || "غير متوفر",
+        CustomerEmail: order.Customer_Infos?.email || "غير متوفر",
         CustomerCity: order.Customer_Infos?.city || "غير محدد",
         CustomerAddress: order.Customer_Infos?.address || "غير محدد",
       }));
 
-      // تحويل البيانات إلى تنسيق CSV
+      notification.setContent(`جاري إنشاء ملف التصدير...`);
+
       const csv = Papa.unparse(csvData, {
         quotes: true,
         delimiter: ",",
+        header: true,
       });
 
-      // إنشاء Blob ورابط التنزيل
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "orders_export.csv";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      link.download = `orders_export_${new Date().toISOString().slice(0, 10)}.csv`;
+
+      notification.setContent(`جاري تنزيل الملف...`);
+
+      setTimeout(() => {
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        notification.dismiss();
+        alertify.success(`تم تصدير ${orders.length} طلب بنجاح`);
+        setLoading(false);
+      }, 1000);
     } catch (error) {
       console.error("Error exporting orders to CSV:", error);
+      alertify.error("حدث خطأ أثناء تصدير الطلبات");
+      setLoading(false);
+    }
+  };
+
+  // Export all to CSV
+  const exportAllToCSV = async () => {
+    try {
+      alertify
+        .confirm(
+          "تصدير جميع الطلبات",
+          "هل أنت متأكد من رغبتك في تصدير جميع الطلبات؟ قد تستغرق هذه العملية بعض الوقت.",
+          async function () {
+            try {
+              const notification = alertify.notify(
+                "جاري تحضير البيانات للتصدير...",
+                "custom",
+                0
+              );
+
+              setLoading(true);
+              notification.setContent("جاري جلب بيانات الطلبات...");
+              const { data: allOrders, error } = await supabase
+                .from("orders")
+                .select(`id, created_at, total_price, Customer_Infos, status`);
+
+              if (error) {
+                console.error("Error fetching all orders:", error);
+                notification.dismiss();
+                alertify.error("حدث خطأ أثناء جلب بيانات الطلبات");
+                setLoading(false);
+                return;
+              }
+
+              if (!allOrders || allOrders.length === 0) {
+                notification.dismiss();
+                alertify.error("لا توجد طلبات للتصدير");
+                setLoading(false);
+                return;
+              }
+
+              notification.setContent(`جاري معالجة ${allOrders.length} طلب...`);
+
+              const batchSize = 100;
+              const totalBatches = Math.ceil(allOrders.length / batchSize);
+              let csvData = [];
+
+              for (let i = 0; i < totalBatches; i++) {
+                const start = i * batchSize;
+                const end = Math.min(start + batchSize, allOrders.length);
+                const batch = allOrders.slice(start, end);
+
+                notification.setContent(
+                  `جاري معالجة الدفعة ${i + 1} من ${totalBatches}...`
+                );
+
+                const batchData = batch.map((order) => ({
+                  OrderID: order.id,
+                  Date: new Date(order.created_at).toLocaleDateString("en-SA"),
+                  Total: order.total_price,
+                  Status: order.status,
+                  CustomerName: order.Customer_Infos?.fullName || "غير محدد",
+                  CustomerPhone: order.Customer_Infos?.tel || "غير متوفر",
+                  CustomerEmail: order.Customer_Infos?.email || "غير متوفر",
+                  CustomerCity: order.Customer_Infos?.city || "غير محدد",
+                  CustomerAddress: order.Customer_Infos?.address || "غير محدد",
+                }));
+
+                csvData = [...csvData, ...batchData];
+                await new Promise((resolve) => setTimeout(resolve, 0));
+              }
+
+              notification.setContent(`جاري إنشاء ملف التصدير...`);
+
+              const csv = Papa.unparse(csvData, {
+                quotes: true,
+                delimiter: ",",
+                header: true,
+              });
+
+              const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = `all_orders_export_${new Date().toISOString().slice(0, 10)}.csv`;
+
+              notification.setContent(`جاري تنزيل الملف...`);
+
+              setTimeout(() => {
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                notification.dismiss();
+                alertify.success(`تم تصدير ${allOrders.length} طلب بنجاح`);
+                setLoading(false);
+              }, 1000);
+            } catch (error) {
+              console.error("Error exporting all orders to CSV:", error);
+              alertify.error("حدث خطأ أثناء تصدير الطلبات");
+              setLoading(false);
+            }
+          },
+          function () {
+            alertify.message("تم إلغاء عملية التصدير");
+          }
+        )
+        .set("labels", { ok: "تصدير", cancel: "إلغاء" });
+    } catch (error) {
+      console.error("Error in export dialog:", error);
+      alertify.error("حدث خطأ غير متوقع");
+    }
+  };
+
+  // Apply bulk action
+  const applyBulkAction = async (action) => {
+    if (selectedOrders.length === 0) {
+      alertify.error("الرجاء تحديد طلب واحد على الأقل");
+      return;
+    }
+
+    const selectedOrderIds = selectedOrders.map((order) => order.id);
+
+    try {
+      setLoading(true);
+
+      let newStatus;
+      switch (action) {
+        case "mark-delivered":
+          newStatus = "delivered";
+          break;
+        case "mark-processing":
+          newStatus = "processing";
+          break;
+        default:
+          return;
+      }
+
+      const { error } = await supabase
+        .from("orders")
+        .update({ status: newStatus })
+        .in("id", selectedOrderIds);
+
+      if (error) {
+        console.error("Error updating orders:", error);
+        alertify.error("حدث خطأ أثناء تحديث حالة الطلبات");
+        return;
+      }
+
+      const { data: updatedOrders, error: fetchError } = await supabase
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (fetchError) {
+        console.error("Error fetching updated orders:", fetchError);
+        return;
+      }
+
+      const ordersWithIds = updatedOrders.map((item, index) => ({
+        ...item,
+        order_Id: `#${String(index + 1).padStart(3, "0")}`,
+      }));
+
+      setOrders(ordersWithIds);
+      setSelectedOrders([]);
+      setSelectedRows({});
+
+      alertify.success(`تم تحديث حالة ${selectedOrderIds.length} طلب بنجاح`);
+    } catch (error) {
+      console.error("Error applying bulk action:", error);
+      alert("حدث خطأ أثناء تطبيق الإجراء");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -311,46 +550,51 @@ function Orders() {
 
       <div className="orders-tools">
         <div className="search-filters">
-          <div className="search-box">
+          <div className="search-box_orders">
             <input
               type="text"
-              placeholder="البحث عن طلب..."
+              placeholder="ابحث برقم الطلب، الاسم، الهاتف..."
               className="search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-            <button className="search-btn">
-              <i className="fas fa-search"></i>
-            </button>
-          </div>
-
-          <div className="filter-group">
-            <select className="filter-select">
-              <option value="">جميع الحالات</option>
-              <option value="delivered">تم التسليم</option>
-              <option value="pending">قيد الانتظار</option>
-              <option value="processing">قيد المعالجة</option>
-              <option value="cancelled">ملغي</option>
-            </select>
-
-            <div className="date-filter">
-              <input type="date" className="date-input" />
-              <span className="date-separator">-</span>
-              <input type="date" className="date-input" />
-            </div>
-
-            <button className="filter-btn">تطبيق الفلتر</button>
-            <button className="filter-reset">إعادة تعيين</button>
+            {isSearchActive ? (
+              <button className="search-btn" onClick={clearSearch}>
+                <i className="fas fa-times"></i>
+              </button>
+            ) : (
+              <button className="search-btn" onClick={handleSearch}>
+                <i className="fas fa-search"></i>
+              </button>
+            )}
           </div>
         </div>
 
         <div className="bulk-actions">
-          <select className="bulk-select">
+          <select
+            className="bulk-select"
+            onChange={(e) => {
+              if (e.target.value) {
+                if (e.target.value === "export") {
+                  exportToCSV();
+                } else {
+                  applyBulkAction(e.target.value);
+                }
+                e.target.value = "";
+              }
+            }}
+          >
             <option value="">إجراءات جماعية</option>
             <option value="mark-delivered">تحديد كمسلم</option>
             <option value="mark-processing">تحديد كقيد المعالجة</option>
             <option value="export">تصدير المحدد</option>
           </select>
-          <button className="bulk-btn">تطبيق</button>
-          <button className="export-btn" onClick={exportToCSV}>
+          <button
+            className="export-btn"
+            onClick={exportAllToCSV}
+            disabled={loading}
+          >
             <i className="fas fa-file-export"></i>
             تصدير الكل
           </button>
@@ -365,7 +609,7 @@ function Orders() {
                 <input
                   type="checkbox"
                   className="select-all-checkbox"
-                  onChange={() => checkAllTableRows()}
+                  onChange={checkAllTableRows}
                   checked={
                     selectedRows[currentPage]?.length ===
                       paginatedOrders.length && paginatedOrders.length > 0
@@ -381,13 +625,13 @@ function Orders() {
             </tr>
           </thead>
           <tbody>
-            {loading ?
+            {loading ? (
               <tr>
                 <td colSpan="7" className="loading-cell_2">
                   <div className="loading-spinner_2"></div>
                 </td>
               </tr>
-            : paginatedOrders.length > 0 ?
+            ) : paginatedOrders.length > 0 ? (
               paginatedOrders.map((order, index) => (
                 <tr
                   key={order.id}
@@ -457,10 +701,15 @@ function Orders() {
                   </td>
                 </tr>
               ))
-            : <tr>
-                <td colSpan="7">لا توجد طلبات متاحة</td>
+            ) : (
+              <tr>
+                <td colSpan="7">
+                  {isSearchActive
+                    ? "لا توجد نتائج مطابقة للبحث"
+                    : "لا توجد طلبات متاحة"}
+                </td>
               </tr>
-            }
+            )}
           </tbody>
         </table>
       </div>
@@ -469,7 +718,12 @@ function Orders() {
         <div className="orders-pagination">
           <div className="pagination-info">
             عرض <span className="font-semibold">{paginatedOrders.length}</span>{" "}
-            من <span className="font-semibold">{orders.length}</span> طلبية
+            من{" "}
+            <span className="font-semibold">
+              {isSearchActive ? filteredOrders.length : orders.length}
+            </span>{" "}
+            طلبية
+            {isSearchActive && " (نتائج البحث)"}
           </div>
           <div className="pagination-controls">
             <PaginationButtons />
@@ -487,7 +741,7 @@ function Orders() {
                 }, 1000);
 
                 setOrdersPerPage(Number(e.target.value));
-                setCurrentPage(1); // العودة للصفحة الأولى عند تغيير عدد العناصر
+                setCurrentPage(1);
               }}
             >
               <option value="5">5</option>
