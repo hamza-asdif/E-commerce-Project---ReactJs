@@ -31,7 +31,7 @@ const Sidebar = () => {
               handleActivePath("/admin/orders") ? "active" : ""
             }`}
             onClick={() => {
-              navigate("orders"), console.log(location.pathname);
+              navigate("orders");
             }}
           >
             <span>📦</span>
@@ -46,7 +46,7 @@ const Sidebar = () => {
                 : ""
             }`}
             onClick={() => {
-              navigate("products"), console.log(location.pathname);
+              navigate("products");
             }}
           >
             <span>🛍️</span>

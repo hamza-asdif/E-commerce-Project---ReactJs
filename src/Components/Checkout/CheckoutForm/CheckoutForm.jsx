@@ -13,6 +13,8 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
     productsInCart_TotalPrice,
     resetall_OrderSubmited,
     setsubmittedOrder,
+    allProducts,
+    setProductsInCart,
   } = useGlobalContext();
 
   const [isMainCheckout, setIsMainCheckout] = useState(false);
@@ -137,6 +139,8 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
           setLoading(false);
         }
       } else if (window.location.pathname !== "checkout") {
+        setLoading(true);
+
         const product = JSON.parse(localStorage.getItem("productPage_Product"));
 
         // إنشاء الطلب
@@ -157,9 +161,10 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
           // انتظار ثانية واحدة قبل الانتقال
           await new Promise((resolve) => setTimeout(resolve, 1000));
 
+          handleCartDuring_CheckoutExpress(product)
+
           // الانتقال لصفحة الشكر وإعادة تعيين الحالة
           navigate("/thank-you");
-          resetall_OrderSubmited();
         } catch (error) {
           console.error("خطأ في حفظ الطلب:", error);
           alertify.error("حدث خطأ أثناء معالجة طلبك");
@@ -191,6 +196,14 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
       [name]: value,
     }));
   };
+
+
+  const handleCartDuring_CheckoutExpress = (product) => {
+    if(productsInCart.length > 0) {
+      const cartProducts = productsInCart.filter( (item) =>  item.id !== product.id)
+      setProductsInCart(cartProducts);
+    }
+  }
 
   return (
     <div

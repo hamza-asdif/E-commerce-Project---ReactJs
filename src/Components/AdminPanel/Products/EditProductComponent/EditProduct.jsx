@@ -48,7 +48,6 @@ const ProductEditPage = ({ isAddProduct }) => {
 
       if (data && data.length) {
         setProductDetails(data[0]);
-        console.log(data);
       }
     }
   };
@@ -93,11 +92,10 @@ const ProductEditPage = ({ isAddProduct }) => {
         const allCategories = data.map((item) => item.category);
         const uniqueCategories = [...new Set(allCategories)].filter(Boolean);
         setCategories(uniqueCategories);
-        console.log("Categories fetched:", uniqueCategories);
       }
 
       if (error) {
-        console.log("Category error", error);
+        console.error("Category error", error);
       }
     } catch (err) {
       console.error("Error fetching categories:", err);
@@ -352,7 +350,6 @@ const ProductEditPage = ({ isAddProduct }) => {
 
     const finalProductData = formatProductData(combinedData);
 
-    console.log("Final product data to save:", finalProductData);
 
     if (!validateProductData(finalProductData)) {
       return;
@@ -400,7 +397,7 @@ const ProductEditPage = ({ isAddProduct }) => {
         }
 
         alertify.success("تم إضافة المنتج بنجاح");
-        console.log("Added product data:", data);
+
 
         // Clear the form after successful addition
         if (isAddProduct) {

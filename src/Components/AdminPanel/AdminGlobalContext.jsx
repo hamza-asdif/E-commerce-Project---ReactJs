@@ -39,7 +39,7 @@ const AdminProvider = ({ children }) => {
       .eq("role", "admin");
 
     if (error) {
-      console.log("ADMIN DATA FETCH ERROR", error);
+      console.error("ADMIN DATA FETCH ERROR", error);
     } else {
       setAdminInfo(data[0]);
     }
@@ -61,7 +61,7 @@ const AdminProvider = ({ children }) => {
   const handletotalOrders = useCallback(async () => {
     const { data, error } = await supabase.from("orders").select("*");
 
-    if (error) console.log(error);
+    if (error) console.error(error);
     else {
       setOrders(data);
     }
@@ -145,7 +145,6 @@ const AdminProvider = ({ children }) => {
         }, 0);
 
         setEarnings(allEarnings);
-        console.log(allEarnings);
       }
     };
 

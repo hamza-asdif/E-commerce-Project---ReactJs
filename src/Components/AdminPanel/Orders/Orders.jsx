@@ -3,6 +3,8 @@ import "./Orders.css";
 import supabase from "../../../supabaseClient";
 import Papa from "papaparse";
 import alertify from "alertifyjs";
+import OrderDetailsPopup from "./OrderDetails/OrderDetails";
+
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -26,6 +28,7 @@ function Orders() {
   const [deliveredOrders, setDeliveredOrders] = useState(0);
   const [processingOrders, setProcessingOrders] = useState(0);
   const [cancelledOrders, setCancelledOrders] = useState(0);
+  const [isOrderDetails, setisOrderDeatils] = useState(false)
 
   // Fetch orders from Supabase
   useEffect(() => {
@@ -522,7 +525,10 @@ function Orders() {
   };
 
   return (
-    <div className="orders-dashboard">
+    
+
+    <>
+      <div className="orders-dashboard">
       <header className="orders-header">
         <h1 className="orders-title">إدارة الطلبات</h1>
         <div className="orders-stats">
@@ -682,6 +688,10 @@ function Orders() {
                       <button
                         className="action-btn view-btn"
                         title="عرض التفاصيل"
+                        onClick={() => {
+                          setisOrderDeatils(true)
+                          setClickedOrder(order)
+                        }}
                       >
                         <i className="fas fa-eye"></i>
                       </button>
@@ -754,6 +764,11 @@ function Orders() {
         </div>
       )}
     </div>
+    <OrderDetailsPopup isOpen={isOrderDetails}  setIsOpen={setisOrderDeatils} order={clickedOrder} />
+
+
+    
+    </>
   );
 }
 

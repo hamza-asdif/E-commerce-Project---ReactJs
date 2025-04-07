@@ -317,7 +317,7 @@
 }
 
 /* Buttons */
-.filter-btn,
+.filter-btn_orders,
 .filter-reset,
 .bulk-btn,
 .export-btn {
@@ -334,13 +334,13 @@
   gap: var(--space-2);
 }
 
-.filter-btn {
+.filter-btn_orders {
   background-color: var(--main-color);
   color: var(--color-white);
   border: none;
 }
 
-.filter-btn:hover {
+.filter-btn_orders:hover {
   background-color: var(--main-color-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
@@ -840,7 +840,7 @@
     padding: var(--space-4);
   }
 
-  .filter-btn,
+  .filter-btn_orders,
   .filter-reset {
     flex: 1;
   }
@@ -924,7 +924,7 @@
 
 /* ===== Accessibility ===== */
 .action-btn:focus,
-.filter-btn:focus,
+.filter-btn_orders:focus,
 .filter-reset:focus,
 .bulk-btn:focus,
 .export-btn:focus,
@@ -937,7 +937,7 @@
 }
 
 .action-btn:focus:not(:focus-visible),
-.filter-btn:focus:not(:focus-visible),
+.filter-btn_orders:focus:not(:focus-visible),
 .filter-reset:focus:not(:focus-visible),
 .bulk-btn:focus:not(:focus-visible),
 .export-btn:focus:not(:focus-visible),

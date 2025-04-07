@@ -11,9 +11,7 @@ function MobileNavBar() {
   const isActive = (path) => location.pathname === path;
   const mypathname = location.pathname;
 
-  useEffect(() => {
-    console.log("aaaaaaaaaaaaaaaaaaaaa", mypathname);
-  }, []);
+
 
   return (
     <div className="mobile-navbar">

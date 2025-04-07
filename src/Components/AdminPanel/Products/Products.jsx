@@ -39,7 +39,6 @@ const Products = () => {
 
   const fetchAdminProductData = () => {
     if (productsData?.length) {
-      console.log("ADMIN PRODUCTS DATA :  ", productsData);
 
       setAdminProducts(productsData);
       setTimeout(() => {
@@ -92,7 +91,6 @@ const Products = () => {
     if (error) {
       console.error("error deleting product", error);
     }
-    console.log(data);
 
     setLoadingText("جاري تحميل المنتجات...");
     const newProducts = productsData.filter((item) => item.id !== productId);

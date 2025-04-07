@@ -27,11 +27,6 @@ function Home_States() {
     if (productsData?.length && orders?.length && activeUsers?.length) {
       setLoading(false);
         setLoadingText("");
-      // const timer = setTimeout(() => {
-      //   setLoading(false);
-      //   setLoadingText("");
-      // }, 1000);
-      // return () => clearTimeout(timer);
     }
   }, [productsData, orders, activeUsers]);
 
