@@ -28,7 +28,7 @@ import {
 
 // Lazy-loaded components (large or route-specific)
 const ProductPage = lazy(
-  () => import("./Components/ProductPage/ProductPage.jsx")
+  () => import("./Components/productPage/ProductPage.jsx")
 );
 const Cart = lazy(() => import("./Components/Cart/Cart.jsx"));
 const SearchForProducts = lazy(
