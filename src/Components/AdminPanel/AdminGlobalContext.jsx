@@ -23,6 +23,7 @@ const AdminProvider = ({ children }) => {
   const [filterOrders, setFiltredOrders] = useState([]);
   const [ordersByTime, setOrdersByTime] = useState({});
   const [earningsByTime, setEarningsByTime] = useState({});
+  const [showNotifications, setShowNotifications] = useState(false);
   const statesTimes = [
     "جميع الأوقات",
     "هذه السنة",
@@ -177,9 +178,10 @@ const AdminProvider = ({ children }) => {
         setFiltredOrders,
         filterOrdersByDate,
         statesTimes,
-        // أضف هذين المتغيرين:
         ordersByTime,
         earningsByTime,
+        showNotifications,
+        setShowNotifications,
       }}
     >
       {children}

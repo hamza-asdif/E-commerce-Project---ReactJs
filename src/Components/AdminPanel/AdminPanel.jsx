@@ -6,6 +6,7 @@ import MobileNavBar from "./MobileSticky_NavBar/MobileNavBar";
 import AdminHeader from "./AdminHeader/AdminHeader";
 import { useAdminGlobalContext } from "./AdminGlobalContext";
 import AdminProvider from "./AdminGlobalContext";
+import Notifications from "./Notifications/Notifications";
 
 const AdminPanel = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -39,6 +40,7 @@ const AdminPanel = () => {
       <div className="admin-panel-container">
         <AdminHeader />
         <Outlet />
+        <Notifications />
       </div>
     </div>
   );

@@ -278,8 +278,9 @@ input:checked + .slider:before {
 }
 
 /* ===== أزرار الإجراءات ===== */
-.actions-cell {
+.actions-cell_products {
   white-space: nowrap;
+  width: 120px;
 }
 
 .action-buttons {

@@ -1,15 +1,15 @@
 :root {
-  --navbar-height: 70px; /* ارتفاع الشريط */
-  --navbar-bg: #1a202c; /* لون الخلفية (داكن) */
-  --navbar-text: #e2e8f0; /* لون النص (فاتح) */
-  --navbar-active: #63b3ed; /* لون العنصر النشط (أزرق فاتح) */
-  --navbar-hover: #2d3748; /* لون الخلفية عند التمرير */
-  --navbar-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3); /* ظل الشريط */
-  --navbar-icon-size: 22px; /* حجم الأيقونات */
-  --navbar-text-size: 12px; /* حجم النص */
-  --notification-badge-bg: #e53e3e; /* لون خلفية الإشعارات */
-  --notification-badge-text: #ffffff; /* لون نص الإشعارات */
-  --transition-speed: 0.2s; /* سرعة الانتقال */
+  --navbar-height: 65px;
+  --navbar-bg: #1a202c;
+  --navbar-text: #a0aec0;
+  --navbar-active: #f24547;
+  --navbar-hover-bg: rgba(242, 69, 71, 0.1);
+  --navbar-shadow: 0 -1px 0 0 rgba(255, 255, 255, 0.05);
+  --navbar-icon-size: 22px;
+  --navbar-text-size: 11px;
+  --notification-badge-bg: #f24547;
+  --notification-badge-text: #ffffff;
+  --transition-speed: 0.2s;
 }
 
 /* تثبيت الشريط في الأسفل */
@@ -25,6 +25,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
 }
 
 /* تنسيق القائمة */
@@ -33,7 +35,7 @@
   justify-content: space-around;
   align-items: center;
   list-style: none;
-  padding: 0;
+  padding: 0 10px;
   margin: 0;
   width: 100%;
   height: 100%;
@@ -46,48 +48,93 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 6px 0;
   flex: 1;
-  transition: all var(--transition-speed) ease;
   position: relative;
+  color: var(--navbar-text);
+  transition: transform 0.2s ease, color 0.2s ease;
+  border-radius: 12px;
+  margin: 0 4px;
 }
 
 /* تأثير عند التمرير فوق العناصر */
 .nav-item:hover {
-  background: var(--navbar-hover);
+  color: var(--navbar-active);
 }
 
 /* العنصر النشط */
 .nav-item.active {
   color: var(--navbar-active);
-  background: var(--navbar-hover);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25px;
+  height: 3px;
+  background: var(--navbar-active);
+  border-radius: 0 0 3px 3px;
+}
+
+.nav-item:active {
+  transform: scale(0.95);
 }
 
 /* تنسيق الأيقونات */
 .nav-icon {
   font-size: var(--navbar-icon-size);
-  margin-bottom: 0.25rem;
-  color: var(--navbar-text); /* لون الأيقونات (فاتح) */
+  margin-bottom: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 32px;
+  height: 32px;
+  background: rgba(242, 69, 71, 0.15);
+  border-radius: 50%;
+  z-index: -1;
+  transition: transform 0.2s ease;
+}
+
+.nav-item.active .nav-icon::after {
+  transform: translate(-50%, -50%) scale(1);
 }
 
 /* تنسيق النص تحت الأيقونات */
 .nav-text {
   font-size: var(--navbar-text-size);
-  font-weight: 500;
-  color: var(--navbar-text); /* لون النص (فاتح) */
+  font-weight: 600;
+  letter-spacing: -0.2px;
 }
 
 /* تنسيق إشعارات الأوامر */
 .notification-badge {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  top: 3px;
+  right: 50%;
+  transform: translateX(10px);
   background: var(--notification-badge-bg);
   color: var(--notification-badge-text);
   font-size: 10px;
   font-weight: bold;
-  padding: 2px 7px;
-  border-radius: 50%;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(242, 69, 71, 0.3);
+  z-index: 999
 }
 
 /* تأثيرات إضافية للشريط */
@@ -98,6 +145,6 @@
   left: 0;
   width: 100%;
   height: 10px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.1), transparent);
   pointer-events: none;
 }

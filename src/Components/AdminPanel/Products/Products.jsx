@@ -261,7 +261,7 @@ const Products = () => {
                     <span className="slider"></span>
                   </label>
                 </td>
-                <td className="actions-cell">
+                <td className="actions-cell_products">
                   <div className="action-buttons_2">
                     <button
                       className="action-btn view-btn"
