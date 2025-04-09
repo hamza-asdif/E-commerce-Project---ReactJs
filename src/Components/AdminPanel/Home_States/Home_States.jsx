@@ -47,19 +47,19 @@ function Home_States() {
       ) : (
         <div className="quick-state-container">
           <div className="quick-stats">
-            <div className="stat-card">
+            <div className="stat-card_home">
               <h3>إجمالي الإيرادات</h3>
               {manageDataLoading(`${earnings} ${currency}`)}
             </div>
-            <div className="stat-card">
+            <div className="stat-card_home">
               <h3>إجمالي الطلبات</h3>
               {manageDataLoading(orders.length)}
             </div>
-            <div className="stat-card">
+            <div className="stat-card_home">
               <h3>المستخدمون النشطون</h3>
               {manageDataLoading(activeUsers.length)}
             </div>
-            <div className="stat-card">
+            <div className="stat-card_home">
               <h3>المنتجات</h3>
               {manageDataLoading(productsData.length)}
             </div>

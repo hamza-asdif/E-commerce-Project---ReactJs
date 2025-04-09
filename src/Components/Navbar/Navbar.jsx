@@ -84,31 +84,29 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (window.location.pathname.endsWith("/")) {
-      const handleScroll = () => {
-        const scrollY = window.scrollY;
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
 
-        if (scrollY > 200) {
-          if (scrollY > lastScrollY) {
-            setIsVisible(true);
-            navBarRef.current.classList.add("scrolled");
-          } else {
-            setIsVisible(false);
-          }
-        } else {
+      if (scrollY > 200) {
+        if (scrollY > lastScrollY) {
           setIsVisible(true);
-          navBarRef.current.classList.remove("scrolled");
+          navBarRef.current.classList.add("scrolled");
+        } else {
+          setIsVisible(false);
         }
+      } else {
+        setIsVisible(true);
+        navBarRef.current.classList.remove("scrolled");
+      }
 
-        setLastScrollY(scrollY);
-      };
+      setLastScrollY(scrollY);
+    };
 
-      window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll);
 
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-      };
-    }
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, [lastScrollY]);
 
   const toggleMobileMenu = () => {
