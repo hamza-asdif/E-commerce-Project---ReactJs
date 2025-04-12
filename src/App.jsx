@@ -1,11 +1,9 @@
-/* eslint-disable react/prop-types */
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import React, { Suspense, lazy, useEffect } from "react";
 import {
   BrowserRouter,
   Route,
   Routes,
   Navigate,
-  Link,
   useLocation,
 } from "react-router-dom";
 import "./App.css";
@@ -16,7 +14,6 @@ import {
   Navbar,
   HeroImage,
   SectionTitle,
-  SideBarWidget,
   ProductLayout,
   ProductCard2,
   WhyUsSection,
@@ -26,7 +23,13 @@ import {
   ToShopSections,
 } from "./Components";
 
-// Lazy-loaded components (large or route-specific)
+// Components
+import ErrorBoundary from "./Components/ErrorBoundary";
+import LoadingFallback from "./Components/LoadingFallback";
+import AdminProvider from "./Components/AdminPanel/AdminGlobalContext.jsx";
+import AdminLayout from "./Components/AdminLayout.jsx";
+
+// Lazy-loaded components
 const ProductPage = lazy(
   () => import("./Components/productPage/ProductPage.jsx")
 );
@@ -44,7 +47,6 @@ const Home_States = lazy(
   () => import("./Components/AdminPanel/Home_States/Home_States.jsx")
 );
 const Login = lazy(() => import("./Components/Login/Login.jsx"));
-const Register = lazy(() => import("./Components/Register/Register"));
 const ThankYouPage = lazy(
   () => import("./Components/Checkout/Thank_you_page/ThankyouPage.jsx")
 );
@@ -56,34 +58,19 @@ const ProductEditPage = lazy(
 );
 const Orders = lazy(() => import("./Components/AdminPanel/Orders/Orders.jsx"));
 
-// Skeleton loading component (for fallback)
-import Skeleton from "react-loading-skeleton";
-import AdminProvider from "./Components/AdminPanel/AdminGlobalContext.jsx";
-
-function AppContent() {
-  const {
-    toggleCart,
-    setSearchState,
-    isMobile,
-    setIsMobile,
-    mobileMenuOpen,
-    setMobileMenuOpen,
-    resetAllStates,
-  } = useGlobalContext();
+const AppContent = React.memo(() => {
+  const { toggleCart, setSearchState, resetAllStates } = useGlobalContext();
 
   useEffect(() => {
-    console.log("AppContent mounted");
     resetAllStates();
-
     return () => {
       toggleCart(false);
       setSearchState(false);
     };
-  }, []);
+  }, [resetAllStates, toggleCart, setSearchState]);
 
   if (!toggleCart || !setSearchState) {
-    console.error("GlobalContext values are missing");
-    return <div>Loading...</div>;
+    return <LoadingFallback />;
   }
 
   return (
@@ -100,167 +87,163 @@ function AppContent() {
       <WhyUsSection />
     </>
   );
-}
+});
+AppContent.displayName = "AppContent";
 
-const CartBreadcrumb = () => {
-  return (
-    <>
-      <Breadcrumb pathNameInfo="سلة التسوق" />
-      <Suspense fallback={<Skeleton count={5} />}>
-        <Cart />
-      </Suspense>
-    </>
-  );
-};
+const CartBreadcrumb = React.memo(() => (
+  <>
+    <Breadcrumb pathNameInfo="سلة التسوق" />
+    <Suspense fallback={<LoadingFallback />}>
+      <Cart />
+    </Suspense>
+  </>
+));
+CartBreadcrumb.displayName = "CartBreadcrumb";
 
-const SearchBreadcrumb = () => {
-  return (
-    <>
-      <Breadcrumb pathNameInfo="نتائج البحث" />
-      <Suspense fallback={<Skeleton count={5} />}>
-        <SearchForProducts />
-      </Suspense>
-    </>
-  );
-};
+const SearchBreadcrumb = React.memo(() => (
+  <>
+    <Breadcrumb pathNameInfo="نتائج البحث" />
+    <Suspense fallback={<LoadingFallback />}>
+      <SearchForProducts />
+    </Suspense>
+  </>
+));
+SearchBreadcrumb.displayName = "SearchBreadcrumb";
 
-const CheckoutBreadcrumb = () => {
-  return (
-    <>
-      <Breadcrumb pathNameInfo="تأكيد الطلب وإتمام الشراء" />
-      <Suspense fallback={<Skeleton count={5} />}>
-        <Checkout />
-      </Suspense>
-    </>
-  );
-};
+const CheckoutBreadcrumb = React.memo(() => (
+  <>
+    <Breadcrumb pathNameInfo="تأكيد الطلب وإتمام الشراء" />
+    <Suspense fallback={<LoadingFallback />}>
+      <Checkout />
+    </Suspense>
+  </>
+));
+CheckoutBreadcrumb.displayName = "CheckoutBreadcrumb";
 
-const ShopPageBreadcrumb = () => {
-  return (
-    <>
-      <Breadcrumb pathNameInfo="جميع المنتجات" />
-      <Suspense fallback={<Skeleton count={5} />}>
-        <ShopPage />
-      </Suspense>
-    </>
-  );
-};
+const ShopPageBreadcrumb = React.memo(() => (
+  <>
+    <Breadcrumb pathNameInfo="جميع المنتجات" />
+    <Suspense fallback={<LoadingFallback />}>
+      <ShopPage />
+    </Suspense>
+  </>
+));
+ShopPageBreadcrumb.displayName = "ShopPageBreadcrumb";
 
-const HandleNavbar = () => {
-  let location = useLocation();
+const HandleNavbar = React.memo(() => {
+  const location = useLocation();
   const isAdminPanel = location.pathname.startsWith("/admin");
-  return <>{!isAdminPanel && <Navbar />}</>;
-};
+  return !isAdminPanel && <Navbar />;
+});
+HandleNavbar.displayName = "HandleNavbar";
 
-const HandleFooter = () => {
-  let location = useLocation();
+const HandleFooter = React.memo(() => {
+  const location = useLocation();
   const isAdminPanel = location.pathname.startsWith("/admin");
-  return <>{!isAdminPanel && <Footer />}</>;
-};
+  return !isAdminPanel && <Footer />;
+});
+HandleFooter.displayName = "HandleFooter";
 
-const AdminPanel_GlobalContext = () => {
-  return (
-    <AdminProvider>
-      <Suspense fallback={<div>Loading Admin Panel...</div>}>
-        <AdminPanel />
-      </Suspense>
-    </AdminProvider>
-  );
-};
+const AdminPanel_GlobalContext = React.memo(() => (
+  <AdminProvider>
+    <Suspense fallback={<LoadingFallback />}>
+      <AdminPanel />
+    </Suspense>
+  </AdminProvider>
+));
+AdminPanel_GlobalContext.displayName = "AdminPanel_GlobalContext";
 
 function App() {
-  const { adminStatus} = useGlobalContext();
-
   return (
     <BrowserRouter>
       <GlobalProvider>
-        <div className="app-container">
-          <HandleNavbar />
-          <Routes>
-            <Route path="/" element={<AppContent />} />
-            <Route
-              path="/login"
-              element={
-                <Suspense fallback={<div>Loading Login...</div>}>
-                  <Login />
-                </Suspense>
-              }
-            />
+        <ErrorBoundary>
+          <div className="app-container">
+            <HandleNavbar />
+            <Routes>
+              <Route path="/" element={<AppContent />} />
+              <Route
+                path="/login"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Login />
+                  </Suspense>
+                }
+              />
 
-            <Route path="/cart" element={<CartBreadcrumb />} />
+              <Route path="/cart" element={<CartBreadcrumb />} />
+              <Route
+                path="/product/:id"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProductPage />
+                  </Suspense>
+                }
+              />
+              <Route path="/search" element={<SearchBreadcrumb />} />
+              <Route path="/checkout" element={<CheckoutBreadcrumb />} />
+              <Route path="/shop" element={<ShopPageBreadcrumb />} />
+              <Route
+                path="/thank-you"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ThankYouPage />
+                  </Suspense>
+                }
+              />
 
-            <Route
-              path="/product/:id"
-              element={
-                <Suspense fallback={<Skeleton count={5} />}>
-                  <ProductPage />
-                </Suspense>
-              }
-            />
-
-            <Route path="/search" element={<SearchBreadcrumb />} />
-            <Route path="/checkout" element={<CheckoutBreadcrumb />} />
-            <Route path="/shop" element={<ShopPageBreadcrumb />} />
-
-            <Route
-              path="/thank-you"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <ThankYouPage />
-                </Suspense>
-              }
-            />
-
-            {adminStatus && (
-              <Route path="/admin" element={<AdminPanel_GlobalContext />}>
-                <Route
-                  path="products"
-                  element={
-                    <Suspense fallback={<div>Loading Products...</div>}>
-                      <Products />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="edit-product/:id"
-                  element={
-                    <Suspense fallback={<div>Loading Editor...</div>}>
-                      <ProductEditPage isAddProduct={false} />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path=""
-                  element={
-                    <Suspense fallback={<div>Loading Dashboard...</div>}>
-                      <Home_States />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="add-product"
-                  element={
-                    <Suspense fallback={<div>Loading Editor...</div>}>
-                      <ProductEditPage isAddProduct={true} />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="orders"
-                  element={
-                    <Suspense fallback={<div>Loading Orders...</div>}>
-                      <Orders />
-                    </Suspense>
-                  }
-                />
+              {/* Protected Admin Routes */}
+              <Route element={<AdminLayout />}>
+                <Route path="/admin" element={<AdminPanel_GlobalContext />}>
+                  <Route
+                    path=""
+                    element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <Home_States />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="products"
+                    element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <Products />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="edit-product/:id"
+                    element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <ProductEditPage isAddProduct={false} />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="add-product"
+                    element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <ProductEditPage isAddProduct={true} />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="orders"
+                    element={
+                      <Suspense fallback={<LoadingFallback />}>
+                        <Orders />
+                      </Suspense>
+                    }
+                  />
+                </Route>
               </Route>
-            )}
 
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-          {!window.location.pathname.startsWith("/admin") && <FloatingBtn />}
-          <HandleFooter />
-        </div>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+            {!window.location.pathname.startsWith("/admin") && <FloatingBtn />}
+            <HandleFooter />
+          </div>
+        </ErrorBoundary>
       </GlobalProvider>
     </BrowserRouter>
   );

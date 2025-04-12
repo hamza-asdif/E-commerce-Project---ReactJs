@@ -1,41 +1,50 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Login.css";
 import { GrFormViewHide } from "react-icons/gr";
 import { BiShowAlt } from "react-icons/bi";
-import { Link, useNavigate } from "react-router-dom";
+import { FiUser } from "react-icons/fi";
+import { useNavigate, useLocation } from "react-router-dom";
 import supabase from "../../supabaseClient";
 import alertify from "alertifyjs";
 
-const Login = ({ isRegisterForm }) => {
+const Login = () => {
   const [loading, setLoading] = useState(true);
-  const [loading_Btn, setLoadingBtn] = useState(false);
+  const [loadingBtn, setLoadingBtn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  }, []);
+    const checkExistingSession = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user) {
+          const isAdmin = await checkIfAdmin(user.email);
+          if (isAdmin) {
+            navigate("/admin");
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Session check error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  useEffect(() => {
-    if (passwordRef.current) {
-      passwordRef.current.type = showPassword ? "text" : "password";
-    }
-  }, [showPassword]);
+    checkExistingSession();
+  }, [navigate]);
 
   const handleInput = (e) => {
-    const inpName = e.target.name;
-    const inpValue = e.target.value;
-
-    if (inpName === "InputEmail" && inpValue.includes("@")) {
-      setEmail(inpValue);
-    } else if (inpName === "InputPassword" && inpValue.length >= 6) {
-      setPassword(inpValue);
+    const { name, value } = e.target;
+    if (name === "InputEmail") {
+      setEmail(value.trim());
+    } else if (name === "InputPassword") {
+      setPassword(value);
     }
   };
 
@@ -48,50 +57,58 @@ const Login = ({ isRegisterForm }) => {
         .single();
 
       if (error) {
-        console.error("❌ خطأ في جلب بيانات المستخدم:", error.message);
+        console.error("❌ Error fetching user data:", error.message);
         return false;
-      } else {
-        if (data && data.role === "admin") {
-          console.log("مرحبًا Admin! سيتم توجيهك إلى لوحة التحكم");
-        }
       }
 
-      return data.role === "admin";
+      return data?.role === "admin";
     } catch (err) {
-      console.log(err);
+      console.error("Unexpected error:", err);
       return false;
     }
   };
 
-  const handleLogin = async (e, email, password) => {
-    setLoadingBtn(true);
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setLoadingBtn(true);
+
     try {
-      const { data: user, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        console.error("خطأ في تسجيل الدخول:", error.message);
         alertify.error("البريد الإلكتروني أو كلمة المرور غير صحيحة");
         return;
       }
 
-      const admin = await checkIfAdmin(email);
-      setTimeout(() => {
-        setLoadingBtn(true);
-      }, 1000);
-      if (admin) {
-        console.log("مرحبًا Admin! سيتم توجيهك إلى لوحة التحكم");
-        alertify.success("تم تسجيل الدخول بنجاح!");
-        navigate("/admin");
-      } else {
-        alertify.warning("أنت لست Admin.");
+      const isAdmin = await checkIfAdmin(email);
+      if (!isAdmin) {
+        await supabase.auth.signOut();
+        alertify.error("عذراً، هذا الحساب ليس لديه صلاحيات الادمن");
+        return;
       }
+
+      // Store session in localStorage
+      localStorage.setItem(
+        "adminSession",
+        JSON.stringify({
+          email: data.user.email,
+          timestamp: new Date().getTime(),
+        })
+      );
+
+      alertify.success("تم تسجيل الدخول بنجاح!");
+
+      // Navigate to the intended page or admin dashboard
+      const from = location.state?.from?.pathname || "/admin";
+      navigate(from, { replace: true });
     } catch (err) {
-      console.error("خطأ غير متوقع:", err);
-      alertify.error("حدث خطأ غير متوقع أثناء محاولة تسجيل الدخول.");
+      console.error("Unexpected error:", err);
+      alertify.error("حدث خطأ غير متوقع");
+    } finally {
+      setLoadingBtn(false);
     }
   };
 
@@ -99,109 +116,77 @@ const Login = ({ isRegisterForm }) => {
     setShowPassword((prev) => !prev);
   };
 
-  const handleLoading_Btn = () => {
-    if (loading_Btn) return <div className="loader"></div>;
-    return isRegisterForm ? "إنشاء حساب" : "تسجيل الدخول";
-  };
-
-  const resetInputs = () => {
-    emailRef.current.value = "";
-    passwordRef.current.value = "";
-    setEmail("");
-    setPassword("");
-    setShowPassword(false);
-  };
-
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>
-          {isRegisterForm
-            ? "جاري تحميل صفحة إنشاء الحساب..."
-            : "جاري تحميل صفحة تسجيل الدخول..."}
-        </p>
+      <div className="admin-loading-container">
+        <div className="admin-loading-spinner"></div>
+        <p>جاري تحميل صفحة تسجيل الدخول...</p>
       </div>
     );
   }
 
   return (
-    <>
-      <div className="login-wrapper">
-        <div className="login-container">
-          <h2>{isRegisterForm ? "إنشاء حساب جديد" : "تسجيل الدخول"}</h2>
+    <div className="admin-login-wrapper">
+      <div className="admin-login-container">
+        <div className="admin-login-header">
+          <FiUser className="admin-login-icon" />
+          <h2>تسجيل دخول الادمن</h2>
+          <p>قم بتسجيل الدخول للوصول إلى لوحة التحكم</p>
+        </div>
 
-          <form
-            className="login-form"
-            onSubmit={(e) => handleLogin(e, email, password)}
-          >
-            {isRegisterForm && (
-              <div className="form-group">
-                <label htmlFor="fullName">الاسم الكامل:</label>
-                <input
-                  type="text"
-                  id="fullName"
-                  name="fullName"
-                  placeholder="أدخل اسمك الكامل"
-                  required
-                />
-              </div>
-            )}
-            <div className="form-group">
-              <label htmlFor="email">البريد الإلكتروني:</label>
+        <form className="admin-login-form" onSubmit={handleLogin}>
+          <div className="admin-form-group">
+            <label htmlFor="email">البريد الإلكتروني:</label>
+            <input
+              type="email"
+              id="email"
+              name="InputEmail"
+              placeholder="أدخل بريدك الإلكتروني"
+              required
+              onChange={handleInput}
+              value={email}
+            />
+          </div>
+          <div className="admin-form-group">
+            <label htmlFor="password">كلمة المرور:</label>
+            <div className="admin-password-box">
               <input
-                type="email"
-                id="email"
-                name="InputEmail"
-                ref={emailRef}
-                placeholder="أدخل بريدك الإلكتروني"
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="InputPassword"
+                placeholder="أدخل كلمة المرور"
                 required
                 onChange={handleInput}
+                value={password}
               />
+              <button
+                type="button"
+                className="admin-password-toggle"
+                onClick={handlePasswordToggle}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <BiShowAlt className="admin-password-icon" />
+                ) : (
+                  <GrFormViewHide className="admin-password-icon" />
+                )}
+              </button>
             </div>
-            <div className="form-group">
-              <label htmlFor="password">كلمة المرور:</label>
-              <div className="password-box">
-                <input
-                  type="password"
-                  id="password"
-                  name="InputPassword"
-                  defaultValue={password}
-                  placeholder="أدخل كلمة المرور"
-                  required
-                  ref={passwordRef}
-                  onChange={handleInput}
-                />
-                <div
-                  className="password-icon-box"
-                  onClick={handlePasswordToggle}
-                >
-                  {showPassword ? (
-                    <BiShowAlt className="password-icon" />
-                  ) : (
-                    <GrFormViewHide className="password-icon" />
-                  )}
-                </div>
-              </div>
-            </div>
-            <button type="submit" className="submit-button">
-              {handleLoading_Btn()}
-            </button>
-          </form>
-          <p className="signup-link">
-            {isRegisterForm ? (
-              <>
-                لديك حساب بالفعل؟ <Link to="/login">تسجيل الدخول</Link>
-              </>
+          </div>
+          <button
+            type="submit"
+            className="admin-submit-button"
+            disabled={loadingBtn}
+          >
+            {loadingBtn ? (
+              <div className="admin-button-loader"></div>
             ) : (
-              <>
-                ليس لديك حساب؟ <Link to="/register">أنشئ حسابًا جديدًا</Link>
-              </>
+              "تسجيل الدخول"
             )}
-          </p>
-        </div>
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 

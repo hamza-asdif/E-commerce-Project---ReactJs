@@ -1,28 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FaFilter, FaSort, FaSearch } from "react-icons/fa";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { FaFilter, FaSort } from "react-icons/fa";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import ProductCard from "../ProductLayout/ProductCard/ProductCard";
 import "./ShopPage.css";
-import axios from "axios";
 
 function ShopPage() {
-  // States needed for shop functionality
-  const [filteredProducts, setFilteredProducts] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [sortedProducts, setSortedProducts] = useState([]);
   const [isSortActive, setIsSortActive] = useState(false);
-  const [loading, setLoading] = useState(true); // Change this line
+  const [loading, setLoading] = useState(true);
   const [loadingText, setLoadingText] = useState("جاري تحميل المنتجات...");
   const [category, setCategory] = useState([]);
   const [activeCategory, setActiveCategory] = useState("all");
   const [categoryProducts, setCategoryProducts] = useState([]);
-  const [restorAllProducts, setRestorAllProducts] = useState(null);
   const [shopPage_AllProducts, setShopPageAllProducts] = useState([]);
   const [filterPrice, setFiltterPrice] = useState({
     min: 0,
     max: 1000,
   });
-  const [isThisMobile, setIsThisMobile] = useState(false);
   const filterSideBarRef_Mobile = useRef(null);
   const Min_PriceRef = useRef(null);
   const Max_PriceRef = useRef(null);
@@ -31,84 +26,9 @@ function ShopPage() {
   const [itemsPerPage] = useState(6);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Get products from context
   const { allProducts } = useGlobalContext();
 
-  // Remove or modify this useEffect
-
-  // Functions you'll need to implement:
-  // 1. handleFilterByCategory - Filter products by category
-  // 2. handleSortProducts - Sort by price, name, newest
-  // 3. handlePriceRangeFilter - Filter by price range
-  // 4. handleSearch - Search products by name
-  // 5. handlePagination - Implement pagination for products
-
-  useEffect(() => {
-    const pageInitialize = async () => {
-      if (allProducts && allProducts.length) {
-        setLoading(false);
-        setShopPageAllProducts(allProducts);
-
-        setTimeout(() => {
-          console.log(shopPage_AllProducts);
-        }, 1000);
-      }
-    };
-
-    pageInitialize();
-  }, [allProducts]);
-
-  useEffect(() => {
-    console.log(shopPage_AllProducts);
-    handleDrawCategory();
-  }, [shopPage_AllProducts]);
-
-  useEffect(() => {
-    handlePagination();
-  }, []);
-
-  // Modified handleSortProducts
-  const handleSortProducts = (e) => {
-    if (allProducts.length) {
-      setLoading(true);
-      setLoadingText("جاري تصفية المنتجات...");
-
-      const Targetoption = e.target.value;
-
-      if (Targetoption === "default") {
-        setIsSortActive(false);
-        setSortedProducts([]);
-        setLoading(false);
-        return;
-      }
-
-      let productsToSort =
-        activeCategory === "all"
-          ? [...shopPage_AllProducts]
-          : [...categoryProducts];
-
-      const sorted = productsToSort.sort((a, b) => {
-        switch (Targetoption) {
-          case "newest":
-            return new Date(b.createdAt) - new Date(a.createdAt);
-          case "price-asc":
-            return a.price - b.price;
-          case "price-desc":
-            return b.price - a.price;
-          case "name-asc":
-            return a.name.localeCompare(b.name, "ar");
-          default:
-            return 0;
-        }
-      });
-
-      setSortedProducts(sorted);
-      setIsSortActive(true);
-    }
-  };
-
-  // Fix the handleDrawCategory function
-  const handleDrawCategory = () => {
+  const handleDrawCategory = useCallback(() => {
     if (shopPage_AllProducts && shopPage_AllProducts.length) {
       const getCategories = shopPage_AllProducts.map((product) => {
         return product.category;
@@ -116,25 +36,24 @@ function ShopPage() {
 
       const uniqueCategories = [...new Set(getCategories)];
       setCategory(uniqueCategories);
-      console.log("CATEGORY", getCategories, uniqueCategories);
     }
-  };
+  }, [shopPage_AllProducts]);
 
-  const handlePriceInput_reset = () => {
-    Min_PriceRef.current.value = "";
-    Max_PriceRef.current.value = "";
-  };
+  useEffect(() => {
+    if (allProducts && allProducts.length) {
+      setShopPageAllProducts(allProducts);
+      setLoading(false);
+      handleDrawCategory();
+    }
+  }, [allProducts, handleDrawCategory]);
 
-  // Modified handleFilterByCategory
   const handleFilterByCategory = (categoryName) => {
     setLoading(true);
 
     if (allProducts.length) {
-      // Clear sorting state
       const select = document.querySelector(".sort-select");
       if (select) select.value = "default";
 
-      // Reset all filters first
       setIsSortActive(false);
       setSortedProducts([]);
 
@@ -145,26 +64,17 @@ function ShopPage() {
         return;
       }
 
-      // Get fresh products from the main source
       const selectedCategory = [...shopPage_AllProducts].filter(
-        (product) => product.category === categoryName,
+        (product) => product.category === categoryName
       );
 
       setActiveCategory(categoryName);
       setCategoryProducts(selectedCategory);
-      // Reset shopPage_AllProducts to original state
-      handlePriceInput_reset();
-    }
-
-    setTimeout(() => {
       setLoading(false);
-    }, 1000);
-
-    handleFilterSideBar_Mobile();
+    }
   };
 
   const ProductsFilters = (arr) => {
-    // Only show no products message if we're not loading and array is empty
     if (!loading && (!arr || arr.length === 0)) {
       return (
         <div className="no-products">
@@ -186,30 +96,6 @@ function ShopPage() {
     ));
   };
 
-  const handleToggle_reset_filters = () => {
-    setIsFilterOpen(false);
-    setActiveCategory("all"); // Change from false to "all"
-    setCategoryProducts([]); // Add this
-    setSortedProducts([]); // Add this
-    setIsSortActive(false); // Add this*
-    setFiltterPrice(() => ({
-      min: 0,
-      max: 1000,
-    }));
-
-    Min_PriceRef.current.value = "";
-    Max_PriceRef.current.value = "";
-  };
-
-  const resetFilters = () => {
-    setIsFilterOpen(false);
-    setActiveCategory("all");
-    setCategoryProducts([]);
-    setSortedProducts([]);
-    setIsSortActive(false);
-    setLoadingText("جاري تحميل المنتجات..."); // Reset loading text
-  };
-
   const handleFilterByPrice = () => {
     if (
       Object.values(filterPrice)[0] !== 0 &&
@@ -218,7 +104,6 @@ function ShopPage() {
       setLoading(true);
       setLoadingText("جاري تصفية المنتجات حسب السعر...");
 
-      // Fix the condition to check for "all" instead of !activeCategory
       const getProductsFirst =
         activeCategory === "all"
           ? [...shopPage_AllProducts]
@@ -232,14 +117,10 @@ function ShopPage() {
         return ProductPrice >= PriceMin && ProductPrice <= PriceMax;
       });
 
-      // Update the filtered products state
       setSortedProducts(NewProducts);
       setIsSortActive(true);
 
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
-
+      setLoading(false);
       handleFilterSideBar_Mobile();
     }
   };
@@ -256,7 +137,6 @@ function ShopPage() {
       ...prev,
       [name]: Number(value),
     }));
-    console.log(`${name} price:`, value);
   };
 
   const handleFilterSideBar_Mobile = () => {
@@ -273,8 +153,7 @@ function ShopPage() {
     }
   };
 
-  const handlePagination = () => {
-    // Get the correct products array based on current filters/sorts
+  const handlePagination = useCallback(() => {
     const sourceProducts = isSortActive
       ? sortedProducts
       : activeCategory === "all"
@@ -282,19 +161,35 @@ function ShopPage() {
         : categoryProducts;
 
     if (sourceProducts?.length) {
-      // Calculate total pages
       const pageCount = Math.ceil(sourceProducts.length / itemsPerPage);
       setTotalPages(pageCount);
 
-      // Calculate slice indexes
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
 
-      // Get current page products
       const currentPageProducts = sourceProducts.slice(startIndex, endIndex);
       setPaginatedProducts(currentPageProducts);
     }
-  };
+  }, [
+    isSortActive,
+    sortedProducts,
+    activeCategory,
+    allProducts,
+    categoryProducts,
+    itemsPerPage,
+    currentPage,
+  ]);
+
+  useEffect(() => {
+    handlePagination();
+  }, [
+    currentPage,
+    allProducts,
+    activeCategory,
+    isSortActive,
+    sortedProducts,
+    handlePagination,
+  ]);
 
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
@@ -308,41 +203,68 @@ function ShopPage() {
     setCurrentPage(pageNumber);
   };
 
-  useEffect(() => {
+  const handleSortProducts = (e) => {
+    const targetOption = e.target.value;
     setLoading(true);
+    setLoadingText("جاري ترتيب المنتجات...");
 
-    setTimeout(() => {
-      handlePagination();
+    if (targetOption === "default") {
+      setIsSortActive(false);
+      setSortedProducts([]);
       setLoading(false);
-    }, 800);
-  }, [currentPage, allProducts, activeCategory, isSortActive, sortedProducts]);
+      return;
+    }
+
+    const productsToSort =
+      activeCategory === "all"
+        ? [...shopPage_AllProducts]
+        : [...categoryProducts];
+
+    const sorted = productsToSort.sort((a, b) => {
+      switch (targetOption) {
+        case "newest":
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        case "price-asc":
+          return a.price - b.price;
+        case "price-desc":
+          return b.price - a.price;
+        case "name-asc":
+          return a.name.localeCompare(b.name, "ar");
+        default:
+          return 0;
+      }
+    });
+
+    setSortedProducts(sorted);
+    setIsSortActive(true);
+    setLoading(false);
+  };
 
   return (
     <div className="shop-page">
-      {/* Shop Header */}
       <div className="shop-header">
         <h1>تسوق منتجاتنا</h1>
         <p>اكتشف مجموعتنا المميزة من المنتجات</p>
       </div>
 
       <div className="shop-container">
-        {/* Filters Panel */}
         <aside
           className={`shop-filters ${isFilterOpen ? "active" : ""}`}
           ref={filterSideBarRef_Mobile}
         >
           <div className="filters-header">
             <h3>تصفية المنتجات</h3>
-            <button onClick={handleToggle_reset_filters} className="filter-btn">
+            <button
+              onClick={() => setIsFilterOpen(false)}
+              className="filter-btn"
+            >
               &times;
             </button>
           </div>
 
-          {/* Categories Filter */}
           <div className="filter-section">
             <h4>الفئات</h4>
             <div className="categories-list">
-              {/* Map through your categories here */}
               {category.length &&
                 category.map((categ, index) => (
                   <h6
@@ -366,7 +288,6 @@ function ShopPage() {
             </div>
           </div>
 
-          {/* Price Range Filter */}
           <div className="filter-section">
             <h4>نطاق السعر</h4>
             <div className="price-ranges">
@@ -401,12 +322,6 @@ function ShopPage() {
                 </div>
               </div>
 
-              <div className="price-slider">
-                <div className="slider-track"></div>
-                <input type="range" className="min-price" />
-                <input type="range" className="max-price" />
-              </div>
-
               <button
                 className="apply-filter-btn"
                 onClick={handleFilterByPrice}
@@ -417,9 +332,7 @@ function ShopPage() {
           </div>
         </aside>
 
-        {/* Products Section */}
         <main className="shop-content">
-          {/* Controls Bar */}
           <div className="shop-controls">
             <button
               className="filter-toggle"
@@ -440,9 +353,6 @@ function ShopPage() {
             </div>
           </div>
 
-          {/* Products Grid */}
-
-          {/* Products Grid */}
           {loading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
@@ -454,7 +364,6 @@ function ShopPage() {
             </div>
           )}
 
-          {/* Pagination */}
           <div className="shop-pagination">
             <div className="pagination-container">
               <button
