@@ -1,24 +1,20 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import PropTypes from "prop-types";
 import "./Orders.css";
-import supabase from "../../../supabaseClient";
 import Papa from "papaparse";
 import alertify from "alertifyjs";
 import OrderDetailsPopup from "./OrderDetails/OrderDetails";
-
+import { useAdminGlobalContext } from "../AdminGlobalContext";
 
 function Orders() {
+  const { orders: contextOrders } = useAdminGlobalContext();
   const [orders, setOrders] = useState([]);
   const [currency] = useState("ر.س");
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage, setOrdersPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
-  const tableRowRef = useRef(null);
-  const [checkbox, setCheckbox] = useState(false);
-  const [tableRowIndex, setTableRowIndex] = useState(null);
-  const [tableRowSelected, setTableRowSelected] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [clickedOrder, setClickedOrder] = useState({});
-  const [rowsSelectedCount, setRowsSelectedCount] = useState(0);
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -28,80 +24,53 @@ function Orders() {
   const [deliveredOrders, setDeliveredOrders] = useState(0);
   const [processingOrders, setProcessingOrders] = useState(0);
   const [cancelledOrders, setCancelledOrders] = useState(0);
-  const [isOrderDetails, setisOrderDeatils] = useState(false)
+  const [isOrderDetails, setisOrderDeatils] = useState(false);
 
-  // Fetch orders from Supabase
+  // Use orders from context
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("orders")
-          .select("*")
-          .order("created_at", { ascending: true });
-        if (error) throw error;
-
-        const ordersWithIds = data.map((item, index) => ({
-          ...item,
-          order_Id: `#${String(index + 1).padStart(3, "0")}`,
-        }));
-
-        setOrders(ordersWithIds);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
+    if (contextOrders?.length) {
+      const ordersWithIds = contextOrders.map((item, index) => ({
+        ...item,
+        order_Id: `#${String(index + 1).padStart(3, "0")}`,
+      }));
+      setOrders(ordersWithIds);
+      setLoading(false);
+    }
+  }, [contextOrders]);
 
   // Calculate order statistics
   useEffect(() => {
-    const calculateOrders = async () => {
-      try {
-        const { data: orderStats, error } = await supabase
-          .from("orders")
-          .select("status");
-
-        if (error) {
-          console.error("Error fetching order statistics:", error);
-          return;
-        }
-
-        const stats = orderStats.reduce(
-          (acc, order) => {
-            switch (order.status) {
-              case "delivered":
-                acc.delivered++;
-                break;
-              case "processing":
-                acc.processing++;
-                break;
-              case "cancelled":
-                acc.cancelled++;
-                break;
-              default:
-                break;
-            }
-            acc.total++;
-            return acc;
-          },
-          {
-            total: 0,
-            delivered: 0,
-            processing: 0,
-            cancelled: 0,
+    const calculateOrders = () => {
+      const stats = orders.reduce(
+        (acc, order) => {
+          switch (order.status) {
+            case "delivered":
+              acc.delivered++;
+              break;
+            case "processing":
+              acc.processing++;
+              break;
+            case "cancelled":
+              acc.cancelled++;
+              break;
+            default:
+              break;
           }
-        );
+          acc.total++;
+          return acc;
+        },
+        {
+          total: 0,
+          delivered: 0,
+          processing: 0,
+          cancelled: 0,
+        }
+      );
 
-        setTotalOrders(stats.total);
-        setDeliveredOrders(stats.delivered);
-        setProcessingOrders(stats.processing);
-        setCancelledOrders(stats.cancelled);
-      } catch (error) {
-        console.error("Error calculating order statistics:", error);
-      }
+      setTotalOrders(stats.total);
+      setDeliveredOrders(stats.delivered);
+      setProcessingOrders(stats.processing);
+      setCancelledOrders(stats.cancelled);
     };
 
     calculateOrders();
@@ -214,6 +183,10 @@ function Orders() {
     );
   };
 
+  HandleOrderStatus.propTypes = {
+    orderStatus: PropTypes.string,
+  };
+
   // Handle checkbox click
   const handleCheckboxClick = (index, order) => {
     const currentPageSelection = selectedRows[currentPage] || [];
@@ -289,28 +262,20 @@ function Orders() {
       setLoading(true);
 
       const selectedOrderIds = selectedOrders.map((order) => order.id);
-      const { data: orders, error } = await supabase
-        .from("orders")
-        .select(`id, created_at, total_price, Customer_Infos, status`)
-        .in("id", selectedOrderIds);
+      const ordersToExport = orders.filter((order) =>
+        selectedOrderIds.includes(order.id)
+      );
 
-      if (error) {
-        console.error("Error fetching selected orders:", error);
-        notification.dismiss();
-        alertify.error("حدث خطأ أثناء جلب بيانات الطلبات");
-        return;
-      }
-
-      if (!orders || orders.length === 0) {
+      if (!ordersToExport || ordersToExport.length === 0) {
         console.error("No orders found to export");
         notification.dismiss();
         alertify.error("لم يتم العثور على طلبات للتصدير");
         return;
       }
 
-      notification.setContent(`جاري معالجة ${orders.length} طلب...`);
+      notification.setContent(`جاري معالجة ${ordersToExport.length} طلب...`);
 
-      const csvData = orders.map((order) => ({
+      const csvData = ordersToExport.map((order) => ({
         OrderID: order.id,
         Date: new Date(order.created_at).toLocaleDateString("en-SA"),
         Total: order.total_price,
@@ -343,7 +308,7 @@ function Orders() {
         link.click();
         document.body.removeChild(link);
         notification.dismiss();
-        alertify.success(`تم تصدير ${orders.length} طلب بنجاح`);
+        alertify.success(`تم تصدير ${ordersToExport.length} طلب بنجاح`);
         setLoading(false);
       }, 1000);
     } catch (error) {
@@ -370,35 +335,24 @@ function Orders() {
 
               setLoading(true);
               notification.setContent("جاري جلب بيانات الطلبات...");
-              const { data: allOrders, error } = await supabase
-                .from("orders")
-                .select(`id, created_at, total_price, Customer_Infos, status`);
 
-              if (error) {
-                console.error("Error fetching all orders:", error);
-                notification.dismiss();
-                alertify.error("حدث خطأ أثناء جلب بيانات الطلبات");
-                setLoading(false);
-                return;
-              }
-
-              if (!allOrders || allOrders.length === 0) {
+              if (!orders || orders.length === 0) {
                 notification.dismiss();
                 alertify.error("لا توجد طلبات للتصدير");
                 setLoading(false);
                 return;
               }
 
-              notification.setContent(`جاري معالجة ${allOrders.length} طلب...`);
+              notification.setContent(`جاري معالجة ${orders.length} طلب...`);
 
               const batchSize = 100;
-              const totalBatches = Math.ceil(allOrders.length / batchSize);
+              const totalBatches = Math.ceil(orders.length / batchSize);
               let csvData = [];
 
               for (let i = 0; i < totalBatches; i++) {
                 const start = i * batchSize;
-                const end = Math.min(start + batchSize, allOrders.length);
-                const batch = allOrders.slice(start, end);
+                const end = Math.min(start + batchSize, orders.length);
+                const batch = orders.slice(start, end);
 
                 notification.setContent(
                   `جاري معالجة الدفعة ${i + 1} من ${totalBatches}...`
@@ -441,7 +395,7 @@ function Orders() {
                 link.click();
                 document.body.removeChild(link);
                 notification.dismiss();
-                alertify.success(`تم تصدير ${allOrders.length} طلب بنجاح`);
+                alertify.success(`تم تصدير ${orders.length} طلب بنجاح`);
                 setLoading(false);
               }, 1000);
             } catch (error) {
@@ -485,26 +439,11 @@ function Orders() {
           return;
       }
 
-      const { error } = await supabase
-        .from("orders")
-        .update({ status: newStatus })
-        .in("id", selectedOrderIds);
-
-      if (error) {
-        console.error("Error updating orders:", error);
-        alertify.error("حدث خطأ أثناء تحديث حالة الطلبات");
-        return;
-      }
-
-      const { data: updatedOrders, error: fetchError } = await supabase
-        .from("orders")
-        .select("*")
-        .order("created_at", { ascending: true });
-
-      if (fetchError) {
-        console.error("Error fetching updated orders:", fetchError);
-        return;
-      }
+      const updatedOrders = orders.map((order) =>
+        selectedOrderIds.includes(order.id)
+          ? { ...order, status: newStatus }
+          : order
+      );
 
       const ordersWithIds = updatedOrders.map((item, index) => ({
         ...item,
@@ -525,249 +464,253 @@ function Orders() {
   };
 
   return (
-    
-
     <>
       <div className="orders-dashboard">
-      <header className="orders-header">
-        <h1 className="orders-title">إدارة الطلبات</h1>
-        <div className="orders-stats">
-          <div className="stat-card">
-            <span className="stat-value">{totalOrders}</span>
-            <span className="stat-label">إجمالي الطلبات</span>
+        <header className="orders-header">
+          <h1 className="orders-title">إدارة الطلبات</h1>
+          <div className="orders-stats">
+            <div className="stat-card">
+              <span className="stat-value">{totalOrders}</span>
+              <span className="stat-label">إجمالي الطلبات</span>
+            </div>
+
+            <div className="stat-card">
+              <span className="stat-value">{deliveredOrders}</span>
+              <span className="stat-label">تم التسليم</span>
+            </div>
+
+            <div className="stat-card">
+              <span className="stat-value">{processingOrders}</span>
+              <span className="stat-label">قيد المعالجة</span>
+            </div>
+
+            <div className="stat-card">
+              <span className="stat-value">{cancelledOrders}</span>
+              <span className="stat-label">ملغي</span>
+            </div>
+          </div>
+        </header>
+
+        <div className="orders-tools">
+          <div className="search-filters">
+            <div className="search-box_orders">
+              <input
+                type="text"
+                placeholder="ابحث برقم الطلب، الاسم، الهاتف..."
+                className="search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+              {isSearchActive ? (
+                <button className="search-btn" onClick={clearSearch}>
+                  <i className="fas fa-times"></i>
+                </button>
+              ) : (
+                <button className="search-btn" onClick={handleSearch}>
+                  <i className="fas fa-search"></i>
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="stat-card">
-            <span className="stat-value">{deliveredOrders}</span>
-            <span className="stat-label">تم التسليم</span>
-          </div>
-
-          <div className="stat-card">
-            <span className="stat-value">{processingOrders}</span>
-            <span className="stat-label">قيد المعالجة</span>
-          </div>
-
-          <div className="stat-card">
-            <span className="stat-value">{cancelledOrders}</span>
-            <span className="stat-label">ملغي</span>
-          </div>
-        </div>
-      </header>
-
-      <div className="orders-tools">
-        <div className="search-filters">
-          <div className="search-box_orders">
-            <input
-              type="text"
-              placeholder="ابحث برقم الطلب، الاسم، الهاتف..."
-              className="search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-            />
-            {isSearchActive ? (
-              <button className="search-btn" onClick={clearSearch}>
-                <i className="fas fa-times"></i>
-              </button>
-            ) : (
-              <button className="search-btn" onClick={handleSearch}>
-                <i className="fas fa-search"></i>
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="bulk-actions">
-          <select
-            className="bulk-select"
-            onChange={(e) => {
-              if (e.target.value) {
-                if (e.target.value === "export") {
-                  exportToCSV();
-                } else {
-                  applyBulkAction(e.target.value);
-                }
-                e.target.value = "";
-              }
-            }}
-          >
-            <option value="">إجراءات جماعية</option>
-            <option value="mark-delivered">تحديد كمسلم</option>
-            <option value="mark-processing">تحديد كقيد المعالجة</option>
-            <option value="export">تصدير المحدد</option>
-          </select>
-          <button
-            className="export-btn"
-            onClick={exportAllToCSV}
-            disabled={loading}
-          >
-            <i className="fas fa-file-export"></i>
-            تصدير الكل
-          </button>
-        </div>
-      </div>
-
-      <div className="orders-table-container">
-        <table className="orders-table" aria-label="جدول الطلبات">
-          <thead>
-            <tr>
-              <th className="checkbox-cell">
-                <input
-                  type="checkbox"
-                  className="select-all-checkbox"
-                  onChange={checkAllTableRows}
-                  checked={
-                    selectedRows[currentPage]?.length ===
-                      paginatedOrders.length && paginatedOrders.length > 0
-                  }
-                />
-              </th>
-              <th className="sortable">رقم الطلب</th>
-              <th>العميل</th>
-              <th className="sortable"> تاريخ الطلب</th>
-              <th> المبلغ </th>
-              <th>الحالة</th>
-              <th>الإجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="7" className="loading-cell_2">
-                  <div className="loading-spinner_2"></div>
-                </td>
-              </tr>
-            ) : paginatedOrders.length > 0 ? (
-              paginatedOrders.map((order, index) => (
-                <tr
-                  key={order.id}
-                  className={
-                    selectedRows[currentPage]?.includes(index) ? "selected" : ""
-                  }
-                >
-                  <td className="checkbox-cell">
-                    <input
-                      type="checkbox"
-                      className="order-checkbox"
-                      onChange={() => handleCheckboxClick(index, order)}
-                      checked={
-                        selectedRows[currentPage]?.includes(index) || false
-                      }
-                    />
-                  </td>
-                  <td className="order-id">{order.order_Id}</td>
-                  <td className="customer-info">
-                    <div className="customer-name">
-                      {order.Customer_Infos?.fullName || "غير محدد"}
-                    </div>
-                    <div className="customer-email">
-                      {order.Customer_Infos?.email || "بريد غير متوفر"}
-                    </div>
-                  </td>
-                  <td className="order-date">
-                    <div className="date-primary">
-                      {new Date(order.created_at).toLocaleDateString("en-SA")}
-                    </div>
-                    <div className="date-secondary">
-                      {new Date(order.created_at).toLocaleTimeString("en-SA", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </div>
-                  </td>
-                  <td className="order-amount">
-                    {order.total_price}{" "}
-                    <span className="currency-span"> {currency} </span>{" "}
-                  </td>
-                  <td className="order-status">
-                    <HandleOrderStatus orderStatus={order.status} />
-                  </td>
-                  <td className="actions-cell_2">
-                    <div className="action-buttons_2">
-                      <button
-                        className="action-btn view-btn"
-                        title="عرض التفاصيل"
-                        onClick={() => {
-                          setisOrderDeatils(true)
-                          setClickedOrder(order)
-                        }}
-                      >
-                        <i className="fas fa-eye"></i>
-                      </button>
-                      <button
-                        className="action-btn print-btn"
-                        title="طباعة الفاتورة"
-                      >
-                        <i className="fas fa-print"></i>
-                      </button>
-                      <button
-                        className="action-btn more-btn"
-                        title="المزيد من الخيارات"
-                      >
-                        <i className="fas fa-ellipsis-v"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7">
-                  {isSearchActive
-                    ? "لا توجد نتائج مطابقة للبحث"
-                    : "لا توجد طلبات متاحة"}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {!loading && (
-        <div className="orders-pagination">
-          <div className="pagination-info">
-            عرض <span className="font-semibold">{paginatedOrders.length}</span>{" "}
-            من{" "}
-            <span className="font-semibold">
-              {isSearchActive ? filteredOrders.length : orders.length}
-            </span>{" "}
-            طلبية
-            {isSearchActive && " (نتائج البحث)"}
-          </div>
-          <div className="pagination-controls">
-            <PaginationButtons />
-          </div>
-          <div className="pagination-options">
-            <span>عرض</span>
+          <div className="bulk-actions">
             <select
-              className="per-page-select"
-              value={ordersPerPage}
+              className="bulk-select"
               onChange={(e) => {
-                setLoading(true);
-                setTimeout(() => {
-                  setLoading(false);
-                  setSelectedRows([]);
-                }, 1000);
-
-                setOrdersPerPage(Number(e.target.value));
-                setCurrentPage(1);
+                if (e.target.value) {
+                  if (e.target.value === "export") {
+                    exportToCSV();
+                  } else {
+                    applyBulkAction(e.target.value);
+                  }
+                  e.target.value = "";
+                }
               }}
             >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="30">30</option>
+              <option value="">إجراءات جماعية</option>
+              <option value="mark-delivered">تحديد كمسلم</option>
+              <option value="mark-processing">تحديد كقيد المعالجة</option>
+              <option value="export">تصدير المحدد</option>
             </select>
-            <span>لكل صفحة</span>
+            <button
+              className="export-btn"
+              onClick={exportAllToCSV}
+              disabled={loading}
+            >
+              <i className="fas fa-file-export"></i>
+              تصدير الكل
+            </button>
           </div>
         </div>
-      )}
-    </div>
-    <OrderDetailsPopup isOpen={isOrderDetails}  setIsOpen={setisOrderDeatils} order={clickedOrder} />
 
+        <div className="orders-table-container">
+          <table className="orders-table" aria-label="جدول الطلبات">
+            <thead>
+              <tr>
+                <th className="checkbox-cell">
+                  <input
+                    type="checkbox"
+                    className="select-all-checkbox"
+                    onChange={checkAllTableRows}
+                    checked={
+                      selectedRows[currentPage]?.length ===
+                        paginatedOrders.length && paginatedOrders.length > 0
+                    }
+                  />
+                </th>
+                <th className="sortable">رقم الطلب</th>
+                <th>العميل</th>
+                <th className="sortable"> تاريخ الطلب</th>
+                <th> المبلغ </th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="7" className="loading-cell_2">
+                    <div className="loading-spinner_2"></div>
+                  </td>
+                </tr>
+              ) : paginatedOrders.length > 0 ? (
+                paginatedOrders.map((order, index) => (
+                  <tr
+                    key={order.id}
+                    className={
+                      selectedRows[currentPage]?.includes(index)
+                        ? "selected"
+                        : ""
+                    }
+                  >
+                    <td className="checkbox-cell">
+                      <input
+                        type="checkbox"
+                        className="order-checkbox"
+                        onChange={() => handleCheckboxClick(index, order)}
+                        checked={
+                          selectedRows[currentPage]?.includes(index) || false
+                        }
+                      />
+                    </td>
+                    <td className="order-id">{order.order_Id}</td>
+                    <td className="customer-info">
+                      <div className="customer-name">
+                        {order.Customer_Infos?.fullName || "غير محدد"}
+                      </div>
+                      <div className="customer-email">
+                        {order.Customer_Infos?.email || "بريد غير متوفر"}
+                      </div>
+                    </td>
+                    <td className="order-date">
+                      <div className="date-primary">
+                        {new Date(order.created_at).toLocaleDateString("en-SA")}
+                      </div>
+                      <div className="date-secondary">
+                        {new Date(order.created_at).toLocaleTimeString(
+                          "en-SA",
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          }
+                        )}
+                      </div>
+                    </td>
+                    <td className="order-amount">
+                      {order.total_price}{" "}
+                      <span className="currency-span"> {currency} </span>{" "}
+                    </td>
+                    <td className="order-status">
+                      <HandleOrderStatus orderStatus={order.status} />
+                    </td>
+                    <td className="actions-cell_2">
+                      <div className="action-buttons_2">
+                        <button
+                          className="action-btn view-btn"
+                          title="عرض التفاصيل"
+                          onClick={() => {
+                            setisOrderDeatils(true);
+                            setClickedOrder(order);
+                          }}
+                        >
+                          <i className="fas fa-eye"></i>
+                        </button>
+                        <button
+                          className="action-btn print-btn"
+                          title="طباعة الفاتورة"
+                        >
+                          <i className="fas fa-print"></i>
+                        </button>
+                        <button
+                          className="action-btn more-btn"
+                          title="المزيد من الخيارات"
+                        >
+                          <i className="fas fa-ellipsis-v"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7">
+                    {isSearchActive
+                      ? "لا توجد نتائج مطابقة للبحث"
+                      : "لا توجد طلبات متاحة"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-    
+        {!loading && (
+          <div className="orders-pagination">
+            <div className="pagination-info">
+              عرض{" "}
+              <span className="font-semibold">{paginatedOrders.length}</span> من{" "}
+              <span className="font-semibold">
+                {isSearchActive ? filteredOrders.length : orders.length}
+              </span>{" "}
+              طلبية
+              {isSearchActive && " (نتائج البحث)"}
+            </div>
+            <div className="pagination-controls">
+              <PaginationButtons />
+            </div>
+            <div className="pagination-options">
+              <span>عرض</span>
+              <select
+                className="per-page-select"
+                value={ordersPerPage}
+                onChange={(e) => {
+                  setLoading(true);
+                  setTimeout(() => {
+                    setLoading(false);
+                    setSelectedRows([]);
+                  }, 1000);
+
+                  setOrdersPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+              </select>
+              <span>لكل صفحة</span>
+            </div>
+          </div>
+        )}
+      </div>
+      <OrderDetailsPopup
+        isOpen={isOrderDetails}
+        setIsOpen={setisOrderDeatils}
+        order={clickedOrder}
+      />
     </>
   );
 }

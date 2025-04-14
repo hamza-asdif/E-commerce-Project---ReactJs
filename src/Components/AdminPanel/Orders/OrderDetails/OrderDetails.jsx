@@ -30,11 +30,10 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
 
     try {
       setIsUpdating(true);
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("orders")
         .update({ status: newStatus })
-        .eq("id", order.id)
-        .single();
+        .eq("id", order.id);
 
       if (error) throw error;
 
@@ -65,7 +64,10 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
   if (!isOpen || !order) return null;
 
   return (
-    <div className="order-modal-overlay-unique" onClick={() => setIsOpen(false)}>
+    <div
+      className="order-modal-overlay-unique"
+      onClick={() => setIsOpen(false)}
+    >
       <div className="order-modal-unique" onClick={(e) => e.stopPropagation()}>
         <header className="modal-header-unique">
           <h2>تفاصيل الطلب {order.order_Id} </h2>
@@ -93,9 +95,7 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
                 <i className="fas fa-envelope"></i>
                 <div>
                   <label>البريد الإلكتروني</label>
-                  <p>
-                    {order.Customer_Infos.email || "hamzaasdif@gmail.com"}
-                  </p>
+                  <p>{order.Customer_Infos.email || "hamzaasdif@gmail.com"}</p>
                 </div>
               </div>
               <div className="info-item-unique">
@@ -210,7 +210,10 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
             className="status-popup-overlay-unique"
             onClick={() => !isUpdating && setShowStatusPopup(false)}
           >
-            <div className="status-popup-unique" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="status-popup-unique"
+              onClick={(e) => e.stopPropagation()}
+            >
               <h4>تغيير حالة الطلب</h4>
               <div className="status-options-unique">
                 {statusOptions.map((status) => (
