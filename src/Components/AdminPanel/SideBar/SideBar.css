@@ -8,6 +8,8 @@
   --sidebar-border: #2d3748;
   --text-color: #ffffff;
   --transition-speed: 0.3s;
+  --danger-color: #ef4444;
+  --danger-hover: #dc2626;
 }
 
 .sidebar {
@@ -22,7 +24,8 @@
   right: 0;
   z-index: 1000;
   transition: all var(--transition-speed) ease;
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-header {
@@ -43,6 +46,9 @@
   list-style: none;
   padding: 0;
   margin-top: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-menu li {
@@ -52,14 +58,48 @@
   margin-bottom: 0.625rem;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: background var(--transition-speed) ease;
+  transition: all var(--transition-speed) ease;
 }
 
-.sidebar-menu li:last-child{
+/* .sidebar-menu li strong {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 20px;
+  min-width: 20px;
+  height: 20px;
+  background: var(--notification-accent, #f24547);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(242, 69, 71, 0.2);
+}
+
+.sidebar-menu li:hover strong {
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Position for RTL layout */
+[dir="rtl"] .sidebar-menu li strong {
+  left: auto;
+  right: 20px;
+}
+*/ .sidebar-menu li:last-child {
+  margin-top: auto;
+  margin-bottom: 0;
+}
+
+#notification-li {
   position: relative;
 }
 
-.sidebar-menu li:last-child strong {
+.sidebar-menu #notification-li strong {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -78,12 +118,12 @@
   transition: all 0.3s ease;
 }
 
-.sidebar-menu li:last-child:hover strong {
+.sidebar-menu #notification-li:hover strong {
   background: #ff6b81;
   transform: translateY(-50%) scale(1.1);
 }
 
-.sidebar-menu li:hover {
+.sidebar-menu #notification-li:hover {
   background: var(--sidebar-hover);
 }
 
@@ -99,6 +139,19 @@
 .sidebar-menu li h6 {
   font-size: 0.9rem;
   margin: 0;
+}
+
+/* Logout button specific styles */
+.sidebar-menu .logout {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger-color);
+  margin-top: auto;
+}
+
+.sidebar-menu .logout:hover {
+  background-color: var(--danger-color);
+  color: white;
+  transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {

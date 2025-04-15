@@ -1,53 +1,143 @@
-/* eslint-disable react/prop-types */
-import React, { useEffect, useState } from "react";
-import "./OrderDetails.css";
-import supabase from "../../../../supabaseClient";
+import React, { useState, useEffect, useRef } from "react";
+import PropTypes from "prop-types";
 import alertify from "alertifyjs";
+import supabase from "../../../../supabaseClient";
+import { useReactToPrint } from "react-to-print";
+import "./OrderDetails.css";
+import { useAdminGlobalContext } from "../../AdminGlobalContext";
 
-const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
+const statusOptions = [
+  { value: "pending", label: "قيد الانتظار", color: "#f59e0b" },
+  { value: "processing", label: "قيد المعالجة", color: "#3b82f6" },
+  { value: "delivered", label: "تم التسليم", color: "#10b981" },
+  { value: "cancelled", label: "ملغي", color: "#6b7280" },
+];
+
+const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
   const [showStatusPopup, setShowStatusPopup] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [orderNote, setOrderNote] = useState("");
+  const [showNoteEditor, setShowNoteEditor] = useState(false);
+  const printComponentRef = useRef();
+  const { refreshOrders } = useAdminGlobalContext();
 
   useEffect(() => {
     if (order) {
       setCurrentStatus(order.status);
+      setOrderNote(order.notes || "");
     }
   }, [order]);
 
-  const statusOptions = [
-    { value: "pending", label: "قيد الانتظار", color: "#f59e0b" },
-    { value: "processing", label: "قيد المعالجة", color: "#3b82f6" },
-    { value: "delivered", label: "تم التسليم", color: "#10b981" },
-    { value: "cancelled", label: "ملغي", color: "#6b7280" },
-  ];
+  // Auto-print if mode is "print"
+  const handlePrint = useReactToPrint({
+    content: () => printComponentRef.current,
+    documentTitle: `فاتورة_${order?.order_Id || "طلب"}`,
+    onAfterPrint: () => setIsOpen(false),
+  });
+
+  useEffect(() => {
+    if (isOpen && mode === "print" && order) {
+      setTimeout(() => handlePrint(), 400); // slight delay for rendering
+    }
+    // eslint-disable-next-line
+  }, [isOpen, mode, order]);
 
   const handleStatusChange = async (newStatus) => {
+    // Prevent unnecessary updates
     if (newStatus === currentStatus) {
       setShowStatusPopup(false);
       return;
     }
-
+    
     try {
       setIsUpdating(true);
+      
+      // Debug log
+      console.log("Updating order:", {
+        orderId: order.id,
+        currentStatus,
+        newStatus
+      });
+      
+      // Make sure we have a valid order ID
+      if (!order || !order.id) {
+        console.error("Invalid order or missing ID");
+        throw new Error("Order ID is missing");
+      }
+      
+      // Update the order status in Supabase
       const { data, error } = await supabase
         .from("orders")
         .update({ status: newStatus })
-        .eq("id", order.id);
-
-      if (error) throw error;
-
+        .eq("id", order.id)
+      
+      if (error) {
+        console.error("Supabase update error:", error);
+        throw error;
+      }
+      
+      console.log("Update successful:", data);
+      
+      // Update local state
       setCurrentStatus(newStatus);
+      
+      // Update the order object
+      if (order) {
+        order.status = newStatus;
+      }
+      
+      // Refresh orders list if available
+      if (refreshOrders) {
+        refreshOrders();
+      }
+      
       alertify.success("تم تحديث حالة الطلب بنجاح");
-
-      // Update the order in the parent component
-      order.status = newStatus;
     } catch (error) {
-      console.error("Error updating order status:", error);
+      console.error("Error updating status:", error);
       alertify.error("حدث خطأ أثناء تحديث حالة الطلب");
     } finally {
       setIsUpdating(false);
       setShowStatusPopup(false);
+    }
+  };
+
+  const handleSaveNote = async () => {
+    try {
+      setIsUpdating(true);
+      
+      // Make sure we have a valid order ID
+      if (!order || !order.id) {
+        throw new Error("Order ID is missing");
+      }
+      
+      const { error } = await supabase
+        .from("orders")
+        .update({ notes: orderNote })
+        .eq("id", order.id);
+
+      if (error) {
+        console.error("Error saving note:", error);
+        throw error;
+      }
+
+      // Update the order object
+      if (order) {
+        order.notes = orderNote;
+      }
+      
+      // Refresh orders list if available
+      if (refreshOrders) {
+        refreshOrders();
+      }
+      
+      alertify.success("تم حفظ الملاحظات بنجاح");
+      setShowNoteEditor(false);
+    } catch (error) {
+      console.error("Error saving note:", error);
+      alertify.error("حدث خطأ أثناء حفظ الملاحظات");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -70,7 +160,7 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
     >
       <div className="order-modal-unique" onClick={(e) => e.stopPropagation()}>
         <header className="modal-header-unique">
-          <h2>تفاصيل الطلب {order.order_Id} </h2>
+          <h2>تفاصيل الطلب {order.order_Id}</h2>
           <button
             className="close-button-unique"
             aria-label="إغلاق"
@@ -80,7 +170,13 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
           </button>
         </header>
 
-        <div className="modal-content-unique">
+        <div className="modal-content-unique" ref={printComponentRef}>
+          <div className="print-header">
+            <h1>فاتورة طلب</h1>
+            <p>رقم الطلب: {order.order_Id}</p>
+            <p>تاريخ: {new Date(order.created_at).toLocaleDateString("ar-SA")}</p>
+          </div>
+
           <section className="customer-info-unique">
             <h3>معلومات العميل</h3>
             <div className="info-container-unique">
@@ -88,28 +184,28 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
                 <i className="fas fa-user"></i>
                 <div>
                   <label>الاسم</label>
-                  <p>{order.Customer_Infos.fullName}</p>
+                  <p>{order.Customer_Infos?.fullName}</p>
                 </div>
               </div>
               <div className="info-item-unique">
                 <i className="fas fa-envelope"></i>
                 <div>
                   <label>البريد الإلكتروني</label>
-                  <p>{order.Customer_Infos.email || "hamzaasdif@gmail.com"}</p>
+                  <p>{order.Customer_Infos?.email || "غير متوفر"}</p>
                 </div>
               </div>
               <div className="info-item-unique">
                 <i className="fas fa-phone"></i>
                 <div>
                   <label>الهاتف</label>
-                  <p dir="ltr">{order.Customer_Infos.tel}</p>
+                  <p dir="ltr">{order.Customer_Infos?.tel}</p>
                 </div>
               </div>
               <div className="info-item-unique">
                 <i className="fas fa-map-marker-alt"></i>
                 <div>
                   <label>العنوان</label>
-                  <p>{order.Customer_Infos.address}</p>
+                  <p>{order.Customer_Infos?.address}</p>
                 </div>
               </div>
             </div>
@@ -158,7 +254,7 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {order.products.map((product) => (
+                  {order.products?.map((product) => (
                     <tr key={product.id}>
                       <td>
                         <div className="product-image-unique">
@@ -179,13 +275,92 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
                     </tr>
                   ))}
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan="4" className="text-left">المجموع الفرعي</td>
+                    <td>{order.total_price} ر.س</td>
+                  </tr>
+                  <tr>
+                    <td colSpan="4" className="text-left">الشحن</td>
+                    <td>0.00 ر.س</td>
+                  </tr>
+                  <tr className="total-row">
+                    <td colSpan="4" className="text-left">الإجمالي</td>
+                    <td>{order.total_price} ر.س</td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
+          </section>
+
+          {/* Order Notes Section */}
+          <section className="order-notes-unique">
+            <div className="notes-header">
+              <h3>ملاحظات الطلب</h3>
+              {!showNoteEditor && (
+                <button 
+                  className="edit-notes-btn" 
+                  onClick={() => setShowNoteEditor(true)}
+                >
+                  <i className="fas fa-edit"></i> تعديل
+                </button>
+              )}
+            </div>
+            
+            {showNoteEditor ? (
+              <div className="notes-editor">
+                <textarea
+                  value={orderNote}
+                  onChange={(e) => setOrderNote(e.target.value)}
+                  placeholder="أضف ملاحظات حول هذا الطلب..."
+                  rows={4}
+                ></textarea>
+                <div className="notes-actions">
+                  <button 
+                    className="save-notes-btn" 
+                    onClick={handleSaveNote}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin"></i> جاري الحفظ...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-save"></i> حفظ
+                      </>
+                    )}
+                  </button>
+                  <button 
+                    className="cancel-notes-btn" 
+                    onClick={() => {
+                      setOrderNote(order.notes || "");
+                      setShowNoteEditor(false);
+                    }}
+                    disabled={isUpdating}
+                  >
+                    إلغاء
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="notes-content">
+                {orderNote ? (
+                  <p>{orderNote}</p>
+                ) : (
+                  <p className="no-notes">لا توجد ملاحظات لهذا الطلب</p>
+                )}
+              </div>
+            )}
           </section>
         </div>
 
         <footer className="modal-footer-unique">
-          <button className="btn-secondary-unique">
+          <button 
+            className="btn-secondary-unique"
+            onClick={handlePrint}
+            disabled={mode === "print"}
+          >
             <i className="fas fa-print"></i> طباعة الفاتورة
           </button>
           <button
@@ -240,6 +415,13 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order }) => {
       </div>
     </div>
   );
+};
+
+OrderDetailsPopup.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  setIsOpen: PropTypes.func.isRequired,
+  order: PropTypes.object,
+  mode: PropTypes.oneOf(["view", "print"]),
 };
 
 export default OrderDetailsPopup;

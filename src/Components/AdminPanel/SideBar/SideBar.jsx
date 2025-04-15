@@ -3,6 +3,8 @@ import "./SideBar.css";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import MobileNavBar from "../MobileSticky_NavBar/MobileNavBar";
 import { useAdminGlobalContext } from "../AdminGlobalContext";
+import supabase from "../../../supabaseClient";
+import alertify from "alertifyjs";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -14,8 +16,22 @@ const Sidebar = () => {
     return location.pathname === path;
   };
 
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.removeItem("adminSession");
+      alertify.success("تم تسجيل الخروج بنجاح");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alertify.error("حدث خطأ أثناء تسجيل الخروج");
+    }
+  };
+
   // Calculate unread notifications (for this example, using new orders)
-  const unreadNotifications = orders ? orders.filter(order => !order.read).length : 0;
+  const unreadNotifications = orders
+    ? orders.filter((order) => !order.read).length
+    : 0;
 
   return (
     <>
@@ -59,23 +75,20 @@ const Sidebar = () => {
             <span>🛍️</span>
             <h6> المنتجات</h6>
           </li>
-          {/* <li
-            className={`sidebar-item ${
-              handleActivePath("/admin/analytics") ? "active" : ""
-            }`}
-          >
-            <span>📊</span>
-            <h6>التحليلات</h6>
-          </li> */}
           <li
             className={`sidebar-item ${
               handleActivePath("/admin/notifications") ? "active" : ""
             }`}
             onClick={() => setShowNotifications(true)}
+            id="notification-li"
           >
             <span>🔔</span>
             <h6>الإشعارات</h6>
             {unreadNotifications > 0 && <strong>{unreadNotifications}</strong>}
+          </li>
+          <li className="sidebar-item logout" onClick={handleLogout}>
+            <span>🚪</span>
+            <h6>تسجيل الخروج</h6>
           </li>
         </ul>
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import "./Orders.css";
 import Papa from "papaparse";
@@ -24,7 +24,8 @@ function Orders() {
   const [deliveredOrders, setDeliveredOrders] = useState(0);
   const [processingOrders, setProcessingOrders] = useState(0);
   const [cancelledOrders, setCancelledOrders] = useState(0);
-  const [isOrderDetails, setisOrderDeatils] = useState(false);
+  const [isOrderDetails, setIsOrderDetails] = useState(false);
+  const [orderDetailsMode, setOrderDetailsMode] = useState("view"); // "view" or "print"
 
   // Use orders from context
   useEffect(() => {
@@ -137,7 +138,7 @@ function Orders() {
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
-          <i className="arrow-icon">◀</i>
+          <i className="arrow-icon">���</i>
           <span>السابق</span>
         </button>
 
@@ -463,6 +464,25 @@ function Orders() {
     }
   };
 
+  // Print handler: open OrderDetailsPopup in print mode
+  const handlePrintOrder = (order) => {
+    setClickedOrder(order);
+    setOrderDetailsMode("print");
+    setIsOrderDetails(true);
+  };
+
+  // View handler: open OrderDetailsPopup in view mode
+  const handleViewOrder = (order) => {
+    setClickedOrder(order);
+    setOrderDetailsMode("view");
+    setIsOrderDetails(true);
+  };
+
+  // More options handler (placeholder)
+  const handleMoreOptions = (order) => {
+    alertify.message("خيارات إضافية قادمة قريبًا");
+  };
+
   return (
     <>
       <div className="orders-dashboard">
@@ -629,23 +649,22 @@ function Orders() {
                       <div className="action-buttons_2">
                         <button
                           className="action-btn view-btn"
-                          title="عرض التفاصيل"
-                          onClick={() => {
-                            setisOrderDeatils(true);
-                            setClickedOrder(order);
-                          }}
+                          title="عرض التفاص��ل"
+                          onClick={() => handleViewOrder(order)}
                         >
                           <i className="fas fa-eye"></i>
                         </button>
                         <button
                           className="action-btn print-btn"
                           title="طباعة الفاتورة"
+                          onClick={() => handlePrintOrder(order)}
                         >
                           <i className="fas fa-print"></i>
                         </button>
                         <button
                           className="action-btn more-btn"
                           title="المزيد من الخيارات"
+                          onClick={() => handleMoreOptions(order)}
                         >
                           <i className="fas fa-ellipsis-v"></i>
                         </button>
@@ -708,8 +727,9 @@ function Orders() {
       </div>
       <OrderDetailsPopup
         isOpen={isOrderDetails}
-        setIsOpen={setisOrderDeatils}
+        setIsOpen={setIsOrderDetails}
         order={clickedOrder}
+        mode={orderDetailsMode}
       />
     </>
   );

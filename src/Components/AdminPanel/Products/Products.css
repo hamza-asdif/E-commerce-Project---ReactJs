@@ -1,28 +1,33 @@
 /* ===== التصميم العام ===== */
 .dashboard-container {
-  background-color: #f5f7fa;
+  padding: 2rem;
+  background-color: #f8fafc;
   min-height: 100vh;
+  font-family: "Cairo", Arial, sans-serif;
 }
 
 .products-container {
-  padding: 24px;
-  font-family: "Cairo", Arial, sans-serif;
-  max-width: 1280px;
-  margin: 0 auto;
-  direction: rtl;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
 }
 
 /* ===== عنوان الصفحة وشريط الإجراءات ===== */
 .header-section {
   display: flex;
   flex-direction: column;
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .admin-h1 {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 1.5rem;
   color: #1e293b;
   text-align: right;
 }
@@ -32,150 +37,128 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 /* ===== زر إضافة منتج ===== */
 .add-product-btn {
-  background-color: #22c55e;
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  cursor: pointer;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease-in-out;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #f24547;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .add-product-btn:hover {
-  background-color: #16a34a;
+  background: #e02e30;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.add-product-btn:active {
-  transform: translateY(0);
 }
 
 .plus-icon {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 /* ===== حقل البحث ===== */
 .search-box {
   position: relative;
-  flex-grow: 1;
-  max-width: 350px;
+  flex: 1;
+  max-width: 400px;
 }
 
 .search-input {
   width: 100%;
-  padding: 12px 40px 12px 16px;
-  border-radius: 8px;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
   border: 1px solid #e2e8f0;
-  font-size: 14px;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #1e293b;
   transition: all 0.2s;
-  background-color: #fff;
+  direction: rtl;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  border-color: #f24547;
+  box-shadow: 0 0 0 3px rgba(242, 69, 71, 0.1);
 }
 
 .search-icon {
   position: absolute;
-  left: 15px;
+  left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #64748b;
-
-  cursor: pointer;
-}
-
-
-
-
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.no-products {
-  text-align: center;
-  padding: 48px 0;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  color: #94a3b8;
+  font-size: 1.25rem;
 }
 
 /* ===== تصميم الجدول ===== */
 .table-responsive {
   overflow-x: auto;
-  background-color: #fff;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: white;
 }
 
 .products-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  margin-bottom: 1.5rem;
+  min-width: 800px;
 }
 
 .products-table th,
 .products-table td {
-  padding: 16px;
-  text-align: center;
+  padding: 1rem 1.5rem;
+  text-align: right;
 }
 
 .products-table th {
-  background-color: #f8fafc;
+  background: #f8fafc;
+  color: #475569;
   font-weight: 600;
-  color: #334155;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .products-table tr {
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .products-table tr:hover {
-  background-color: #f1f5f9;
+  background-color: #f8fafc;
 }
 
 .products-table td {
   border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.products-table tr:last-child td {
+  border-bottom: none;
 }
 
 /* ===== خلية صورة المنتج ===== */
+.td-img {
+  width: 80px;
+}
+
 .image-container-admin {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
+  width: 64px;
+  height: 64px;
+  border-radius: 0.5rem;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f8fafc;
-  margin: 0 auto;
+  background: #f8fafc;
   border: 1px solid #e2e8f0;
 }
 
@@ -183,59 +166,62 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
-/* ===== إسم المنتج ===== */
+.image-container-admin:hover .product-image {
+  transform: scale(1.1);
+}
+
 .product-name {
   font-weight: 500;
   color: #1e293b;
-  text-align: right;
-  max-width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-/* ===== سعر المنتج ===== */
+/* ===== عرض السعر ===== */
 .product-price {
   white-space: nowrap;
 }
 
 .price-amount {
   font-weight: 600;
-  color: #0369a1;
-  margin-left: 4px;
+  color: #f24547;
+  font-size: 1rem;
 }
 
 .price-currency {
-  font-size: 12px;
   color: #64748b;
+  font-size: 0.875rem;
+  margin-right: 0.25rem;
 }
 
 /* ===== حالة المخزون ===== */
 .stock-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 100px;
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
   font-weight: 500;
+  min-width: 80px;
 }
 
 .in-stock {
-  background-color: #dcfce7;
-  color: #166534;
+  background: #dcfce7;
+  color: #16a34a;
 }
 
 .out-stock {
-  background-color: #fee2e2;
-  color: #b91c1c;
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 /* ===== تصميم زر التبديل (Toggle) ===== */
 .toggle-switch {
   position: relative;
   display: inline-block;
-  width: 48px;
+  width: 46px;
   height: 24px;
 }
 
@@ -252,9 +238,9 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #cbd5e1;
-  transition: 0.3s;
-  border-radius: 24px;
+  background-color: #e2e8f0;
+  transition: 0.4s;
+  border-radius: 34px;
 }
 
 .slider:before {
@@ -265,60 +251,122 @@
   left: 3px;
   bottom: 3px;
   background-color: white;
-  transition: 0.3s;
+  transition: 0.4s;
   border-radius: 50%;
 }
 
 input:checked + .slider {
-  background-color: #3b82f6;
+  background-color: #f24547;
 }
 
 input:checked + .slider:before {
-  transform: translateX(24px);
+  transform: translateX(22px);
 }
 
 /* ===== أزرار الإجراءات ===== */
 .actions-cell_products {
-  white-space: nowrap;
-  width: 120px;
+  width: 140px;
 }
 
-.action-buttons {
+.action-buttons_2 {
   display: flex;
-  gap: 8px;
-  justify-content: center;
+  gap: 0.5rem;
+  justify-content: flex-end;
 }
 
-.edit-btn,
-.delete-btn {
+.action-btn {
+  width: 32px; /* Decreased from 36px */
+  height: 32px; /* Decreased from 36px */
+  border: none;
+  border-radius: 0.375rem; /* Slightly smaller border radius */
   display: flex;
   align-items: center;
-  gap: 6px;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
+  justify-content: center;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.edit-btn {
-  background-color: #e0f2fe;
-  color: #0369a1;
+.action-btn svg {
+  width: 1rem; /* Decreased from 1.25rem */
+  height: 1rem; /* Decreased from 1.25rem */
+  transition: transform 0.2s ease;
 }
 
-.edit-btn:hover {
-  background-color: #bae6fd;
+.action-btn:hover svg {
+  transform: scale(1.1);
 }
 
-.delete-btn {
-  background-color: #fee2e2;
-  color: #b91c1c;
+.action-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: currentColor;
+  opacity: 0.1;
+  transition: opacity 0.2s ease;
 }
 
-.delete-btn:hover {
-  background-color: #fecaca;
+.action-btn:hover::before {
+  opacity: 0.15;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+}
+
+.action-btn i {
+  font-size: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.view-btn {
+  color: #0ea5e9;
+}
+
+.print-btn {
+  color: #22c55e;
+}
+
+.more-btn {
+  color: #ef4444;
+}
+
+.open-product-link {
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Button Tooltips */
+.action-btn::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.5rem;
+  background: #1e293b;
+  color: white;
+  font-size: 0.75rem;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover::after {
+  opacity: 1;
+  visibility: visible;
+  bottom: -40px;
 }
 
 /* ===== تصميم الترقيم ===== */
@@ -327,28 +375,32 @@ input:checked + .slider:before {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  margin: 2rem 0;
+  margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
 .pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #e2e8f0;
   background: white;
-  color: #333;
-  border-radius: 4px;
+  color: #475569;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: #f0f0f0;
-  border-color: #999;
+  transition: all 0.2s;
 }
 
 .pagination-btn:disabled {
-  background: #f5f5f5;
-  color: #999;
+  opacity: 0.5;
   cursor: not-allowed;
+}
+
+.pagination-btn:not(:disabled):hover {
+  border-color: #f24547;
+  color: #f24547;
 }
 
 .pagination-numbers {
@@ -358,47 +410,243 @@ input:checked + .slider:before {
 }
 
 .pagination-number {
-  width: 35px;
-  height: 35px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 4px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #475569;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.pagination-number:hover {
-  background: #f0f0f0;
-  border-color: #999;
+  transition: all 0.2s;
 }
 
 .pagination-number.active {
-  background: #f24547; /* اللون الرئيسي */
+  background: #f24547;
   color: white;
   border-color: #f24547;
 }
 
-.pagination-ellipsis {
-  color: #666;
-  letter-spacing: 2px;
+.pagination-number:not(.active):hover {
+  border-color: #f24547;
+  color: #f24547;
 }
 
-@media (max-width: 480px) {
-  .pagination-numbers {
-    gap: 0.25rem;
+.pagination-ellipsis {
+  color: #94a3b8;
+  padding: 0 0.25rem;
+}
+
+/* ===== حالات التحميل ===== */
+.loading-container,
+.error-container,
+.no-products {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #f24547;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== رسالة الخطأ ===== */
+.error-message {
+  text-align: center;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.retry-button {
+  padding: 0.5rem 1rem;
+  background: #f24547;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.retry-button:hover {
+  background: #e02e30;
+}
+
+/* ===== تصميم متجاوب ===== */
+@media (max-width: 1024px) {
+  .actions-bar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .search-box {
+    max-width: 100%;
+  }
+
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .products-table th,
+  .products-table td {
+    padding: 0.75rem 1rem;
+  }
+
+  .image-container-admin {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .actions-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    max-width: none;
+  }
+
+  .add-product-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .products-table th,
+  .products-table td {
+    padding: 0.75rem;
+  }
+
+  .image-container-admin {
+    width: 48px;
+    height: 48px;
+  }
+
+  .action-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .action-btn svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .action-btn i {
+    font-size: 0.875rem;
+  }
+
+  .stock-badge {
+    min-width: 60px;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .products-table {
+    font-size: 0.875rem;
+  }
+
+  .image-container-admin {
+    width: 48px;
+    height: 48px;
+  }
+
+  .price-amount {
+    font-size: 0.875rem;
   }
 
   .pagination-number {
-    width: 30px;
-    height: 30px;
-    font-size: 0.875rem;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .admin-h1 {
+    font-size: 1.5rem;
+  }
+
+  .pagination-container {
+    gap: 0.5rem;
   }
 
   .pagination-btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.813rem;
+  }
+
+  .pagination-number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.813rem;
+  }
+
+  .action-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .action-btn svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}
+
+/* ===== دعم RTL ===== */
+[dir="rtl"] .slider:before {
+  right: 2px;
+  left: auto;
+}
+
+[dir="rtl"] input:checked + .slider:before {
+  transform: translateX(-24px);
+}
+
+/* ===== تصميم الطباعة ===== */
+@media print {
+  .actions-bar,
+  .pagination-container {
+    display: none;
+  }
+
+  .products-table {
+    box-shadow: none;
+  }
+
+  .action-buttons_2 {
+    display: none;
   }
 }

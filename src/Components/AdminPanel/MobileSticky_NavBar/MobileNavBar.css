@@ -11,13 +11,16 @@
   --notification-badge-text: #ffffff;
   --transition-speed: 0.2s;
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --danger-color: #ef4444;
+  --danger-hover: rgba(239, 68, 68, 0.1);
 }
 
 /* تثبيت الشريط في الأسفل */
 .mobile-navbar {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
   height: calc(var(--navbar-height) + var(--safe-area-bottom));
   background: var(--navbar-bg);
@@ -30,8 +33,6 @@
   border-top-right-radius: 16px;
   padding-bottom: var(--safe-area-bottom);
   max-width: 500px;
-  left: 50%;
-  transform: translateX(-50%);
 }
 
 /* تنسيق القائمة */
@@ -40,14 +41,17 @@
   justify-content: space-around;
   align-items: center;
   list-style: none;
-  padding: 0 16px;
+  padding: 0 12px;
   margin: 0;
   width: 100%;
   height: var(--navbar-height);
+  gap: 4px;
 }
 
 /* تنسيق العناصر */
 .nav-item {
+  background: transparent;
+  border: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,40 +60,35 @@
   padding: 8px 0;
   position: relative;
   color: var(--navbar-text);
-  transition:
-    transform var(--transition-speed) ease,
-    color var(--transition-speed) ease;
+  transition: all var(--transition-speed) ease;
   border-radius: 12px;
   flex: 1;
   max-width: 80px;
   min-width: 60px;
   margin: 0 4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-item a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+  background: transparent;
 }
 
 /* تأثير عند التمرير فوق العناصر */
 .nav-item:hover {
   color: var(--navbar-active);
+  background: var(--navbar-hover-bg);
 }
 
 /* العنصر النشط */
 .nav-item.active {
   color: var(--navbar-active);
-}
-
-.nav-item.active::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 25px;
-  height: 3px;
-  background: var(--navbar-active);
-  border-radius: 0 0 3px 3px;
-}
-
-.nav-item:active {
-  transform: scale(0.95);
+  background: var(--navbar-hover-bg);
 }
 
 /* تنسيق الأيقونات */
@@ -102,24 +101,6 @@
   align-items: center;
   justify-content: center;
   height: 24px;
-}
-
-.nav-icon::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  width: 32px;
-  height: 32px;
-  background: rgba(242, 69, 71, 0.15);
-  border-radius: 50%;
-  z-index: -1;
-  transition: transform 0.2s ease;
-}
-
-.nav-item.active .nav-icon::after {
-  transform: translate(-50%, -50%) scale(1);
 }
 
 /* تنسيق النص تحت الأيقونات */
@@ -137,22 +118,31 @@
 /* تنسيق إشعارات الأوامر */
 .notification-badge {
   position: absolute;
-  top: 0;
-  right: 50%;
-  transform: translateX(8px);
-  background: var(--notification-badge-bg);
-  color: var(--notification-badge-text);
-  font-size: 10px;
-  font-weight: bold;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 8px;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  background: var(--notification-accent, #f24547);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(242, 69, 71, 0.3);
-  z-index: 2;
+  padding: 0 6px;
+  box-shadow: 0 2px 4px rgba(242, 69, 71, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.nav-item:hover .notification-badge {
+  transform: scale(1.1);
+}
+
+/* RTL Support */
+[dir="rtl"] .notification-badge {
+  right: auto;
+  left: -6px;
 }
 
 /* تأثيرات إضافية للشريط */
@@ -167,6 +157,16 @@
   pointer-events: none;
 }
 
+/* Logout button styles */
+.nav-item.logout {
+  color: var(--danger-color);
+}
+
+.nav-item.logout:hover {
+  color: var(--danger-color);
+  background: var(--danger-hover);
+}
+
 @media (max-width: 360px) {
   :root {
     --navbar-icon-size: 20px;
@@ -176,13 +176,42 @@
 
   .nav-item {
     padding: 6px 0;
-    min-width: 50px;
+    min-width: 45px;
+    margin: 0 2px;
   }
 
   .notification-badge {
-    min-width: 14px;
-    height: 14px;
+    min-width: 18px;
+    height: 18px;
+    font-size: 11px;
+    top: -4px;
+    right: -4px;
+  }
+
+  [dir="rtl"] .notification-badge {
+    right: auto;
+    left: -4px;
+  }
+
+  .nav-text {
     font-size: 9px;
+  }
+}
+
+@media (max-width: 280px) {
+  .nav-item {
+    min-width: 40px;
+    margin: 0 1px;
+  }
+
+  .nav-text {
+    font-size: 8px;
+  }
+
+  .notification-badge {
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
   }
 }
 
@@ -192,5 +221,47 @@
     bottom: 16px;
     width: calc(100% - 32px);
     max-width: 468px;
+  }
+}
+
+@media (max-height: 400px) {
+  .mobile-navbar {
+    --navbar-height: 50px;
+  }
+
+  .nav-icon {
+    margin-bottom: 2px;
+  }
+
+  .nav-text {
+    font-size: 9px;
+  }
+}
+
+@media screen and (orientation: landscape) {
+  .mobile-navbar {
+    height: var(--navbar-height);
+    padding-bottom: 0;
+  }
+
+  .nav-item {
+    font-size: 0.9em;
+    min-width: 50px;
+  }
+
+  .nav-icon {
+    margin-bottom: 2px;
+  }
+
+  .nav-text {
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-navbar,
+  .nav-item,
+  .notification-badge {
+    transition: none;
   }
 }
