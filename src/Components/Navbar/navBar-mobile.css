@@ -1,0 +1,161 @@
+/* Mobile Menu Styles */
+@media screen and (max-width: 1279px) {
+  .header-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.75rem 0;
+  }
+
+  /* Mobile menu button */
+  .mobile-menu-box {
+    grid-column: 3;
+    justify-self: end;
+    z-index: 2001;
+  }
+
+  .mobile-menu-button {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .mobile-menu-button:hover {
+    background: rgba(242, 69, 71, 0.1);
+  }
+
+  .mobile-menu-button:active {
+    transform: scale(0.95);
+  }
+
+  #mobile-menu {
+    color: var(--main-color);
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  #mobile-menu:hover {
+    transform: scale(1.1);
+  }
+
+  .header.scrolled .mobile-menu-button {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .header.scrolled .mobile-menu-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Cart positioning */
+  .header-cart {
+    grid-column: 1;
+    justify-self: start;
+  }
+
+  /* Logo positioning */
+  .header-logo {
+    grid-column: 2;
+    justify-self: center;
+    max-width: 120px;
+  }
+
+  /* Hide desktop menu */
+  .header-links {
+    display: none;
+  }
+
+  /* Adjust cart styles for mobile */
+  .cart-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+
+  .cart-content:hover {
+    background: rgba(242, 69, 71, 0.1);
+  }
+
+  .cart-icon-box {
+    padding: 8px 12px;
+    font-size: 18px;
+  }
+
+  .cart-counter {
+    top: -8px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    font-size: 11px;
+  }
+
+  /* Prevent scrolling when mobile menu is open */
+  body.mobile-menu-open {
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* But allow interaction with the menu itself */
+  body.mobile-menu-open .mobile-menu {
+    pointer-events: auto;
+  }
+}
+
+/* Further mobile optimizations */
+@media screen and (max-width: 767px) {
+  .cart-span {
+    display: none;
+  }
+
+  .cart-icon-box {
+    border-left: none;
+    border-right: none;
+  }
+}
+
+/* Very small screens */
+@media screen and (max-width: 480px) {
+  .header-container {
+    padding: 0.5rem 0;
+  }
+
+  .logo-box > img {
+    max-height: 60px;
+  }
+}
+
+/* Better spacing for very small screens */
+@media screen and (max-width: 360px) {
+  .header-container {
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+  }
+
+  .logo-box > img {
+    max-height: 50px;
+  }
+
+  .cart-icon-box {
+    padding: 6px 10px;
+  }
+}

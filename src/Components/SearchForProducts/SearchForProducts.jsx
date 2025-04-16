@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { FaSearch, FaFilter, FaSadTear } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { FaFilter, FaSadTear } from "react-icons/fa";
 import ProductCard from "../ProductLayout/ProductCard/ProductCard";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import "./SearchForProducts.css";
 
 function SearchForProducts() {
-  const { searchResults, setSearchResults } = useGlobalContext();
+  const { searchResults } = useGlobalContext();
   const [loading, setLoading] = useState(true);
   const [searchResults_InPage, setSearchResults_InPage] = useState([]);
   const [filterActive, setfilterActive] = useState(false);
   const [searchReasults_Restor, setSearchReasults_Restor] = useState([]);
   const [clickToFilter, setClickToFilter] = useState(false);
   const [filter_loading, setFilter_loading] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   useEffect(() => {
     setSearchReasults_Restor(searchResults);
@@ -32,12 +33,14 @@ function SearchForProducts() {
     setClickToFilter((prev) => !prev);
   };
 
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen);
+    // Prevent body scroll when filter is open
+    document.body.style.overflow = !isFilterOpen ? "hidden" : "auto";
+  };
+
   const handleFilteringClick = (e) => {
-    console.log(e.target.value);
-
-    const targetValue = e.target.value;
-
-    e.stopPropagation(); // منع انتشار الحدث
+    e.stopPropagation();
     const value = e.target.value;
 
     if (value === "default") {
@@ -65,6 +68,22 @@ function SearchForProducts() {
     }, 1000);
   };
 
+  const handleSelectClick = (e) => {
+    e.stopPropagation();
+    if (window.innerWidth <= 768) {
+      setClickToFilter(true);
+    }
+  };
+
+  const handleSelectChange = (e) => {
+    handleFilteringClick(e);
+    setIsFilterOpen(false);
+    document.body.style.overflow = "auto";
+    if (window.innerWidth <= 768) {
+      setClickToFilter(false);
+    }
+  };
+
   useEffect(() => {
     setFilter_loading(true);
 
@@ -89,8 +108,12 @@ function SearchForProducts() {
           <h1>نتائج البحث</h1>
           <p>تم العثور على {searchResults_InPage.length} منتج</p>
         </div>
-        <div className={`search-filters ${clickToFilter ? "active" : ""}`}>
-          <button className="filter-btn" onClick={filterToggle}>
+        <div className={`search-filters ${isFilterOpen ? "active" : ""}`}>
+          <button
+            className="filter-btn"
+            onClick={toggleFilter}
+            aria-label="Toggle filter menu"
+          >
             <FaFilter />
             <span>تصفية النتائج</span>
           </button>
@@ -99,8 +122,8 @@ function SearchForProducts() {
             name="filter-select"
             id="filter_select"
             className="filter-select"
-            onChange={handleFilteringClick} // تغيير من onClick إلى onChange
-            onClick={(e) => e.stopPropagation()} // منع إغلاق القائمة عند النقر
+            onChange={handleSelectChange}
+            onClick={(e) => e.stopPropagation()}
           >
             <option value="default">ترتيب حسب</option>
             <option value="price-asc">السعر: من الأقل إلى الأعلى</option>

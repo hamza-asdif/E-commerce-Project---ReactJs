@@ -1,20 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { IoIosSearch, IoMdClose } from "react-icons/io";
 import "./searchBar.css";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import { useNavigate } from "react-router-dom";
+import debounce from "lodash/debounce";
 
 function SearchBar() {
-  const {
-    allProducts,
-    seachForProductFunction,
-    searchForProduct,
-    Search_Products,
-    setSearchQuery,
-    searchQuery,
-    setSearchResults,
-    searchResults,
-  } = useGlobalContext();
+  const { allProducts, setSearchQuery, searchQuery, setSearchResults, setSearchState } =
+    useGlobalContext();
+
   const [showAlert, setShowAlert] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
   const navigateToSearchNow = useNavigate();
@@ -28,44 +22,69 @@ function SearchBar() {
     "Beauty",
   ];
 
+  const searchProducts = useCallback(
+    (query) => {
+      if (query.length >= 3 && allProducts) {
+        const searchRes = allProducts.filter((p) =>
+          p.name.toLowerCase().includes(query.toLowerCase())
+        );
+        setSearchResults(searchRes);
+        navigateToSearchNow("/search");
+      }
+    },
+    [allProducts, setSearchResults, navigateToSearchNow]
+  );
+
+  const debouncedSearch = useMemo(
+    () => debounce((query) => searchProducts(query), 300),
+    [searchProducts]
+  );
+
+  // Cleanup debounced function on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
   const handleInputSearch = (e) => {
     const value = e.target.value.trim();
     setSearchQuery(value);
+
+    if (value.length >= 3) {
+      debouncedSearch(value);
+    } else if (value.length > 0) {
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
   };
 
-  const handleIconClick = () => {
-    if (searchQuery.length >= 3 && allProducts) {
-      const searchRes = allProducts.filter((p) => {
-        return p.name.toLowerCase().includes(searchQuery.toLowerCase());
-      });
-
-      setSearchResults(searchRes);
-      navigateToSearchNow("/search");
-    } else {
-      setShowAlert(true);
-      setTimeout(() => {
-        setShowAlert(false);
-      }, 3000);
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+    if (searchQuery.length >= 3) {
+      debouncedSearch(searchQuery);
     }
   };
 
   const handleKeyUp = (e) => {
-    if (e.key === "Enter") {
-      handleIconClick();
+    if (e.key === "Enter" && searchQuery.length >= 3) {
+      debouncedSearch.flush();
     }
   };
 
-  // Alert Component
-  const AlertBox = () => (
-    <div className="alert-box-container">
-      <div className="alert-box">
-        <p>الرجاء إدخال أكثر من 3 أحرف للبحث</p>
-        <button className="alert-close" onClick={() => setShowAlert(false)}>
-          <IoMdClose />
-        </button>
-      </div>
-    </div>
-  );
+  const handleSearchClick = () => {
+    if (searchQuery.length >= 3) {
+      debouncedSearch.flush();
+    } else {
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    }
+  };
+
+  const handleCloseSearch = () => {
+    setSearchState(false);
+    setSearchQuery("");
+  };
 
   return (
     <div className="search-bar">
@@ -75,12 +94,14 @@ function SearchBar() {
             title="collections"
             name="collection"
             value={selectedCategory}
+            onChange={handleCategoryChange}
+            aria-label="اختر التصنيف"
           >
             <option value="" id="select-first">
               جميع التشكيلات
             </option>
             {categories.map((category, index) => (
-              <option value={category} key={index} id={`categorie-${index}`}>
+              <option value={category} key={index}>
                 {category}
               </option>
             ))}
@@ -91,14 +112,40 @@ function SearchBar() {
           <input
             type="text"
             placeholder="البحث عن منتج"
-            id="seachBar"
+            value={searchQuery}
             onChange={handleInputSearch}
             onKeyUp={handleKeyUp}
+            aria-label="البحث عن منتج"
           />
-          <IoIosSearch id="search-bar-icon" onClick={handleIconClick} />
+          <IoIosSearch
+            id="search-bar-icon"
+            onClick={handleSearchClick}
+            role="button"
+            aria-label="بحث"
+          />
+          <button 
+            className="search-close-button"
+            onClick={handleCloseSearch}
+            aria-label="إغلاق البحث"
+          >
+            <IoMdClose />
+          </button>
         </div>
 
-        {showAlert && <AlertBox />}
+        {showAlert && (
+          <div className="alert-box-container" role="alert">
+            <div className="alert-box">
+              <p>الرجاء إدخال أكثر من 3 أحرف للبحث</p>
+              <button
+                className="alert-close"
+                onClick={() => setShowAlert(false)}
+                aria-label="إغلاق التنبيه"
+              >
+                <IoMdClose />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
