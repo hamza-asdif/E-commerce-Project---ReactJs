@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { FaFilter, FaSort } from "react-icons/fa";
+import { FaFilter, FaSort, FaTimes } from "react-icons/fa";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import ProductCard from "../ProductLayout/ProductCard/ProductCard";
 import "./ShopPage.css";
@@ -240,6 +240,35 @@ function ShopPage() {
     setLoading(false);
   };
 
+  const clearAllFilters = () => {
+    setActiveCategory("all");
+    setCategoryProducts([]);
+    setFiltterPrice({
+      min: 0,
+      max: 1000,
+    });
+    setSortedProducts([]);
+    setIsSortActive(false);
+    setCurrentPage(1);
+
+    // Reset price inputs
+    if (Min_PriceRef.current) Min_PriceRef.current.value = "";
+    if (Max_PriceRef.current) Max_PriceRef.current.value = "";
+
+    // Reset sort select
+    const select = document.querySelector(".sort-select");
+    if (select) select.value = "default";
+  };
+
+  const clearPriceFilter = () => {
+    setFiltterPrice({
+      min: 0,
+      max: 1000,
+    });
+    if (Min_PriceRef.current) Min_PriceRef.current.value = "";
+    if (Max_PriceRef.current) Max_PriceRef.current.value = "";
+  };
+
   return (
     <div className="shop-page">
       <div className="shop-header">
@@ -255,17 +284,33 @@ function ShopPage() {
           <div className="filters-header">
             <h3>تصفية المنتجات</h3>
             <button
-              onClick={() => setIsFilterOpen(false)}
-              className="filter-btn"
+              onClick={clearAllFilters}
+              className="clear-all-btn"
+              title="مسح جميع الفلاتر"
             >
-              &times;
+              مسح الكل
+            </button>
+            <button
+              onClick={() => setIsFilterOpen(false)}
+              className="close-filter-btn"
+              aria-label="إغلاق"
+            >
+              <FaTimes />
             </button>
           </div>
 
           <div className="filter-section">
             <h4>الفئات</h4>
             <div className="categories-list">
-              {category.length &&
+              <h6
+                className={`category-name ${
+                  activeCategory === "all" ? "active" : ""
+                }`}
+                onClick={() => handleFilterByCategory("all")}
+              >
+                عرض الكل
+              </h6>
+              {category.length > 0 &&
                 category.map((categ, index) => (
                   <h6
                     key={index}
@@ -277,19 +322,20 @@ function ShopPage() {
                     {categ}
                   </h6>
                 ))}
-              <h6
-                className={`category-name ${
-                  activeCategory === "all" ? "active" : ""
-                }`}
-                onClick={() => handleFilterByCategory("all")}
-              >
-                عرض الكل
-              </h6>
             </div>
           </div>
 
           <div className="filter-section">
-            <h4>نطاق السعر</h4>
+            <div className="price-header">
+              <h4>نطاق السعر</h4>
+              <button
+                onClick={clearPriceFilter}
+                className="clear-price-btn"
+                title="مسح فلتر السعر"
+              >
+                مسح
+              </button>
+            </div>
             <div className="price-ranges">
               <div className="price-inputs">
                 <div className="price-field">
