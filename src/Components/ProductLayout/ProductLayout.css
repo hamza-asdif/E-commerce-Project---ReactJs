@@ -29,6 +29,52 @@
   }
 }
 
+/* Skeleton loading styles */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.skeleton-product-card {
+  border: 1px solid #eee;
+  border-radius: 5px;
+  padding: 10px;
+  background: white;
+}
+
+.skeleton-image {
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media screen and (max-width: 1200px) {
+  .skeleton-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .skeleton-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* No products state styles */
 .no-products-container {
   display: flex;

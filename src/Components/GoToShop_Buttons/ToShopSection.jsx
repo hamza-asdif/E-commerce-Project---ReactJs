@@ -14,10 +14,7 @@ function FloatingButton() {
           </Link>
         </div>
 
-        <Link to="/shop" className="floating-shop-btn">
-          <FaStore />
-          <span>تسوق الآن</span>
-        </Link>
+        
       </section>
     </>
   );

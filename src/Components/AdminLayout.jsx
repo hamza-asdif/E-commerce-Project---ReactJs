@@ -50,7 +50,7 @@ const AdminLayout = () => {
 
       return isAdmin;
     } catch (error) {
-      console.error("Admin role check failed:", error);
+      alertify.error("فشل التحقق من صلاحيات المسؤول");
       return false;
     }
   }, []);
@@ -92,8 +92,6 @@ const AdminLayout = () => {
           error: null,
         });
       } catch (error) {
-        console.error("Auth initialization error:", error);
-
         if (!mounted) return;
 
         // Retry up to 3 times with exponential backoff

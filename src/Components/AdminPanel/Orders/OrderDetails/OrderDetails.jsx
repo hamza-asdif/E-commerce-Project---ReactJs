@@ -44,57 +44,39 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
   }, [isOpen, mode, order]);
 
   const handleStatusChange = async (newStatus) => {
-    // Prevent unnecessary updates
     if (newStatus === currentStatus) {
       setShowStatusPopup(false);
       return;
     }
-    
+
     try {
       setIsUpdating(true);
-      
-      // Debug log
-      console.log("Updating order:", {
-        orderId: order.id,
-        currentStatus,
-        newStatus
-      });
-      
-      // Make sure we have a valid order ID
+
       if (!order || !order.id) {
-        console.error("Invalid order or missing ID");
         throw new Error("Order ID is missing");
       }
-      
-      // Update the order status in Supabase
+
       const { data, error } = await supabase
         .from("orders")
         .update({ status: newStatus })
-        .eq("id", order.id)
-      
+        .eq("id", order.id);
+
       if (error) {
-        console.error("Supabase update error:", error);
         throw error;
       }
-      
-      console.log("Update successful:", data);
-      
-      // Update local state
+
       setCurrentStatus(newStatus);
-      
-      // Update the order object
+
       if (order) {
         order.status = newStatus;
       }
-      
-      // Refresh orders list if available
+
       if (refreshOrders) {
         refreshOrders();
       }
-      
+
       alertify.success("تم تحديث حالة الطلب بنجاح");
     } catch (error) {
-      console.error("Error updating status:", error);
       alertify.error("حدث خطأ أثناء تحديث حالة الطلب");
     } finally {
       setIsUpdating(false);
@@ -105,12 +87,12 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
   const handleSaveNote = async () => {
     try {
       setIsUpdating(true);
-      
+
       // Make sure we have a valid order ID
       if (!order || !order.id) {
         throw new Error("Order ID is missing");
       }
-      
+
       const { error } = await supabase
         .from("orders")
         .update({ notes: orderNote })
@@ -125,12 +107,12 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
       if (order) {
         order.notes = orderNote;
       }
-      
+
       // Refresh orders list if available
       if (refreshOrders) {
         refreshOrders();
       }
-      
+
       alertify.success("تم حفظ الملاحظات بنجاح");
       setShowNoteEditor(false);
     } catch (error) {
@@ -174,7 +156,9 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
           <div className="print-header">
             <h1>فاتورة طلب</h1>
             <p>رقم الطلب: {order.order_Id}</p>
-            <p>تاريخ: {new Date(order.created_at).toLocaleDateString("ar-SA")}</p>
+            <p>
+              تاريخ: {new Date(order.created_at).toLocaleDateString("ar-SA")}
+            </p>
           </div>
 
           <section className="customer-info-unique">
@@ -277,15 +261,21 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colSpan="4" className="text-left">المجموع الفرعي</td>
+                    <td colSpan="4" className="text-left">
+                      المجموع الفرعي
+                    </td>
                     <td>{order.total_price} ر.س</td>
                   </tr>
                   <tr>
-                    <td colSpan="4" className="text-left">الشحن</td>
+                    <td colSpan="4" className="text-left">
+                      الشحن
+                    </td>
                     <td>0.00 ر.س</td>
                   </tr>
                   <tr className="total-row">
-                    <td colSpan="4" className="text-left">الإجمالي</td>
+                    <td colSpan="4" className="text-left">
+                      الإجمالي
+                    </td>
                     <td>{order.total_price} ر.س</td>
                   </tr>
                 </tfoot>
@@ -298,15 +288,15 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
             <div className="notes-header">
               <h3>ملاحظات الطلب</h3>
               {!showNoteEditor && (
-                <button 
-                  className="edit-notes-btn" 
+                <button
+                  className="edit-notes-btn"
                   onClick={() => setShowNoteEditor(true)}
                 >
                   <i className="fas fa-edit"></i> تعديل
                 </button>
               )}
             </div>
-            
+
             {showNoteEditor ? (
               <div className="notes-editor">
                 <textarea
@@ -316,8 +306,8 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
                   rows={4}
                 ></textarea>
                 <div className="notes-actions">
-                  <button 
-                    className="save-notes-btn" 
+                  <button
+                    className="save-notes-btn"
                     onClick={handleSaveNote}
                     disabled={isUpdating}
                   >
@@ -331,8 +321,8 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
                       </>
                     )}
                   </button>
-                  <button 
-                    className="cancel-notes-btn" 
+                  <button
+                    className="cancel-notes-btn"
                     onClick={() => {
                       setOrderNote(order.notes || "");
                       setShowNoteEditor(false);
@@ -356,7 +346,7 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
         </div>
 
         <footer className="modal-footer-unique">
-          <button 
+          <button
             className="btn-secondary-unique"
             onClick={handlePrint}
             disabled={mode === "print"}

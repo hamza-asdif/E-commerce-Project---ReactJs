@@ -57,6 +57,7 @@ const ProductEditPage = lazy(
     )
 );
 const Orders = lazy(() => import("./Components/AdminPanel/Orders/Orders.jsx"));
+const Favorites = lazy(() => import("./Components/Favorites/Favorites.jsx"));
 
 const AppContent = React.memo(() => {
   const { toggleCart, setSearchState, resetAllStates } = useGlobalContext();
@@ -130,6 +131,16 @@ const ShopPageBreadcrumb = React.memo(() => (
 ));
 ShopPageBreadcrumb.displayName = "ShopPageBreadcrumb";
 
+const FavoritesBreadcrumb = React.memo(() => (
+  <>
+    <Breadcrumb pathNameInfo="المنتجات المفضلة" />
+    <Suspense fallback={<LoadingFallback />}>
+      <Favorites />
+    </Suspense>
+  </>
+));
+FavoritesBreadcrumb.displayName = "FavoritesBreadcrumb";
+
 const HandleNavbar = React.memo(() => {
   const location = useLocation();
   const isAdminPanel = location.pathname.startsWith("/admin");
@@ -143,6 +154,18 @@ const HandleFooter = React.memo(() => {
   return !isAdminPanel && <Footer />;
 });
 HandleFooter.displayName = "HandleFooter";
+
+const HandleFloatingButton = React.memo(() => {
+  const location = useLocation();
+  const isAdminPanel = location.pathname.startsWith("/admin");
+  const isLoginPage = location.pathname === "/login";
+
+  // Don't show floating button on admin panel or login page
+  if (isAdminPanel || isLoginPage) return null;
+
+  return <FloatingBtn />;
+});
+HandleFloatingButton.displayName = "HandleFloatingButton";
 
 const AdminPanel_GlobalContext = React.memo(() => (
   <AdminProvider>
@@ -183,6 +206,7 @@ function App() {
               <Route path="/search" element={<SearchBreadcrumb />} />
               <Route path="/checkout" element={<CheckoutBreadcrumb />} />
               <Route path="/shop" element={<ShopPageBreadcrumb />} />
+              <Route path="/favorites" element={<FavoritesBreadcrumb />} />
               <Route
                 path="/thank-you"
                 element={
@@ -240,7 +264,7 @@ function App() {
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-            {!window.location.pathname.startsWith("/admin") && <FloatingBtn />}
+            <HandleFloatingButton />
             <HandleFooter />
           </div>
         </ErrorBoundary>

@@ -53,7 +53,9 @@ function ProductInCart({ Cart_Products }) {
 
             <button
               className="remove-btn"
-              onClick={() => removeProductFromCart(Cart_Products.id)}
+              onClick={async () => {
+                await removeProductFromCart(Cart_Products.id);
+              }}
             >
               <FaTrash />
             </button>
@@ -61,7 +63,7 @@ function ProductInCart({ Cart_Products }) {
         </div>
       </li>
     );
-  }, [Cart_Products]);
+  }, [Cart_Products, updateProductQuantity, removeProductFromCart]);
 }
 
 export default ProductInCart;

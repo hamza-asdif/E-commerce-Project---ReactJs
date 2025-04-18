@@ -1,77 +1,171 @@
-.floating-shop-btn {
+.floating-buttons-container {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: var(--main-color);
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 50px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  backdrop-filter: blur(8px);
+  z-index: 1000;
 }
 
-.floating-shop-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  background: #d83f41; /* Slightly darker shade */
+.floating-buttons-wrapper {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  z-index: 99999;
+}
+
+.floating-buttons-wrapper.expanded {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.floating-btn {
+  background: var(--main-color);
+  color: white;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.main-floating-btn {
+  background: var(--main-color);
+  font-size: 1.5rem;
+  z-index: 2;
+  position: relative;
+}
+
+.main-floating-btn svg {
+  pointer-events: none; /* This ensures the icon doesn't intercept clicks */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.main-floating-btn.active {
+  transform: rotate(45deg);
+  background: #d83f41;
+}
+
+.floating-child-btn {
+  font-size: 1.25rem;
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.expanded .floating-child-btn {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.floating-child-btn:hover {
+  transform: scale(1.1);
+  background: #d83f41;
+}
+
+.btn-tooltip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.floating-child-btn:hover .btn-tooltip {
+  opacity: 1;
+  transform: translateY(-50%);
+}
+
+.favorites-count-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #2d3436;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border: 2px solid white;
 }
 
 /* Mobile Optimizations */
 @media (max-width: 768px) {
-  .floating-shop-btn {
+  .floating-buttons-container {
     bottom: 1.5rem;
-    right: 50%;
-    transform: translateX(50%);
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    /* Mobile glass effect */
-    background: rgba(242, 69, 71, 0.95);
+    right: 1.5rem;
   }
 
-  .floating-shop-btn:hover {
-    transform: translateX(50%) translateY(0);
+  .floating-btn {
+    width: 48px;
+    height: 48px;
   }
 
-  /* Active/Pressed state for mobile */
-  .floating-shop-btn:active {
-    transform: translateX(50%) scale(0.95);
-    background: #d83f41;
+  .btn-tooltip {
+    display: none;
   }
 }
 
-/* Small screens and landscape mode */
-@media (max-width: 480px), (max-height: 480px) {
-  .floating-shop-btn {
-    bottom: 1rem;
-    padding: 0.625rem 1rem;
-    font-size: 0.875rem;
-  }
-
-  /* Hide text on very small screens, show only icon */
-  @media (max-width: 360px) {
-    .floating-shop-btn span {
-      display: none;
-    }
-
-    .floating-shop-btn {
-      padding: 0.75rem;
-      border-radius: 50%;
-      aspect-ratio: 1;
-      justify-content: center;
-    }
-  }
-}
-
-/* Handle devices with bottom navigation bars */
+/* Safe area support for modern mobile devices */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .floating-shop-btn {
+  .floating-buttons-container {
     bottom: calc(1.5rem + env(safe-area-inset-bottom));
   }
+}
+
+/* Animation for buttons appearing */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.expanded .floating-child-btn {
+  animation: fadeInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.expanded .floating-child-btn:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.expanded .floating-child-btn:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.expanded .floating-child-btn:nth-child(3) {
+  animation-delay: 0.3s;
 }

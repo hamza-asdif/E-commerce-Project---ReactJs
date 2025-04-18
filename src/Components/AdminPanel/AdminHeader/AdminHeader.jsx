@@ -14,7 +14,7 @@ const AdminHeader = () => {
         .eq("role", "admin");
 
       if (error) {
-        console.log("ADMIN DATA FETCH ERRRRRRROOOOOOR", error);
+        alertify.error("حدث خطأ في تحميل بيانات المسؤول");
       } else {
         setAdminInfo(data[0]);
       }

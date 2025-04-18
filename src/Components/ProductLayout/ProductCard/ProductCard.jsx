@@ -1,12 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
-import "./ProductCard.css";
-import { FaRegHeart, FaHeart, FaRegClosedCaptioning } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+import {
+  FaStar,
+  FaRegStar,
+  FaStarHalfAlt,
+  FaHeart,
+  FaRegHeart,
+} from "react-icons/fa";
 import { useGlobalContext } from "../../../Context/GlobalContext";
-import axios from "axios";
-import { FaStar } from "react-icons/fa";
-import { FaStarHalfAlt } from "react-icons/fa";
-import { FaRegStar } from "react-icons/fa";
+import alertify from "alertifyjs";
+import "alertifyjs/build/css/alertify.rtl.css";
+import "alertifyjs/build/css/themes/default.rtl.css";
+import "../../../Context/alertify.custom.css";
+import "./ProductCard.css";
+
+const RatingStars = ({ rating }) => {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 !== 0;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+  return (
+    <div className="product-card__rating">
+      {[...Array(fullStars)].map((_, i) => (
+        <FaStar
+          key={`full-${i}`}
+          className="product-card__star product-card__star--full"
+        />
+      ))}
+      {hasHalfStar && (
+        <FaStarHalfAlt
+          key="half"
+          className="product-card__star product-card__star--half"
+        />
+      )}
+      {[...Array(emptyStars)].map((_, i) => (
+        <FaRegStar
+          key={`empty-${i}`}
+          className="product-card__star product-card__star--empty"
+        />
+      ))}
+    </div>
+  );
+};
+
+RatingStars.propTypes = {
+  rating: PropTypes.number.isRequired,
+};
 
 function ProductCard({
   ProductTitle,
@@ -16,209 +56,146 @@ function ProductCard({
   ProductId,
   Rating,
 }) {
-  const {
-    addProductToCart,
-    toggleCart,
-    refreshCart,
-    saveProductToFavorites,
-    NavigateToProduct,
-  } = useGlobalContext();
-
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isAdded_ToFavorite, setIsAdded_ToFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [buyNow_Loading, setBuyNow_Loading] = useState(false);
-  const [rating, setRating] = useState(0);
-  const NavigateNow = useNavigate();
-
-  // تأكد من أن المعرف هو قيمة رقمية
+  const [addToCartLoading, setAddToCartLoading] = useState(false);
+  const { toggleFavorite, checkIfFavorite, addProductToCart } =
+    useGlobalContext();
+  const navigate = useNavigate();
   const productIdNumeric = parseInt(ProductId);
-
-  // التحقق من حالة المفضلة عند تحميل المكون
-  useEffect(() => {
-    const storedFavorites = localStorage.getItem("Fav_Products");
-    if (storedFavorites) {
-      const favorites = JSON.parse(storedFavorites);
-      const isProductFavorite = favorites.some(
-        (item) => item.id === ProductId && item.isFav === true,
-      );
-      setIsFavorite(isProductFavorite);
-      setIsAdded_ToFavorite(isProductFavorite);
-    }
-  }, [ProductId]);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
-    handleDrawRatings();
+    setIsFavorite(checkIfFavorite(productIdNumeric));
+    setRating(Rating || 0);
+  }, [productIdNumeric, Rating, checkIfFavorite]);
 
-    if (Rating) {
-      setRating(Rating);
-    }
-
-    return () => {
-      toggleCart(false);
-    };
-  }, []);
-
-  // في مكون ProductCard.js، تأكد من استدعاء refreshCart بعد إضافة منتج بنجاح
-  const handleAddToCart = () => {
-    const product = {
-      id: parseInt(ProductId),
-      name: ProductTitle,
-      Image: ProductImage,
-      price: parseInt(ProductPrice),
-      OldPrice: parseInt(ProductOldPrice),
-      quantity: 1,
-    };
-
-    setBuyNow_Loading(true);
-    setTimeout(() => {
-      setBuyNow_Loading(false);
-      toggleCart(true);
-
-      // إضافة المنتج ثم تحديث السلة
-      addProductToCart(product).then(() => {
-        refreshCart(); // تأكد من استدعاء هذه الدالة بعد إضافة المنتج بنجاح
-      });
-    }, 1500);
+  const handleNavigation = () => {
+    navigate(`/product/${ProductId}`);
   };
 
-  const handleFavoriteClick = () => {
-    setLoading(true);
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+    if (addToCartLoading) return;
 
-    setTimeout(() => {
-      // تبديل حالة المفضلة
-      const newFavoriteState = !isFavorite;
-      setIsFavorite(newFavoriteState);
-      setIsAdded_ToFavorite(newFavoriteState);
-
-      // إنشاء كائن المفضلة
-      const favoriteObj = {
-        id: ProductId,
-        isFav: newFavoriteState,
+    setAddToCartLoading(true);
+    try {
+      const product = {
+        id: productIdNumeric,
+        name: ProductTitle,
+        Image: ProductImage,
+        price: parseInt(ProductPrice),
+        OldPrice: ProductOldPrice ? parseInt(ProductOldPrice) : null,
       };
 
-      // الحصول على المفضلات المخزنة
-      const storedFavorites = localStorage.getItem("Fav_Products");
-      let favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
-
-      // التحقق مما إذا كان المنتج موجودًا بالفعل في المفضلة
-      const existingIndex = favorites.findIndex(
-        (item) => item.id === ProductId,
-      );
-
-      if (existingIndex !== -1) {
-        // تحديث حالة المنتج الموجود
-        favorites[existingIndex].isFav = newFavoriteState;
+      const success = await addProductToCart(product, 1);
+      if (success) {
+        setTimeout(() => {
+          setAddToCartLoading(false);
+          // alertify.success("تم إضافة المنتج إلى السلة بنجاح");
+        }, 400);
       } else {
-        // إضافة منتج جديد إلى المفضلة
-        favorites.push(favoriteObj);
+        setAddToCartLoading(false);
+        alertify.error("حدث خطأ أثناء إضافة المنتج إلى السلة");
       }
-
-      // تخزين المفضلات المحدثة
-      localStorage.setItem("Fav_Products", JSON.stringify(favorites));
-
-      // اختياري: استدعاء saveProductToFavorites إذا كان متاحًا
-
-      setLoading(false);
-    }, 500);
-  };
-
-  const getText_Favorite = () => {
-    if (loading) return "جاري التحميل...";
-    return isAdded_ToFavorite ? "تمت إضافته إلى المفضلة" : "أضف إلى المفضلة";
-  };
-
-  const getText_BuyNow = () => {
-    if (buyNow_Loading) return <div className="loader"></div>;
-    return "للطلب اضغطي هنا";
-  };
-
-  const handleProductClick = () => {
-    // Remove ProductId parameter since it's already in props
-    const product = {
-      id: parseInt(ProductId), // Use ProductId directly from props
-      name: ProductTitle,
-      Image: ProductImage,
-      price: parseInt(ProductPrice),
-      OldPrice: parseInt(ProductOldPrice),
-      quantity: 1,
-    };
-
-    NavigateToProduct(product, false);
-    console.log("here's the product page clicked product :", product);
-    NavigateNow(`/product/${ProductId}`); // Use ProductId directly from props
-  };
-
-  const handleDrawRatings = () => {
-    if (rating !== 0) {
-      const rates = Array.from({ length: rating });
-      console.log(rates);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      setAddToCartLoading(false);
+      alertify.error("حدث خطأ أثناء إضافة المنتج إلى السلة");
     }
   };
 
-  const RatingStars = ({ rating }) => {
-    const fullStars = Math.floor(rating); // عدد النجوم الممتلئة
-    const hasHalfStar = rating % 1 !== 0; // هل يوجد نصف نجمة؟
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0); // عدد النجوم الفارغة
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation();
+    if (loading) return;
 
-    return (
-      <div className="rating-stars">
-        {[...Array(fullStars)].map((_, i) => (
-          <FaStar key={`full-${i}`} className="star-icon full-star" />
-        ))}
+    setLoading(true);
+    try {
+      const product = {
+        id: productIdNumeric,
+        name: ProductTitle,
+        Image: ProductImage,
+        price: parseInt(ProductPrice),
+        OldPrice: parseInt(ProductOldPrice),
+      };
 
-        {hasHalfStar && (
-          <FaStarHalfAlt key="half" className="star-icon half-star" />
-        )}
-
-        {[...Array(emptyStars)].map((_, i) => (
-          <FaRegStar key={`empty-${i}`} className="star-icon empty-star" />
-        ))}
-      </div>
-    );
+      toggleFavorite(product);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="product-card" key={productIdNumeric}>
-      <div className="product-container">
-        <div className="product-img-box" onClick={handleProductClick}>
-          <img src={ProductImage} alt={ProductTitle} className="product-img" />
+    <div className="product-card" onClick={handleNavigation}>
+      <div className="product-card__container">
+        <div className="product-card__image-box">
+          <img
+            src={ProductImage}
+            alt={ProductTitle}
+            className="product-card__image"
+            loading="lazy"
+          />
+          <button
+            className={`product-card__heart-button ${
+              isFavorite ? "product-card__heart-button--active" : ""
+            }`}
+            onClick={handleFavoriteClick}
+            disabled={loading}
+          >
+            {isFavorite ? (
+              <FaHeart className="product-card__heart-icon" />
+            ) : (
+              <FaRegHeart className="product-card__heart-icon" />
+            )}
+          </button>
         </div>
-        <div className="product-infos-box">
-          <h3 className="product-title">{ProductTitle}</h3>
-          <div className="product-price-container">
-            <span className="product-old-price">
-              {ProductOldPrice} ريال سعودي
-            </span>
-            <span className="product-price">{ProductPrice} ريال سعودي</span>
+        <div className="product-card__info">
+          <h3 className="product-card__title">{ProductTitle}</h3>
+          <div className="product-card__price-container">
+            {ProductOldPrice && (
+              <span className="product-card__old-price">
+                {ProductOldPrice} ريال سعودي
+              </span>
+            )}
+            <span className="product-card__price">{ProductPrice} ريال سعودي</span>
           </div>
           <button
-            className="product-btn"
-            id="buynow"
+            className={`product-card__button ${addToCartLoading ? "loading" : ""}`}
             onClick={handleAddToCart}
-            disabled={buyNow_Loading}
+            disabled={addToCartLoading}
           >
-            {getText_BuyNow()}
+            {addToCartLoading ? (
+              <div className="button-content">
+                <div>
+                {/* <span className="loading-spinner" /> */}
+                <span className="loading-text">جاري الإضافة...</span>
+                </div>
+              </div>
+            ) : (
+              "للطلب اضغطي هنا"
+            )}
           </button>
-          <div className="rating-container">
-            <div className="rating-box">
-              <RatingStars rating={rating} />
-            </div>
-          </div>
-          <div className="favorite-a" onClick={handleFavoriteClick}>
-            <span className="favorite-text">{getText_Favorite()}</span>
-            <div className="heart-icon-toggle">
-              {isFavorite ? (
-                <FaHeart className="favorite-icon" />
-              ) : (
-                <FaRegHeart className="favorite-icon" />
-              )}
-            </div>
-          </div>
+          <RatingStars rating={rating} />
         </div>
       </div>
     </div>
   );
 }
 
-export default React.memo(ProductCard);
+ProductCard.propTypes = {
+  ProductTitle: PropTypes.string.isRequired,
+  ProductImage: PropTypes.string.isRequired,
+  ProductPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
+  ProductOldPrice: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  ProductId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
+  Rating: PropTypes.number,
+};
+
+ProductCard.defaultProps = {
+  ProductOldPrice: null,
+  Rating: 0,
+};
+
+export default ProductCard;

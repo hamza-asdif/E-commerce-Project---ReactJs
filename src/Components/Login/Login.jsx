@@ -30,7 +30,7 @@ const Login = () => {
           }
         }
       } catch (error) {
-        console.error("Session check error:", error);
+        alertify.error("خطأ في التحقق من الجلسة");
       } finally {
         setLoading(false);
       }
@@ -57,13 +57,13 @@ const Login = () => {
         .single();
 
       if (error) {
-        console.error("❌ Error fetching user data:", error.message);
+        alertify.error("خطأ في التحقق من صلاحيات المستخدم");
         return false;
       }
 
       return data?.role === "admin";
     } catch (err) {
-      console.error("Unexpected error:", err);
+      alertify.error("خطأ غير متوقع");
       return false;
     }
   };
@@ -90,7 +90,6 @@ const Login = () => {
         return;
       }
 
-      // Store session in localStorage
       localStorage.setItem(
         "adminSession",
         JSON.stringify({
@@ -101,11 +100,9 @@ const Login = () => {
 
       alertify.success("تم تسجيل الدخول بنجاح!");
 
-      // Navigate to the intended page or admin dashboard
       const from = location.state?.from?.pathname || "/admin";
       navigate(from, { replace: true });
     } catch (err) {
-      console.error("Unexpected error:", err);
       alertify.error("حدث خطأ غير متوقع");
     } finally {
       setLoadingBtn(false);

@@ -53,18 +53,14 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
         const { data, error } = await supabase.from("orders").insert([order]);
 
         if (error) {
-          console.error("خطأ في حفظ الطلب:", error);
           alertify.error("حدث خطأ أثناء إرسال الطلب");
         } else {
-          console.log("تم حفظ الطلب بنجاح:", data);
           alertify.success("تم إرسال الطلب بنجاح");
         }
       } catch (err) {
-        console.error("خطأ غير متوقع:", err);
         alertify.error("حدث خطأ غير متوقع");
       }
     } else {
-      console.error("الطلب فارغ، لن يتم الإرسال.");
       alertify.error("لا يمكن إرسال طلب فارغ");
     }
   };
@@ -115,9 +111,6 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
           Customer_Infos: formData,
         };
 
-        console.log("Order submitted:", formData);
-        console.log("YOURE MADE A SALE", submittedOrder);
-
         setOrder(submittedOrder);
         // set the state of submitted order to use it in thank you page
         setsubmittedOrder(submittedOrder);
@@ -133,7 +126,6 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
           navigate("/thank-you");
           resetall_OrderSubmited();
         } catch (error) {
-          console.error("خطأ في حفظ الطلب:", error);
           alertify.error("حدث خطأ أثناء معالجة طلبك");
         } finally {
           setLoading(false);
@@ -161,12 +153,11 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
           // انتظار ثانية واحدة قبل الانتقال
           await new Promise((resolve) => setTimeout(resolve, 1000));
 
-          handleCartDuring_CheckoutExpress(product)
+          handleCartDuring_CheckoutExpress(product);
 
           // الانتقال لصفحة الشكر وإعادة تعيين الحالة
           navigate("/thank-you");
         } catch (error) {
-          console.error("خطأ في حفظ الطلب:", error);
           alertify.error("حدث خطأ أثناء معالجة طلبك");
         } finally {
           setLoading(false);
@@ -174,7 +165,7 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
       } else {
         // رسالة خطأ إذا كانت سلة التسوق فارغة
         alertify.error(
-          "لا يمكن إرسال طلبك لأنك لا تمتلك أي منتجات في سلة التسوق",
+          "لا يمكن إرسال طلبك لأنك لا تمتلك أي منتجات في سلة التسوق"
         );
       }
     }
@@ -197,13 +188,14 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
     }));
   };
 
-
   const handleCartDuring_CheckoutExpress = (product) => {
-    if(productsInCart.length > 0) {
-      const cartProducts = productsInCart.filter( (item) =>  item.id !== product.id)
+    if (productsInCart.length > 0) {
+      const cartProducts = productsInCart.filter(
+        (item) => item.id !== product.id
+      );
       setProductsInCart(cartProducts);
     }
-  }
+  };
 
   return (
     <div
