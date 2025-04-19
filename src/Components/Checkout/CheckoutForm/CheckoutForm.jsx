@@ -1,10 +1,11 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { FaCartPlus } from "react-icons/fa";
 import { useGlobalContext } from "../../../Context/GlobalContext";
 import supabase from "../../../supabaseClient";
 import { v4 as uuidv4 } from "uuid";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import alertify from "alertifyjs";
+import PropTypes from "prop-types";
 import "./CheckoutForm.css";
 
 function CheckoutForm({ productPage_Product, checkoutStyle }) {
@@ -13,11 +14,9 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
     productsInCart_TotalPrice,
     resetall_OrderSubmited,
     setsubmittedOrder,
-    allProducts,
     setProductsInCart,
   } = useGlobalContext();
 
-  const [isMainCheckout, setIsMainCheckout] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -28,12 +27,25 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
 
   const fullNameRef = useRef(null);
   const [errors, setErrors] = useState({});
-  const [order, setOrder] = useState({});
   const navigate = useNavigate();
 
+  // Ensure product quantity is included in order
+  useEffect(() => {
+    if (productPage_Product) {
+      localStorage.setItem(
+        "productPage_Product",
+        JSON.stringify(productPage_Product)
+      );
+    }
+  }, [productPage_Product]);
+
   useLayoutEffect(() => {
-    handleFormStyle();
-  }, []);
+    // Handle form style directly in the effect
+    if (checkoutStyle) {
+      // Any form style logic can go here if needed in the future
+      return;
+    }
+  }, [checkoutStyle]);
 
   useEffect(() => {
     if (fullNameRef.current) {
@@ -41,33 +53,31 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
     }
   }, [productPage_Product]);
 
-  const handleFormStyle = () => {
-    if (checkoutStyle === true) {
-      setIsMainCheckout(true);
-    }
-  };
-
   const saveOrder = async (order) => {
     if (Object.keys(order).length > 0) {
       try {
-        const { data, error } = await supabase.from("orders").insert([order]);
+        const { error } = await supabase.from("orders").insert([order]);
 
         if (error) {
-          alertify.error("حدث خطأ أثناء إرسال الطلب");
-        } else {
-          alertify.success("تم إرسال الطلب بنجاح");
+          throw error;
         }
+
+        // Save the order ID for the thank you page
+        localStorage.setItem("lastOrderId", order.user_id);
+        alertify.success("تم إرسال الطلب بنجاح");
+        return true;
       } catch (err) {
+        console.error("Error saving order:", err);
         alertify.error("حدث خطأ غير متوقع");
+        return false;
       }
     } else {
       alertify.error("لا يمكن إرسال طلب فارغ");
+      return false;
     }
   };
 
-  // معالجة إرسال النموذج
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validateForm = () => {
     let isValid = true;
     const newErrors = {};
 
@@ -77,96 +87,106 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
       isValid = false;
     }
 
+    // التحقق من صحة رقم الهاتف
     const phoneRegex = /^(06|(\+212)|(00212))[0-9]{8}$/;
     if (!formData.tel || !phoneRegex.test(formData.tel)) {
       newErrors.tel = "يجب إدخال رقم هاتف صحيح (يبدأ بـ 06 أو +212)";
       isValid = false;
     }
 
+    // التحقق من المدينة
     if (!formData.city) {
       newErrors.city = "المدينة مطلوبة";
       isValid = false;
     }
 
+    // التحقق من العنوان
     if (!formData.address || formData.address.length < 10) {
       newErrors.address = "يرجى إدخال عنوان تفصيلي (10 أحرف على الأقل)";
       isValid = false;
     }
 
     setErrors(newErrors);
+    return isValid;
+  };
 
-    if (isValid) {
-      if (
-        window.location.pathname.endsWith("/checkout") &&
-        productsInCart.length !== 0
-      ) {
-        setLoading(true);
-
-        // إنشاء الطلب
-        const submittedOrder = {
-          user_id: uuidv4(),
-          products: [...productsInCart],
-          total_price: productsInCart_TotalPrice,
-          status: "pending",
-          Customer_Infos: formData,
-        };
-
-        setOrder(submittedOrder);
-        // set the state of submitted order to use it in thank you page
-        setsubmittedOrder(submittedOrder);
-
-        try {
-          // حفظ الطلب
-          await saveOrder(submittedOrder);
-
-          // انتظار ثانية واحدة قبل الانتقال
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-
-          // الانتقال لصفحة الشكر وإعادة تعيين الحالة
-          navigate("/thank-you");
-          resetall_OrderSubmited();
-        } catch (error) {
-          alertify.error("حدث خطأ أثناء معالجة طلبك");
-        } finally {
-          setLoading(false);
-        }
-      } else if (window.location.pathname !== "checkout") {
-        setLoading(true);
-
-        const product = JSON.parse(localStorage.getItem("productPage_Product"));
-
-        // إنشاء الطلب
-        const submittedOrder = {
-          user_id: uuidv4(),
-          products: [product],
-          total_price: product.price * product.quantity,
-          status: "pending",
-          Customer_Infos: formData,
-        };
-
-        setsubmittedOrder(submittedOrder);
-
-        try {
-          // حفظ الطلب
-          await saveOrder(submittedOrder);
-
-          // انتظار ثانية واحدة قبل الانتقال
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-
-          handleCartDuring_CheckoutExpress(product);
-
-          // الانتقال لصفحة الشكر وإعادة تعيين الحالة
-          navigate("/thank-you");
-        } catch (error) {
-          alertify.error("حدث خطأ أثناء معالجة طلبك");
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        // رسالة خطأ إذا كانت سلة التسوق فارغة
-        alertify.error(
-          "لا يمكن إرسال طلبك لأنك لا تمتلك أي منتجات في سلة التسوق"
+  const handleCartAfterOrder = (isExpressCheckout, product = null) => {
+    if (isExpressCheckout && product) {
+      // For express checkout, only remove the ordered product if it exists in cart
+      const productInCart = productsInCart.find(
+        (item) => item.id === product.id
+      );
+      if (productInCart) {
+        const updatedCart = productsInCart.filter(
+          (item) => item.id !== product.id
         );
+        setProductsInCart(updatedCart);
+      }
+      // If product not in cart, do nothing
+    } else {
+      // For regular checkout, clear the entire cart
+      resetall_OrderSubmited();
+    }
+  };
+
+  const getProductQuantity = (product) => {
+    if (!product) return 1;
+    const cartProduct = productsInCart.find((item) => item.id === product.id);
+    return cartProduct ? cartProduct.quantity : product.quantity || 1;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      setLoading(true);
+
+      try {
+        let submittedOrder;
+        const isExpressCheckout = !!productPage_Product;
+
+        if (!isExpressCheckout && productsInCart.length !== 0) {
+          // Regular checkout
+          submittedOrder = {
+            user_id: uuidv4(),
+            products: [...productsInCart],
+            total_price: productsInCart_TotalPrice,
+            status: "pending",
+            Customer_Infos: formData,
+            created_at: new Date().toISOString(),
+          };
+        } else if (isExpressCheckout) {
+          // Express checkout - use cart quantity if product exists in cart
+          const quantity = getProductQuantity(productPage_Product);
+          submittedOrder = {
+            user_id: uuidv4(),
+            products: [
+              {
+                ...productPage_Product,
+                quantity,
+              },
+            ],
+            total_price: productPage_Product.price * quantity,
+            status: "pending",
+            Customer_Infos: formData,
+            created_at: new Date().toISOString(),
+          };
+        } else {
+          throw new Error("No products in cart");
+        }
+
+        setsubmittedOrder(submittedOrder);
+        const saved = await saveOrder(submittedOrder);
+
+        if (saved) {
+          // Handle cart based on checkout type
+          handleCartAfterOrder(isExpressCheckout, productPage_Product);
+          navigate("/thank-you");
+        }
+      } catch (error) {
+        console.error("Checkout error:", error);
+        alertify.error("حدث خطأ أثناء معالجة طلبك");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -186,15 +206,6 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
       ...prev,
       [name]: value,
     }));
-  };
-
-  const handleCartDuring_CheckoutExpress = (product) => {
-    if (productsInCart.length > 0) {
-      const cartProducts = productsInCart.filter(
-        (item) => item.id !== product.id
-      );
-      setProductsInCart(cartProducts);
-    }
   };
 
   return (
@@ -300,5 +311,10 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
     </div>
   );
 }
+
+CheckoutForm.propTypes = {
+  productPage_Product: PropTypes.object,
+  checkoutStyle: PropTypes.bool,
+};
 
 export default CheckoutForm;

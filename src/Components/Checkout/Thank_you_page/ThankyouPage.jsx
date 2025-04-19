@@ -12,53 +12,56 @@ function ThankYouPage() {
 
   const getOrderInfo = async () => {
     try {
-      if (!submittedOrder?.user_id) return;
+      // Try to get the order ID from context first, then from localStorage
+      const orderId =
+        submittedOrder?.user_id || localStorage.getItem("lastOrderId");
+
+      if (!orderId) {
+        setLoading(false);
+        return;
+      }
 
       const { data, error } = await supabase
         .from("orders")
         .select("*")
-        .eq("user_id", submittedOrder.user_id)
-        .order("created_at", { ascending: false })
-        .limit(1);
+        .eq("user_id", orderId)
+        .single();
 
       if (error) throw error;
-      if (data?.length > 0) {
-        setOrderDetails(data[0]);
+
+      if (data) {
+        setOrderDetails(data);
       }
     } catch (error) {
       console.error("Failed to fetch order:", error);
     } finally {
       setLoading(false);
+      // Clear the localStorage after fetching
+      localStorage.removeItem("lastOrderId");
     }
   };
 
   useEffect(() => {
     getOrderInfo();
-  }, [submittedOrder?.user_id]);
+  }, [submittedOrder]);
 
-  // Format UUID to show first 8 characters only
   const formatOrderId = (uuid) => {
-    if (!uuid) return "";
-    return uuid.split("-")[0].toUpperCase(); // Shows first part of UUID
+    return uuid ? uuid.substring(0, 8).toUpperCase() : "N/A";
   };
 
-  // Format date in Arabic with English numbers
   const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date
-      .toLocaleDateString("ar-SA", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-      .replace(/[٠-٩]/g, (d) => "٠١٢٣٤٥٦٧٨٩".indexOf(d));
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString("ar-SA", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
-    <div className="thank-you-page" dir="rtl">
+    <div className="thank-you-page">
       <div className="thank-you-card">
         <FaCheckCircle className="success-icon" />
         <h1>شكراً لتسوقك معنا!</h1>
@@ -73,7 +76,7 @@ function ThankYouPage() {
             <h2>ملخص الطلب</h2>
             <div className="order-detail">
               <span>رقم الطلب:</span>
-              <strong>#{formatOrderId(orderDetails.id)}</strong>
+              <strong>#{formatOrderId(orderDetails.user_id)}</strong>
             </div>
             <div className="order-detail">
               <span>التاريخ:</span>
@@ -85,15 +88,15 @@ function ThankYouPage() {
             </div>
           </div>
         ) : (
-          <p>لا يوجد بيانات للطلب</p>
+          <p>لا يمكن عرض تفاصيل الطلب حالياً</p>
         )}
 
         <div className="action-buttons">
           <Link to="/" className="home-btn">
             <FaHome /> الصفحة الرئيسية
           </Link>
-          <Link to="/orders" className="orders-btn">
-            <FaShoppingCart /> طلباتي
+          <Link to="/shop" className="orders-btn">
+            <FaShoppingCart /> متابعة التسوق
           </Link>
         </div>
       </div>

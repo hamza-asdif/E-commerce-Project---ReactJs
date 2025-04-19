@@ -204,11 +204,19 @@ function ProductPage() {
 
   useEffect(() => {
     if (productPage) {
+      // Save product data for express checkout
+      localStorage.setItem(
+        "productPage_Product",
+        JSON.stringify({
+          ...productPage,
+          quantity: ProductPage_Quantity,
+        })
+      );
       setTimeout(() => {
         setLoading(false);
       }, 1000);
     }
-  }, [productPage]);
+  }, [productPage, ProductPage_Quantity]);
 
   useEffect(() => {
     const data = productPage;
@@ -378,7 +386,10 @@ function ProductPage() {
                 {/* Order Form */}
 
                 {!loading && isExpressCheckoutEnable ? (
-                  <CheckoutForm />
+                  <CheckoutForm
+                    productPage_Product={productPage}
+                    checkoutStyle={false}
+                  />
                 ) : (
                   <div className="checkout-btn-product-page">
                     <div className="checkout-btn-product-page-quantitySelect">
