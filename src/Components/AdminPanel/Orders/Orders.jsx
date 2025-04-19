@@ -5,6 +5,7 @@ import Papa from "papaparse";
 import alertify from "alertifyjs";
 import OrderDetailsPopup from "./OrderDetails/OrderDetails";
 import { useAdminGlobalContext } from "../AdminGlobalContext";
+import { FaRegArrowAltCircleLeft, FaRegArrowAltCircleRight } from "react-icons/fa";
 
 function Orders() {
   const { orders: contextOrders } = useAdminGlobalContext();
@@ -140,7 +141,7 @@ function Orders() {
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
-          <i className="arrow-icon">���</i>
+          <FaRegArrowAltCircleRight />
           <span>السابق</span>
         </button>
 
@@ -164,7 +165,8 @@ function Orders() {
           disabled={currentPage === totalPages}
         >
           <span>التالي</span>
-          <i className="arrow-icon">▶</i>
+          <FaRegArrowAltCircleLeft />
+          {/* <i className="arrow-icon">▶</i> */}
         </button>
       </div>
     );
@@ -760,7 +762,7 @@ function Orders() {
                       <div className="action-buttons_2">
                         <button
                           className="action-btn view-btn"
-                          title="عرض التفاص��ل"
+                          title="عرض التفاصيل"
                           onClick={() => handleViewOrder(order)}
                         >
                           <i className="fas fa-eye"></i>
