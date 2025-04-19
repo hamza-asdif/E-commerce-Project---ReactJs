@@ -275,8 +275,8 @@
 
 single-product-old-price {
   font-size: clamp(1rem, 1.5vw, 1.2rem);
-  color: var(--text-secondary);
-  text-decoration: line-through;
+  color: var(--text-gray) !important;
+  text-decoration: line-through !important;
 }
 
 /* ======== Stats Section ======== */

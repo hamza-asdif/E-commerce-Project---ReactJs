@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useGlobalContext } from "../../Context/GlobalContext";
 import { FaMinus, FaPlus, FaCartArrowDown } from "react-icons/fa";
-import "./Productpage.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import CheckoutForm from "../Checkout/CheckoutForm/CheckoutForm";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import "./Productpage.css";
+
 
 const ProductPageSkeleton = () => (
   <div className="single-product-page">
