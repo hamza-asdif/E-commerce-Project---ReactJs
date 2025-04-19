@@ -1,44 +1,141 @@
-/* eslint-disable react/display-name */
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useGlobalContext } from "../../Context/GlobalContext";
-import { FaCartPlus, FaMinus, FaPlus } from "react-icons/fa";
+import { FaMinus, FaPlus, FaCartArrowDown } from "react-icons/fa";
 import "./Productpage.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
-import { useForm } from "react-hook-form";
 import CheckoutForm from "../Checkout/CheckoutForm/CheckoutForm";
-import { createClient } from "@supabase/supabase-js";
-import { FaCartArrowDown } from "react-icons/fa";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
-
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
+const ProductPageSkeleton = () => (
+  <div className="single-product-page">
+    <div className="single-product-container">
+      <div className="container-product-page">
+        <div className="single-product-content">
+          {/* Gallery Section */}
+          <div className="single-product-gallery">
+            {/* Main Image with 1:1 aspect ratio */}
+            <div
+              className="single-product-main-image"
+              style={{ aspectRatio: "1/1" }}
+            >
+              <Skeleton
+                height="100%"
+                style={{
+                  transform: "none",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                }}
+              />
+            </div>
+            {/* Thumbnails with proper grid layout */}
+            <div className="single-product-thumbnails">
+              {[1, 2, 3, 4].map((_, index) => (
+                <div
+                  key={index}
+                  className="single-product-thumbnail"
+                  style={{ aspectRatio: "1/1" }}
+                >
+                  <Skeleton
+                    height="100%"
+                    style={{
+                      transform: "none",
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      borderRadius: "var(--radius-md)",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Product Details Section */}
+          <div
+            className="single-product-details"
+            style={{ textAlign: "right" }}
+          >
+            {/* Title */}
+            <Skeleton height={45} width="85%" style={{ transform: "none" }} />
+
+            {/* Pricing */}
+            <div className="single-product-pricing">
+              <Skeleton height={35} width={150} style={{ transform: "none" }} />
+              <Skeleton
+                height={35}
+                width={100}
+                style={{ transform: "none", opacity: 0.7 }}
+              />
+            </div>
+
+            {/* Quantity Selector & Add to Cart */}
+            <div className="checkout-btn-product-page">
+              <div
+                className="checkout-btn-product-page-quantitySelect"
+                style={{ background: "transparent" }}
+              >
+                <Skeleton
+                  height={50}
+                  style={{
+                    transform: "none",
+                    borderRadius: "var(--radius-md)",
+                  }}
+                />
+              </div>
+              <div
+                className="checkout-btn-product-page-button"
+                style={{ marginTop: "1rem" }}
+              >
+                <Skeleton
+                  height={50}
+                  style={{
+                    transform: "none",
+                    borderRadius: "var(--radius-md)",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Stats Section */}
+            <div className="single-product-stats">
+              {[1, 2, 3].map((_, index) => (
+                <div key={index} style={{ padding: "0.5rem 0" }}>
+                  <Skeleton
+                    height={40}
+                    style={{
+                      marginBottom: "0.5rem",
+                      borderRadius: "var(--radius-sm)",
+                      transform: "none",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 function ProductPage() {
   const {
-    productPage_Product,
-    setproductPage_Product,
     toggleCart,
-    setSearchState,
-    resetAllStates,
     Supabase_APIURL,
     supabase_APIKEY,
-    allProducts,
-    updateProductQuantity,
     productsInCart,
     setProductsInCart,
     addProductToCart,
-    refreshCart,
   } = useGlobalContext();
-  const [productPage_Storage, setProductPage_Storage] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [noProduct, setNoProduct] = useState(false);
   const { id } = useParams();
@@ -47,12 +144,63 @@ function ProductPage() {
   const [productImages, setProductImages] = useState([]);
   const [isExpressCheckoutEnable, setIsExpressCheckoutEnable] = useState(false);
   const [ProductPage_Quantity, setProductPage_Quantity] = useState(1);
-  const [btnText, setBtnText] = useState("أضف إلى السلة");
+  const [btnText] = useState("أضف إلى السلة");
   const [btnLoader, setBtnLoader] = useState(false);
   const [productPage_MainImage, setProductPage_MainImage] = useState("");
-  const [isActive, setIsActive] = useState(false);
   const [imageIndex, setImageIndex] = useState(null);
   const mainImageRef = useRef(null);
+
+  const fetchProductPage_Product = useCallback(
+    async (productId) => {
+      const productPage_Api = `${Supabase_APIURL}?id=eq.${productId}`;
+      try {
+        console.log("FETCH PRODUCT PAGE ID HERE :", productId);
+        const response = await axios.get(productPage_Api, {
+          headers: {
+            apikey: supabase_APIKEY,
+            Authorization: `bearer ${supabase_APIKEY}`,
+          },
+        });
+
+        console.log("FETCH PRODUCT PAGE ID HERE :", response.data);
+
+        // Check if we got any data back
+        if (!response.data || response.data.length === 0) {
+          setNoProduct(true);
+          setLoading(false);
+          return;
+        }
+
+        setProductPage(response.data[0]);
+        await new Promise((resolve) => {
+          setProductPage_MainImage(`${response.data[0].Image}`);
+          resolve();
+        });
+
+        if (response.data[0].isExpressCheckoutEnabled) {
+          setIsExpressCheckoutEnable(true);
+        }
+      } catch (err) {
+        console.error(err);
+        setNoProduct(true);
+        setLoading(false);
+      }
+    },
+    [Supabase_APIURL, supabase_APIKEY]
+  );
+
+  const handleVisitorsRandom = useCallback(() => {
+    const randomDelay = Math.floor(Math.random() * (4000 - 2000 + 1)) + 2000;
+    setInterval(() => {
+      const randomNumber = Math.floor(Math.random() * (120 - 30 + 1)) + 30;
+      setRandomVisitors(randomNumber);
+    }, randomDelay);
+  }, []);
+
+  useEffect(() => {
+    handleVisitorsRandom();
+    fetchProductPage_Product(id);
+  }, [id, fetchProductPage_Product, handleVisitorsRandom]);
 
   useEffect(() => {
     if (productPage) {
@@ -68,67 +216,12 @@ function ProductPage() {
 
     if (thisData) {
       setProductImages(thisData);
-      const test = thisData.map((img) => {
-        console.log(img);
-        return img;
-      });
     }
-
-    console.log(thisData);
   }, [productPage]);
 
-  useEffect(() => {
-    handleVisitorsRandom();
-    fetchProductPage_Product(id);
-  }, []);
-
-  const handleVisitorsRandom = () => {
-    const randomDelay = Math.floor(Math.random() * (4000 - 2000 + 1)) + 2000;
-    setInterval(() => {
-      const randomNumber = Math.floor(Math.random() * (120 - 30 + 1)) + 30;
-
-      setRandomVisitors(randomNumber);
-    }, randomDelay);
-  };
-
-  const fetchProductPage_Product = async (id) => {
-    const productPage_Api = `${Supabase_APIURL}?id=eq.${id}`;
-    try {
-      console.log("FETCH PRODUCT PAGE ID HERE :", id);
-      const response = await axios.get(productPage_Api, {
-        headers: {
-          apikey: supabase_APIKEY,
-          Authorization: `bearer ${supabase_APIKEY}`,
-        },
-      });
-
-      console.log("FETCH PRODUCT PAGE ID HERE :", response.data);
-      setProductPage(response.data[0]);
-      await new Promise((resolve) => {
-        setProductPage_MainImage(`${response.data[0].Image}`);
-        resolve();
-      });
-
-      if (response.data[0].isExpressCheckoutEnabled) {
-        setIsExpressCheckoutEnable(true);
-        return;
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  // Define a memoized loading component
-  const LoadingComponent = React.memo(() => (
-    <div className="loading-container">
-      <div className="loading-spinner"></div>
-      <p>جاري تحميل المنتج...</p>
-    </div>
-  ));
-
-  // Then use it in your conditional
+  // Replace the old loading component with our new skeleton
   if (loading) {
-    return <LoadingComponent />;
+    return <ProductPageSkeleton />;
   }
 
   if (noProduct) {
@@ -167,6 +260,30 @@ function ProductPage() {
     } else {
       handleBtnButton_Loading();
     }
+  };
+
+  const getReviewCount = (product) => {
+    if (!product) return 0;
+
+    // Base review count based on price range
+    let baseCount;
+    if (product.price <= 100) baseCount = 180;
+    else if (product.price <= 200) baseCount = 250;
+    else if (product.price <= 300) baseCount = 320;
+    else baseCount = 400;
+
+    // Add more reviews if the product has a discount
+    const hasDiscount = product.OldPrice && product.OldPrice > product.price;
+    if (hasDiscount) {
+      const discountPercent =
+        ((product.OldPrice - product.price) / product.OldPrice) * 100;
+      baseCount += Math.round(discountPercent * 3); // More discount = more reviews
+    }
+
+    // Add variation based on product ID (to make it unique per product)
+    const variation = (product.id * 17) % 50; // Using prime number for better distribution
+
+    return baseCount + variation;
   };
 
   return (
@@ -304,19 +421,44 @@ function ProductPage() {
                 {/* Product Stats */}
                 <div className="single-product-stats">
                   <p className="single-product-stats-item">
-                    أكثر من 2500 زبون راض عن هذا المنتج 
+                    <span className="stats-icon">⭐</span>
+                    تقييم عملائنا{" "}
+                    {productPage.Rating ? productPage.Rating.toFixed(1) : "4.8"}
+                    /5 ({getReviewCount(productPage)}+ تقييم)
+                  </p>
+                  {productPage.OldPrice && (
+                    <p className="single-product-stats-item">
+                      <span className="stats-icon">💥</span>
+                      خصم{" "}
+                      {Math.round(
+                        ((productPage.OldPrice - productPage.price) /
+                          productPage.OldPrice) *
+                          100
+                      )}
+                      % لفترة محدودة
+                    </p>
+                  )}
+                  <p className="single-product-stats-item">
+                    <span className="stats-icon">📦</span>
+                    {productPage.Stock > 10
+                      ? "متوفر في المخزون"
+                      : `باقي ${productPage.Stock} قطع فقط`}
                   </p>
                   <p className="single-product-stats-item">
-                    📦 التوصيل مجاني داخل مدينة الرياض ومدن المملكة الكبرى
+                    <span className="stats-icon">🚚</span>
+                    توصيل مجاني لجميع مدن المملكة
                   </p>
                   <p className="single-product-stats-item">
-                    👁‍🗨 يشاهده{" "}
+                    <span className="stats-icon">💯</span>
+                    ضمان استرجاع خلال 14 يوم
+                  </p>
+                  <p className="single-product-stats-item highlight-stats">
+                    <span className="stats-icon">👁️</span>
+                    يشاهده حالياً{" "}
                     <span className="single-product-highlight">
-                      <strong>
-                      {randomVisitors}
-                      </strong>
+                      <strong>{randomVisitors}</strong>
                     </span>{" "}
-                    زبون في الوقت الحالي
+                    شخص
                   </p>
                 </div>
               </div>

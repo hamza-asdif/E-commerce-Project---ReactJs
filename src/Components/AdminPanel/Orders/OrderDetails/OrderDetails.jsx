@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import alertify from "alertifyjs";
 import supabase from "../../../../supabaseClient";
-import { useReactToPrint } from "react-to-print";
-import "./OrderDetails.css";
 import { useAdminGlobalContext } from "../../AdminGlobalContext";
+import "./OrderDetails.css";
 
 const statusOptions = [
   { value: "pending", label: "قيد الانتظار", color: "#f59e0b" },
@@ -14,13 +13,11 @@ const statusOptions = [
 ];
 
 const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
-  const [showStatusPopup, setShowStatusPopup] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [orderNote, setOrderNote] = useState("");
-  const [showNoteEditor, setShowNoteEditor] = useState(false);
-  const printComponentRef = useRef();
   const { refreshOrders } = useAdminGlobalContext();
+  const [selectedTab, setSelectedTab] = useState("details"); // ["details", "products", "notes"]
 
   useEffect(() => {
     if (order) {
@@ -29,92 +26,44 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
     }
   }, [order]);
 
-  // Auto-print if mode is "print"
-  const handlePrint = useReactToPrint({
-    content: () => printComponentRef.current,
-    documentTitle: `فاتورة_${order?.order_Id || "طلب"}`,
-    onAfterPrint: () => setIsOpen(false),
-  });
-
-  useEffect(() => {
-    if (isOpen && mode === "print" && order) {
-      setTimeout(() => handlePrint(), 400); // slight delay for rendering
-    }
-    // eslint-disable-next-line
-  }, [isOpen, mode, order]);
-
   const handleStatusChange = async (newStatus) => {
-    if (newStatus === currentStatus) {
-      setShowStatusPopup(false);
-      return;
-    }
+    if (newStatus === currentStatus) return;
 
     try {
       setIsUpdating(true);
 
-      if (!order || !order.id) {
-        throw new Error("Order ID is missing");
-      }
-
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("orders")
         .update({ status: newStatus })
         .eq("id", order.id);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       setCurrentStatus(newStatus);
-
-      if (order) {
-        order.status = newStatus;
-      }
-
-      if (refreshOrders) {
-        refreshOrders();
-      }
+      if (order) order.status = newStatus;
+      if (refreshOrders) refreshOrders();
 
       alertify.success("تم تحديث حالة الطلب بنجاح");
     } catch (error) {
+      console.error("Error updating order status:", error);
       alertify.error("حدث خطأ أثناء تحديث حالة الطلب");
     } finally {
       setIsUpdating(false);
-      setShowStatusPopup(false);
     }
   };
 
-  const handleSaveNote = async () => {
+  const handleNoteUpdate = async () => {
     try {
       setIsUpdating(true);
-
-      // Make sure we have a valid order ID
-      if (!order || !order.id) {
-        throw new Error("Order ID is missing");
-      }
 
       const { error } = await supabase
         .from("orders")
         .update({ notes: orderNote })
         .eq("id", order.id);
 
-      if (error) {
-        console.error("Error saving note:", error);
-        throw error;
-      }
-
-      // Update the order object
-      if (order) {
-        order.notes = orderNote;
-      }
-
-      // Refresh orders list if available
-      if (refreshOrders) {
-        refreshOrders();
-      }
+      if (error) throw error;
 
       alertify.success("تم حفظ الملاحظات بنجاح");
-      setShowNoteEditor(false);
     } catch (error) {
       console.error("Error saving note:", error);
       alertify.error("حدث خطأ أثناء حفظ الملاحظات");
@@ -122,6 +71,8 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
       setIsUpdating(false);
     }
   };
+
+  if (!isOpen || !order) return null;
 
   const getStatusColor = (status) => {
     const statusOption = statusOptions.find((s) => s.value === status);
@@ -133,275 +84,227 @@ const OrderDetailsPopup = ({ isOpen, setIsOpen, order, mode = "view" }) => {
     return statusOption ? statusOption.label : "غير معروف";
   };
 
-  if (!isOpen || !order) return null;
+  const renderTab = () => {
+    switch (selectedTab) {
+      case "products":
+        return (
+          <div className="products-tab">
+            <div className="products-grid">
+              {order.products?.map((product) => (
+                <div key={product.id} className="product-card">
+                  <div className="product-image">
+                    <img src={product.Image} alt={product.name} />
+                  </div>
+                  <div className="product-info">
+                    <h4>{product.name}</h4>
+                    <div className="product-details">
+                      <span className="price">{product.price} ر.س</span>
+                      <span className="quantity">
+                        الكمية: {product.quantity}
+                      </span>
+                      <span className="total">
+                        الإجمالي: {product.price * product.quantity} ر.س
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="order-summary">
+              <div className="summary-row">
+                <span>المجموع الفرعي:</span>
+                <span>{order.total_price} ر.س</span>
+              </div>
+              <div className="summary-row">
+                <span>رسوم الشحن:</span>
+                <span>0 ر.س</span>
+              </div>
+              <div className="summary-row total">
+                <span>الإجمالي:</span>
+                <span>{order.total_price} ر.س</span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "notes":
+        return (
+          <div className="notes-tab">
+            <textarea
+              value={orderNote}
+              onChange={(e) => setOrderNote(e.target.value)}
+              placeholder="أضف ملاحظات حول هذا الطلب..."
+              className="notes-textarea"
+            />
+            <button
+              className="save-notes-btn"
+              onClick={handleNoteUpdate}
+              disabled={isUpdating}
+            >
+              {isUpdating ? "جاري الحفظ..." : "حفظ الملاحظات"}
+            </button>
+          </div>
+        );
+
+      default: // details tab
+        return (
+          <div className="details-tab">
+            <div className="info-grid">
+              <div className="info-section">
+                <h3>معلومات العميل</h3>
+                <div className="info-card">
+                  <div className="info-row">
+                    <i className="fas fa-user"></i>
+                    <div>
+                      <label>الاسم</label>
+                      <p>{order.Customer_Infos?.fullName || "غير محدد"}</p>
+                    </div>
+                  </div>
+                  <div className="info-row">
+                    <i className="fas fa-phone"></i>
+                    <div>
+                      <label>الهاتف</label>
+                      <p dir="ltr">
+                        {order.Customer_Infos?.tel || "غير متوفر"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="info-row">
+                    <i className="fas fa-envelope"></i>
+                    <div>
+                      <label>البريد الإلكتروني</label>
+                      <p>{order.Customer_Infos?.email || "غير متوفر"}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="info-section">
+                <h3>معلومات التوصيل</h3>
+                <div className="info-card">
+                  <div className="info-row">
+                    <i className="fas fa-map-marker-alt"></i>
+                    <div>
+                      <label>العنوان</label>
+                      <p>{order.Customer_Infos?.address || "غير محدد"}</p>
+                    </div>
+                  </div>
+                  <div className="info-row">
+                    <i className="fas fa-city"></i>
+                    <div>
+                      <label>المدينة</label>
+                      <p>{order.Customer_Infos?.city || "غير محدد"}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="info-section">
+                <h3>معلومات الطلب</h3>
+                <div className="info-card">
+                  <div className="info-row">
+                    <i className="fas fa-shopping-cart"></i>
+                    <div>
+                      <label>رقم الطلب</label>
+                      <p>{order.order_Id}</p>
+                    </div>
+                  </div>
+                  <div className="info-row">
+                    <i className="fas fa-calendar"></i>
+                    <div>
+                      <label>تاريخ الطلب</label>
+                      <p>
+                        {new Date(order.created_at).toLocaleDateString("ar-SA")}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="info-row">
+                    <i className="fas fa-money-bill-wave"></i>
+                    <div>
+                      <label>طريقة الدفع</label>
+                      <p>الدفع عند الاستلام</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+    }
+  };
 
   return (
-    <div
-      className="order-modal-overlay-unique"
-      onClick={() => setIsOpen(false)}
-    >
-      <div className="order-modal-unique" onClick={(e) => e.stopPropagation()}>
-        <header className="modal-header-unique">
-          <h2>تفاصيل الطلب {order.order_Id}</h2>
-          <button
-            className="close-button-unique"
-            aria-label="إغلاق"
-            onClick={() => setIsOpen(false)}
-          >
-            <span>&times;</span>
-          </button>
-        </header>
-
-        <div className="modal-content-unique" ref={printComponentRef}>
-          <div className="print-header">
-            <h1>فاتورة طلب</h1>
-            <p>رقم الطلب: {order.order_Id}</p>
-            <p>
-              تاريخ: {new Date(order.created_at).toLocaleDateString("ar-SA")}
-            </p>
+    <div className="order-modal-overlay" onClick={() => setIsOpen(false)}>
+      <div className="order-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <div className="header-content">
+            <h2>تفاصيل الطلب {order.order_Id}</h2>
+            <div
+              className="order-status"
+              style={{ backgroundColor: `${getStatusColor(currentStatus)}20` }}
+            >
+              <span
+                className="status-dot"
+                style={{ backgroundColor: getStatusColor(currentStatus) }}
+              ></span>
+              <span style={{ color: getStatusColor(currentStatus) }}>
+                {getStatusLabel(currentStatus)}
+              </span>
+            </div>
           </div>
-
-          <section className="customer-info-unique">
-            <h3>معلومات العميل</h3>
-            <div className="info-container-unique">
-              <div className="info-item-unique">
-                <i className="fas fa-user"></i>
-                <div>
-                  <label>الاسم</label>
-                  <p>{order.Customer_Infos?.fullName}</p>
-                </div>
-              </div>
-              <div className="info-item-unique">
-                <i className="fas fa-envelope"></i>
-                <div>
-                  <label>البريد الإلكتروني</label>
-                  <p>{order.Customer_Infos?.email || "غير متوفر"}</p>
-                </div>
-              </div>
-              <div className="info-item-unique">
-                <i className="fas fa-phone"></i>
-                <div>
-                  <label>الهاتف</label>
-                  <p dir="ltr">{order.Customer_Infos?.tel}</p>
-                </div>
-              </div>
-              <div className="info-item-unique">
-                <i className="fas fa-map-marker-alt"></i>
-                <div>
-                  <label>العنوان</label>
-                  <p>{order.Customer_Infos?.address}</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="order-summary-unique">
-            <h3>ملخص الطلب</h3>
-            <div className="summary-container-unique">
-              <div className="summary-item-unique">
-                <span
-                  className={`status-badge-unique ${currentStatus}`}
-                  style={{
-                    backgroundColor: getStatusColor(currentStatus) + "20",
-                    color: getStatusColor(currentStatus),
-                  }}
-                >
-                  {getStatusLabel(currentStatus)}
-                </span>
-              </div>
-              <div className="summary-item-unique">
-                <label>تاريخ الطلب</label>
-                <p>{new Date(order.created_at).toLocaleDateString("ar-SA")}</p>
-              </div>
-              <div className="summary-item-unique">
-                <label>طريقة الدفع</label>
-                <p>الدفع عند الاستلام</p>
-              </div>
-              <div className="summary-item-unique">
-                <label>المبلغ الإجمالي</label>
-                <p className="total-amount-unique">{order.total_price} ر.س</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="order-items-unique">
-            <h3>العناصر المطلوبة</h3>
-            <div className="items-table-wrapper-unique">
-              <table className="items-table-unique">
-                <thead>
-                  <tr>
-                    <th>المنتج</th>
-                    <th>التفاصيل</th>
-                    <th>السعر</th>
-                    <th>الكمية</th>
-                    <th>الإجمالي</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.products?.map((product) => (
-                    <tr key={product.id}>
-                      <td>
-                        <div className="product-image-unique">
-                          <img src={product.Image} alt={product.name} />
-                        </div>
-                      </td>
-                      <td>
-                        <div className="product-details-unique">
-                          <h4>{product.name}</h4>
-                          <span className="product-id-unique">
-                            #{product.id}
-                          </span>
-                        </div>
-                      </td>
-                      <td>{product.price} ر.س</td>
-                      <td>{product.quantity}</td>
-                      <td>{product.price * product.quantity} ر.س</td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <td colSpan="4" className="text-left">
-                      المجموع الفرعي
-                    </td>
-                    <td>{order.total_price} ر.س</td>
-                  </tr>
-                  <tr>
-                    <td colSpan="4" className="text-left">
-                      الشحن
-                    </td>
-                    <td>0.00 ر.س</td>
-                  </tr>
-                  <tr className="total-row">
-                    <td colSpan="4" className="text-left">
-                      الإجمالي
-                    </td>
-                    <td>{order.total_price} ر.س</td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </section>
-
-          {/* Order Notes Section */}
-          <section className="order-notes-unique">
-            <div className="notes-header">
-              <h3>ملاحظات الطلب</h3>
-              {!showNoteEditor && (
-                <button
-                  className="edit-notes-btn"
-                  onClick={() => setShowNoteEditor(true)}
-                >
-                  <i className="fas fa-edit"></i> تعديل
-                </button>
-              )}
-            </div>
-
-            {showNoteEditor ? (
-              <div className="notes-editor">
-                <textarea
-                  value={orderNote}
-                  onChange={(e) => setOrderNote(e.target.value)}
-                  placeholder="أضف ملاحظات حول هذا الطلب..."
-                  rows={4}
-                ></textarea>
-                <div className="notes-actions">
-                  <button
-                    className="save-notes-btn"
-                    onClick={handleSaveNote}
-                    disabled={isUpdating}
-                  >
-                    {isUpdating ? (
-                      <>
-                        <i className="fas fa-spinner fa-spin"></i> جاري الحفظ...
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-save"></i> حفظ
-                      </>
-                    )}
-                  </button>
-                  <button
-                    className="cancel-notes-btn"
-                    onClick={() => {
-                      setOrderNote(order.notes || "");
-                      setShowNoteEditor(false);
-                    }}
-                    disabled={isUpdating}
-                  >
-                    إلغاء
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="notes-content">
-                {orderNote ? (
-                  <p>{orderNote}</p>
-                ) : (
-                  <p className="no-notes">لا توجد ملاحظات لهذا الطلب</p>
-                )}
-              </div>
-            )}
-          </section>
+          <button className="close-button" onClick={() => setIsOpen(false)}>
+            <i className="fas fa-times"></i>
+          </button>
         </div>
 
-        <footer className="modal-footer-unique">
-          <button
-            className="btn-secondary-unique"
-            onClick={handlePrint}
-            disabled={mode === "print"}
-          >
-            <i className="fas fa-print"></i> طباعة الفاتورة
-          </button>
-          <button
-            className="btn-primary-unique"
-            onClick={() => setShowStatusPopup(true)}
-            disabled={isUpdating}
-          >
-            {isUpdating ? (
-              <>
-                <i className="fas fa-spinner fa-spin"></i> جاري التحديث...
-              </>
-            ) : (
-              <>
-                <i className="fas fa-sync"></i> تغيير الحالة
-              </>
-            )}
-          </button>
-        </footer>
-
-        {showStatusPopup && (
-          <div
-            className="status-popup-overlay-unique"
-            onClick={() => !isUpdating && setShowStatusPopup(false)}
-          >
-            <div
-              className="status-popup-unique"
-              onClick={(e) => e.stopPropagation()}
+        <div className="tabs-container">
+          <div className="tabs">
+            <button
+              className={`tab ${selectedTab === "details" ? "active" : ""}`}
+              onClick={() => setSelectedTab("details")}
             >
-              <h4>تغيير حالة الطلب</h4>
-              <div className="status-options-unique">
-                {statusOptions.map((status) => (
-                  <button
-                    key={status.value}
-                    className={`status-option-unique ${
-                      currentStatus === status.value ? "active" : ""
-                    }`}
-                    onClick={() => handleStatusChange(status.value)}
-                    disabled={isUpdating}
-                    style={{
-                      "--status-color": status.color,
-                      "--status-bg": status.color + "20",
-                    }}
-                  >
-                    <span className="status-dot-unique"></span>
-                    {status.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+              <i className="fas fa-info-circle"></i>
+              التفاصيل
+            </button>
+            <button
+              className={`tab ${selectedTab === "products" ? "active" : ""}`}
+              onClick={() => setSelectedTab("products")}
+            >
+              <i className="fas fa-box"></i>
+              المنتجات
+            </button>
+            <button
+              className={`tab ${selectedTab === "notes" ? "active" : ""}`}
+              onClick={() => setSelectedTab("notes")}
+            >
+              <i className="fas fa-sticky-note"></i>
+              الملاحظات
+            </button>
           </div>
-        )}
+        </div>
+
+        <div className="modal-content">{renderTab()}</div>
+
+        <div className="modal-footer">
+          {selectedTab === "details" && (
+            <div className="status-buttons">
+              {statusOptions.map((status) => (
+                <button
+                  key={status.value}
+                  className={`status-btn ${currentStatus === status.value ? "active" : ""}`}
+                  onClick={() => handleStatusChange(status.value)}
+                  disabled={isUpdating}
+                  style={{
+                    "--status-color": status.color,
+                    "--status-bg": status.color + "20",
+                  }}
+                >
+                  {status.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

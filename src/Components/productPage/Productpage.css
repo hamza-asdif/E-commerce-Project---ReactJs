@@ -58,6 +58,7 @@
   background: var(--bg-white);
   box-shadow: var(--shadow-md);
   aspect-ratio: 1 / 1;
+  position: relative;
 }
 
 .single-product-main-image img {
@@ -93,6 +94,7 @@
   border: 2px solid transparent;
   transition: var(--transition-normal);
   background: var(--bg-white);
+  position: relative;
 }
 
 .single-product-thumbnail.active {
@@ -254,7 +256,7 @@
 
 .single-product-description {
   font-size: clamp(1rem, 1.5vw, 1.1rem);
-  color: var(--text-secondary);
+  color: var (--text-secondary);
   line-height: 1.6;
   margin-top: calc(var(--spacing-sm) * -0.5);
 }
@@ -271,7 +273,7 @@
   color: var(--main-color);
 }
 
-.single-product-old-price {
+single-product-old-price {
   font-size: clamp(1rem, 1.5vw, 1.2rem);
   color: var(--text-secondary);
   text-decoration: line-through;
@@ -284,22 +286,44 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   margin-top: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .single-product-stats-item {
   padding: var(--spacing-sm);
-  margin: var(--spacing-xs) 0;
-  font-size: clamp(0.9rem, 1.3vw, 1rem);
-  color: var(--text-primary);
   background: #f8fafc;
   border-radius: var(--radius-sm);
-  transition: transform var(--transition-normal);
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
   text-align: center;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .single-product-stats-item:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background: white;
+}
+
+.stats-icon {
+  font-size: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.highlight-stats {
+  background: #fff8f8;
+  border: 1px solid var(--main-color);
+  color: var(--main-color);
 }
 
 .single-product-highlight {
@@ -307,12 +331,15 @@
   font-weight: 700;
 }
 
-.single-product-highlight strong{
+.single-product-highlight strong {
   background: var(--main-color);
   color: white;
   border-radius: 8px;
   padding: 2px 15px;
   margin: 0px 5px;
+  display: inline-block;
+  min-width: 3rem;
+  text-align: center;
 }
 
 /* ======== Error & Loading States ======== */
@@ -378,6 +405,103 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Skeleton Loading Styles */
+.skeleton-wrapper {
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.single-product-gallery .react-loading-skeleton {
+  border-radius: var(--radius-lg);
+  height: 100%;
+  width: 100%;
+  transform: none !important;
+  position: absolute;
+}
+
+.single-product-main-image {
+  position: relative;
+}
+
+.single-product-thumbnail {
+  position: relative;
+}
+
+.single-product-gallery .single-product-thumbnail .react-loading-skeleton {
+  border-radius: var(--radius-md);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  transform: none !important;
+}
+
+.single-product-details .react-loading-skeleton {
+  margin-bottom: var(--spacing-md);
+  transform: none !important;
+}
+
+.single-product-pricing .react-loading-skeleton {
+  display: inline-block;
+  margin-inline-start: var(--spacing-sm);
+  transform: none !important;
+}
+
+/* Override default skeleton colors to match your theme */
+.react-loading-skeleton {
+  --base-color: #f0f0f0 !important;
+  --highlight-color: #f8f8f8 !important;
+  background-color: var(--base-color) !important;
+  background-image: linear-gradient(
+    90deg,
+    var(--base-color) 0px,
+    var(--highlight-color) 40px,
+    var(--base-color) 80px
+  ) !important;
+}
+
+/* Add animation for smoother loading experience */
+@keyframes skeletonLoading {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.react-loading-skeleton {
+  animation: skeletonLoading 1.5s ease-in-out infinite !important;
+}
+
+/* Custom container for pricing skeletons */
+.skeleton-pricing {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+/* Add animation for smoother loading experience */
+@keyframes skeletonLoading {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.react-loading-skeleton {
+  animation: skeletonLoading 1.5s ease-in-out infinite !important;
 }
 
 /* ======== Responsive Design ======== */
@@ -498,12 +622,11 @@
 }
 
 @media (max-width: 480px) {
-
   .container-product-page {
     /* padding: var(--spacing-md); */
     width: 99%;
   }
-  
+
   .single-product-page {
     padding-top: var(--spacing-md);
   }

@@ -1,14 +1,22 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import "./productCard2.css";
-import axios from "axios";
 import { useGlobalContext } from "../../../Context/GlobalContext";
 import { useNavigate } from "react-router-dom";
-import supabase from "../../../supabaseClient";
+
+const SkeletonCard = () => (
+  <div className="card2-box">
+    <div className="skeleton-card">
+      <div className="skeleton-image"></div>
+      <div className="skeleton-content">
+        <div className="skeleton-title"></div>
+        <div className="skeleton-price"></div>
+        <div className="skeleton-price"></div>
+      </div>
+    </div>
+  </div>
+);
 
 function ProductCard2() {
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-  const SUPABASE_APIKEY = import.meta.env.VITE_SUPABASE_API_KEY;
-
   const [productCard2, setProductCard2] = useState([]);
   const [randomProducts, setRandomProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,25 +24,16 @@ function ProductCard2() {
   const { NavigateToProduct, allProducts } = useGlobalContext();
   const NavigateNow = useNavigate();
 
-
-
-  useEffect( () => {
-    handleRandomProducts_main()
-  }, [allProducts] )
-
-
-  const handleRandomProducts_main = () => {
-    if(allProducts && allProducts.length) {
+  const handleRandomProducts_main = useCallback(() => {
+    if (allProducts && allProducts.length) {
       setProductCard2(allProducts);
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
-
-
+  }, [allProducts]);
 
   useEffect(() => {
-    handleRandomProducts();
-  }, [productCard2]);
+    handleRandomProducts_main();
+  }, [handleRandomProducts_main]);
 
   const handleRandomProducts = useCallback(() => {
     if (productCard2.length <= 3) {
@@ -54,20 +53,27 @@ function ProductCard2() {
     setRandomProducts(selectedProducts);
   }, [productCard2]);
 
+  useEffect(() => {
+    handleRandomProducts();
+  }, [handleRandomProducts]);
+
   const handleProductClick = useCallback(
     async (product) => {
       await NavigateToProduct(product);
       NavigateNow(`/product/${product.id}`);
     },
-    [NavigateToProduct, NavigateNow],
+    [NavigateToProduct, NavigateNow]
   );
 
   const LoadingProducts = useMemo(() => {
     return (
-      <div className="container">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>جاري تحميل المنتجات...</p>
+      <div className="card2">
+        <div className="container">
+          <div className="product-card2-container">
+            {[1, 2, 3].map((index) => (
+              <SkeletonCard key={index} />
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -110,7 +116,7 @@ function ProductCard2() {
       <div className="card2">
         <div className="container">
           <div className="product-card2-container">
-            {randomProducts.length > 0 && productList}
+            {!isLoading && randomProducts.length > 0 && productList}
           </div>
         </div>
       </div>

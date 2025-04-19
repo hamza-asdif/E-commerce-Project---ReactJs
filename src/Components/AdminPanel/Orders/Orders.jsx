@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import "./Orders.css";
 import Papa from "papaparse";
@@ -30,10 +30,12 @@ function Orders() {
   // Use orders from context
   useEffect(() => {
     if (contextOrders?.length) {
-      const ordersWithIds = contextOrders.map((item, index) => ({
-        ...item,
-        order_Id: `#${String(index + 1).padStart(3, "0")}`,
-      }));
+      const ordersWithIds = contextOrders
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Sort by date, newest first
+        .map((item, index) => ({
+          ...item,
+          order_Id: `#${String(index + 1).padStart(3, "0")}`,
+        }));
       setOrders(ordersWithIds);
       setLoading(false);
     }
@@ -440,35 +442,144 @@ function Orders() {
           return;
       }
 
-      const updatedOrders = orders.map((order) =>
-        selectedOrderIds.includes(order.id)
-          ? { ...order, status: newStatus }
-          : order
-      );
+      // Update orders in state
+      const updatedOrders = orders.map((order) => {
+        if (selectedOrderIds.includes(order.id)) {
+          return {
+            ...order,
+            status: newStatus,
+          };
+        }
+        return order;
+      });
 
-      const ordersWithIds = updatedOrders.map((item, index) => ({
-        ...item,
-        order_Id: `#${String(index + 1).padStart(3, "0")}`,
-      }));
+      // Sort by date again after update
+      const sortedUpdatedOrders = updatedOrders
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .map((item, index) => ({
+          ...item,
+          order_Id: `#${String(index + 1).padStart(3, "0")}`,
+        }));
 
-      setOrders(ordersWithIds);
+      setOrders(sortedUpdatedOrders);
       setSelectedOrders([]);
       setSelectedRows({});
 
-      alertify.success(`تم تحديث حالة ${selectedOrderIds.length} طلب بنجاح`);
+      // Show success message with updated status text
+      const statusText =
+        newStatus === "delivered" ? "تم التسليم" : "قيد المعالجة";
+      alertify.success(
+        `تم تحديث ${selectedOrderIds.length} طلب إلى "${statusText}" بنجاح`
+      );
     } catch (error) {
       console.error("Error applying bulk action:", error);
-      alert("حدث خطأ أثناء تطبيق الإجراء");
+      alertify.error("حدث خطأ أثناء تحديث حالة الطلبات");
     } finally {
       setLoading(false);
     }
   };
 
-  // Print handler: open OrderDetailsPopup in print mode
-  const handlePrintOrder = (order) => {
-    setClickedOrder(order);
-    setOrderDetailsMode("print");
-    setIsOrderDetails(true);
+  // Print handler: directly print the order
+  const handlePrintOrder = async (order) => {
+    const printWindow = window.open("", "_blank");
+
+    // Create print-optimized HTML
+    const printContent = `
+      <!DOCTYPE html>
+      <html dir="rtl">
+      <head>
+        <title>فاتورة طلب #${order.order_Id}</title>
+        <style>
+          @media print {
+            body { font-family: Arial, sans-serif; }
+            .invoice-header { text-align: center; margin-bottom: 30px; }
+            .invoice-details { margin-bottom: 20px; }
+            .customer-info { margin-bottom: 30px; }
+            .items-table { width: 100%; border-collapse: collapse; }
+            .items-table th, .items-table td { 
+              border: 1px solid #ddd; 
+              padding: 8px; 
+              text-align: right; 
+            }
+            .total-section { 
+              margin-top: 30px;
+              text-align: left;
+              border-top: 2px solid #ddd;
+              padding-top: 10px;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="invoice-header">
+          <h1>فاتورة طلب</h1>
+          <p>رقم الطلب: ${order.order_Id}</p>
+          <p>التاريخ: ${new Date(order.created_at).toLocaleDateString("ar-SA")}</p>
+        </div>
+        
+        <div class="invoice-details">
+          <strong>حالة الطلب:</strong> ${
+            order.status === "delivered"
+              ? "تم التسليم"
+              : order.status === "processing"
+                ? "قيد المعالجة"
+                : order.status === "cancelled"
+                  ? "ملغي"
+                  : "قيد الانتظار"
+          }
+        </div>
+
+        <div class="customer-info">
+          <h3>معلومات العميل</h3>
+          <p>الاسم: ${order.Customer_Infos?.fullName || "غير محدد"}</p>
+          <p>الهاتف: ${order.Customer_Infos?.tel || "غير متوفر"}</p>
+          <p>العنوان: ${order.Customer_Infos?.address || "غير محدد"}</p>
+          <p>المدينة: ${order.Customer_Infos?.city || "غير محدد"}</p>
+        </div>
+
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>المنتج</th>
+              <th>السعر</th>
+              <th>الكمية</th>
+              <th>المجموع</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${order.products
+              ?.map(
+                (product) => `
+              <tr>
+                <td>${product.name}</td>
+                <td>${product.price} ر.س</td>
+                <td>${product.quantity}</td>
+                <td>${product.price * product.quantity} ر.س</td>
+              </tr>
+            `
+              )
+              .join("")}
+          </tbody>
+        </table>
+
+        <div class="total-section">
+          <p>المجموع الفرعي: ${order.total_price} ر.س</p>
+          <p>رسوم الشحن: 0 ر.س</p>
+          <p><strong>الإجمالي: ${order.total_price} ر.س</strong></p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+
+    // Wait for content to load
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
   };
 
   // View handler: open OrderDetailsPopup in view mode
@@ -479,7 +590,7 @@ function Orders() {
   };
 
   // More options handler (placeholder)
-  const handleMoreOptions = (order) => {
+  const handleMoreOptions = () => {
     alertify.message("خيارات إضافية قادمة قريبًا");
   };
 
