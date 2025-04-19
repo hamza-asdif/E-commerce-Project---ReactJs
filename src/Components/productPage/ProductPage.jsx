@@ -154,7 +154,7 @@ function ProductPage() {
     async (productId) => {
       const productPage_Api = `${Supabase_APIURL}?id=eq.${productId}`;
       try {
-        console.log("FETCH PRODUCT PAGE ID HERE :", productId);
+        // console.log("FETCH PRODUCT PAGE ID HERE :", productId);
         const response = await axios.get(productPage_Api, {
           headers: {
             apikey: supabase_APIKEY,
@@ -162,7 +162,7 @@ function ProductPage() {
           },
         });
 
-        console.log("FETCH PRODUCT PAGE ID HERE :", response.data);
+        // console.log("FETCH PRODUCT PAGE ID HERE :", response.data);
 
         // Check if we got any data back
         if (!response.data || response.data.length === 0) {
