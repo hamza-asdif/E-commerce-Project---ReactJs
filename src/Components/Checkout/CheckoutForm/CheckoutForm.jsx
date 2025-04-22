@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { FaCartPlus } from "react-icons/fa";
+import { FaCartPlus, FaEnvelope, FaUser, FaMapMarkerAlt, FaCity } from "react-icons/fa";
 import { useGlobalContext } from "../../../Context/GlobalContext";
 import supabase from "../../../supabaseClient";
 import { v4 as uuidv4 } from "uuid";
@@ -20,6 +20,7 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
+    email: "",
     tel: "",
     city: "",
     address: "",
@@ -87,10 +88,16 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
       isValid = false;
     }
 
+    // التحقق من صحة البريد الإلكتروني
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      newErrors.email = "يرجى إدخال بريد إلكتروني صحيح";
+      isValid = false;
+    }
+
     // التحقق من صحة رقم الهاتف
-    const phoneRegex = /^(06|(\+212)|(00212))[0-9]{8}$/;
-    if (!formData.tel || !phoneRegex.test(formData.tel)) {
-      newErrors.tel = "يجب إدخال رقم هاتف صحيح (يبدأ بـ 06 أو +212)";
+    if (!formData.tel || formData.tel.length < 8) {
+      newErrors.tel = "يرجى إدخال رقم هاتف صحيح";
       isValid = false;
     }
 
@@ -143,6 +150,10 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
       try {
         let submittedOrder;
         const isExpressCheckout = !!productPage_Product;
+        
+        const customerInfo = {
+          ...formData,
+        };
 
         if (!isExpressCheckout && productsInCart.length !== 0) {
           // Regular checkout
@@ -151,7 +162,7 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
             products: [...productsInCart],
             total_price: productsInCart_TotalPrice,
             status: "pending",
-            Customer_Infos: formData,
+            Customer_Infos: customerInfo,
             created_at: new Date().toISOString(),
           };
         } else if (isExpressCheckout) {
@@ -167,7 +178,7 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
             ],
             total_price: productPage_Product.price * quantity,
             status: "pending",
-            Customer_Infos: formData,
+            Customer_Infos: customerInfo,
             created_at: new Date().toISOString(),
           };
         } else {
@@ -209,32 +220,34 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
   };
 
   return (
-    <div
-      className={`checkout-form ${
-        checkoutStyle
-          ? "checkout-form--page-checkout"
-          : "checkout-form--express"
-      }`}
-    >
-      <div className="checkout-form__order-section">
+    <div className="checkout-form">
+      <div className="checkout-form__header">
         <h3 className="checkout-form__order-title">
-          للطلب يرجى إدخال معلوماتك في الخانات أسفله
+          إتمام الطلب
         </h3>
+        <p className="checkout-form__subtitle">
+          يرجى إدخال بياناتك لإتمام عملية الشراء
+        </p>
+      </div>
 
-        <form className="checkout-form__form" onSubmit={handleSubmit}>
+      <div className="checkout-form__body">
+        <form onSubmit={handleSubmit}>
           <div className="checkout-form__grid">
-            {/* Input fields remain the same */}
+            {/* Full Name Field */}
             <div className="checkout-form__form-group">
-              <input
-                ref={fullNameRef}
-                type="text"
-                placeholder="الاسم بالكامل"
-                name="fullName"
-                onChange={handleInputChange}
-                className={`checkout-form__input ${
-                  errors.fullName ? "checkout-form__input--error" : ""
-                }`}
-              />
+              <div className="checkout-form__input-wrapper">
+                <input
+                  ref={fullNameRef}
+                  type="text"
+                  placeholder="الاسم بالكامل"
+                  name="fullName"
+                  onChange={handleInputChange}
+                  className={`checkout-form__input ${
+                    errors.fullName ? "checkout-form__input--error" : ""
+                  }`}
+                />
+                <FaUser className="checkout-form__input-icon" />
+              </div>
               {errors.fullName && (
                 <span className="checkout-form__error-message">
                   {errors.fullName}
@@ -242,17 +255,42 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
               )}
             </div>
 
+            {/* Email Field */}
             <div className="checkout-form__form-group">
-              <input
-                type="tel"
-                placeholder="رقم الهاتف"
-                name="tel"
-                onChange={handleInputChange}
-                className={`checkout-form__input ${
-                  errors.tel ? "checkout-form__input--error" : ""
-                }`}
-                dir="rtl"
-              />
+              <div className="checkout-form__input-wrapper">
+                <input
+                  type="email"
+                  placeholder="البريد الإلكتروني"
+                  name="email"
+                  onChange={handleInputChange}
+                  className={`checkout-form__input ${
+                    errors.email ? "checkout-form__input--error" : ""
+                  }`}
+                />
+                <FaEnvelope className="checkout-form__input-icon" />
+              </div>
+              {errors.email && (
+                <span className="checkout-form__error-message">
+                  {errors.email}
+                </span>
+              )}
+            </div>
+
+            {/* Phone Field */}
+            <div className="checkout-form__form-group">
+              <div className="checkout-form__input-wrapper">
+                <input
+                  type="tel"
+                  placeholder="رقم الهاتف"
+                  name="tel"
+                  onChange={handleInputChange}
+                  className={`checkout-form__input ${
+                    errors.tel ? "checkout-form__input--error" : ""
+                  }`}
+                  dir="rtl"
+                />
+                <FaUser className="checkout-form__input-icon" />
+              </div>
               {errors.tel && (
                 <span className="checkout-form__error-message">
                   {errors.tel}
@@ -260,16 +298,20 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
               )}
             </div>
 
+            {/* City Field */}
             <div className="checkout-form__form-group">
-              <input
-                type="text"
-                placeholder="المدينة"
-                name="city"
-                onChange={handleInputChange}
-                className={`checkout-form__input ${
-                  errors.city ? "checkout-form__input--error" : ""
-                }`}
-              />
+              <div className="checkout-form__input-wrapper">
+                <input
+                  type="text"
+                  placeholder="المدينة"
+                  name="city"
+                  onChange={handleInputChange}
+                  className={`checkout-form__input ${
+                    errors.city ? "checkout-form__input--error" : ""
+                  }`}
+                />
+                <FaCity className="checkout-form__input-icon" />
+              </div>
               {errors.city && (
                 <span className="checkout-form__error-message">
                   {errors.city}
@@ -277,16 +319,20 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
               )}
             </div>
 
+            {/* Address Field - Full Width */}
             <div className="checkout-form__form-group">
-              <input
-                type="text"
-                placeholder="العنوان"
-                name="address"
-                onChange={handleInputChange}
-                className={`checkout-form__input ${
-                  errors.address ? "checkout-form__input--error" : ""
-                }`}
-              />
+              <div className="checkout-form__input-wrapper">
+                <input
+                  type="text"
+                  placeholder="العنوان التفصيلي"
+                  name="address"
+                  onChange={handleInputChange}
+                  className={`checkout-form__input ${
+                    errors.address ? "checkout-form__input--error" : ""
+                  }`}
+                />
+                <FaMapMarkerAlt className="checkout-form__input-icon" />
+              </div>
               {errors.address && (
                 <span className="checkout-form__error-message">
                   {errors.address}
@@ -295,17 +341,36 @@ function CheckoutForm({ productPage_Product, checkoutStyle }) {
             </div>
           </div>
 
-          {/* Submit button remains the same */}
-          <button type="submit" className="checkout-form__submit-button">
-            {loading ? (
-              <div className="checkout-form__loader">جار التحميل...</div>
-            ) : (
-              <>
-                <span>لتأكيد الطلب اضغط هنا</span>
-                <FaCartPlus className="checkout-form__cart-icon" />
-              </>
-            )}
-          </button>
+          {/* Trust Section */}
+          <div className="checkout-form__trust">
+            <div className="checkout-form__trust-item">
+              <FaCartPlus className="checkout-form__trust-icon" />
+              <span>توصيل مجاني لجميع مدن المملكة</span>
+            </div>
+            <div className="checkout-form__trust-item">
+              <FaUser className="checkout-form__trust-icon" />
+              <span>الدفع عند الاستلام متاح لجميع المناطق</span>
+            </div>
+            <div className="checkout-form__trust-item">
+              <FaEnvelope className="checkout-form__trust-icon" />
+              <span>ضمان استرجاع المنتج خلال 14 يوم</span>
+            </div>
+          </div>
+
+          <div className="checkout-form__footer">
+            <button type="submit" className="checkout-form__submit-button">
+              {loading ? (
+                <div className="checkout-form__loader">
+                  جار معالجة الطلب
+                </div>
+              ) : (
+                <>
+                  <FaCartPlus className="checkout-form__cart-icon" />
+                  <span>لتأكيد الطلب اضغط هنا</span>
+                </>
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>

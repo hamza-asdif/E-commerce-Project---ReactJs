@@ -12,7 +12,7 @@ function Orders() {
   const [orders, setOrders] = useState([]);
   const [currency] = useState("ر.س");
   const [currentPage, setCurrentPage] = useState(1);
-  const [ordersPerPage, setOrdersPerPage] = useState(10);
+  const [ordersPerPage, setOrdersPerPage] = useState(15);
   const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState([]);
   const [clickedOrder, setClickedOrder] = useState({});
@@ -828,7 +828,6 @@ function Orders() {
                   setCurrentPage(1);
                 }}
               >
-                <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="15">15</option>
                 <option value="30">30</option>
