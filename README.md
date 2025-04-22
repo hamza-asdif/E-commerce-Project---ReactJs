@@ -2,7 +2,7 @@
 # Million Idea Store - E-commerce Platform
 
 <div align="center">
-  <img src="public/images/slide.png" alt="Million Idea Store Preview" style="width: 100%; max-width: 1200px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);" />
+  <img src="public/screen-shots/floating buttons.png" alt="Million Idea Store Preview" style="width: 100%; max-width: 1200px; border-radius: 10px; margin: 20px 0; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);" />
   <p align="center">
     <strong>
       Modern, full-featured e-commerce platform with dual-mode checkout, RTL support, and a comprehensive admin dashboard.
