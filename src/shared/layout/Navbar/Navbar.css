@@ -27,9 +27,17 @@ a {
   justify-content: center;
   align-items: center;
   padding: 10px 0;
-  transition: all var(--transition-speed) ease;
+  transition: all var(--transition-speed) ease, transform var(--transition-speed) ease, background var(--transition-speed) ease;
   z-index: 1000;
   position: relative; /* إضافة هذه الخاصية */
+}
+
+.header.hidden {
+  transform: translateY(-100%);
+}
+
+.header.visible {
+  transform: translateY(0);
 }
 
 .header.scrolled {
@@ -83,6 +91,24 @@ a {
   padding: 10px 0;
 }
 
+/* Logo container box */
+.header-logo .logo-box {
+  width: 140px;
+  height: 60px;
+  /* background: #fff; */
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  overflow: hidden;
+}
+.header-logo .logo-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
 /* Menu on the RIGHT side */
 .header-links {
   order: 3;
@@ -92,21 +118,10 @@ a {
   min-width: 150px;
 }
 
-/* Logo Style */
-.header-logo > a {
-  max-width: 150px;
-}
-
-.logo-box > img {
-  width: 100%;
-  height: auto;
-  max-height: 80px;
-}
-
-/* Links/Menu Style on RIGHT */
 .header-links ul {
   width: 100%;
   display: flex;
+  gap: 1rem;
   justify-content: flex-end;
   align-items: center;
   list-style: none;
@@ -121,7 +136,7 @@ a {
 }
 
 .header-links .header-a {
-  padding: 10px 15px;
+  padding: 10px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -145,6 +160,23 @@ a {
 
 .header-links .header-a:hover::after {
   width: 50%;
+}
+
+.header-links .header-a.active {
+  color: var(--main-color);
+}
+
+.header-links .header-a.active::after {
+  width: 100%;
+}
+
+/* Navbar link overrides */
+.header-links .header-a {
+  color: #fff;
+}
+.header-links .header-a:hover,
+.header-links .header-a.active {
+  color: var(--main-color);
 }
 
 /* Cart Icon Style on LEFT */
@@ -310,10 +342,8 @@ a {
 
 @media screen and (max-width: 1279px) {
   .header-container {
-    width: 90%;
-    display: grid;
+    /* تحسين للشاشات الصغيرة جداً */
     grid-template-columns: 1fr auto 1fr;
-    align-items: center;
   }
 
   /* استخدام Grid بدلاً من Flexbox للتحكم الدقيق بالتوزيع */

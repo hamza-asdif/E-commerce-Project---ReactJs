@@ -24,13 +24,14 @@
 hr {
   width: 80%;
   margin: auto;
-  color: #ddd;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   font-size: 0.5px;
 }
 
 footer {
   padding: 25px 0px 45px 0px;
-  background: black;
+  background: #111;
   border-top: 1px solid var(--main-color);
 }
 
@@ -48,8 +49,13 @@ footer {
 }
 
 .footer ul li a {
-  color: var(--main-color);
+  color: #fff;
   font-size: 1rem;
+  transition: color 0.3s;
+}
+
+.footer ul li a:hover {
+  color: var(--main-color);
 }
 
 .footer ul li:first-of-type {
@@ -91,6 +97,14 @@ footer {
     text-align: center;
   }
 
+  .footer ul li a {
+    font-size: 0.8rem;
+  }
+
+  .footer ul li a:hover {
+    color: var(--main-color);
+  }
+
   .footer ul li:first-of-type a::after {
     content: "";
     position: absolute;
@@ -100,9 +114,5 @@ footer {
     height: 2px;
     background: var(--main-color);
     transform: translate(50%);
-  }
-
-  .footer ul li a {
-    font-size: 0.8rem;
   }
 }
