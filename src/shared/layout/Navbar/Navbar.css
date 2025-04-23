@@ -239,7 +239,7 @@ a {
 }
 
 #cart-icon {
-  color: #f24547;
+    color: rgba(255, 255, 255, 0.7);
   font-size: 1.25rem;
   transition: transform 0.2s ease;
 }
@@ -277,8 +277,9 @@ a {
 
 .header-search-icon {
   font-size: 1.25rem;
-  color: var(--main-color);
+    color: rgba(255, 255, 255, 0.7);
   transition: transform 0.2s ease;
+  cursor: pointer;
 }
 
 .search-toggle:hover .header-search-icon {
