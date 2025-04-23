@@ -30,6 +30,33 @@
 - [Navigation & UI Elements](#navigation--ui-elements)
 - [Screenshots & GIF Suggestions](#screenshots--gif-suggestions)
 - [Technical Stack](#technical-stack)
+- [Project Structure](#project-structure)
+
+---
+
+## 🗂️ Project Structure (2025 Refactor)
+
+```txt
+src/
+│
+├── app/              # App.jsx, main.jsx (entry points)
+├── assets/           # Images, fonts, static files
+├── context/          # Context providers
+├── hooks/            # Custom React hooks
+├── lib/              # External libraries config (Supabase, Axios...)
+├── pages/            # Page-level components (routes)
+├── shared/
+│   ├── layout/       # Layout components (Navbar, Sidebar, Footer...)
+│   ├── ui/           # Reusable UI components (Button, Input, Card...)
+│   └── utils/        # Helper functions
+├── widgets/          # Compound widgets (combine multiple components)
+├── styles/           # Global styles (CSS/SCSS/themes)
+└── index.html        # (in public/)
+```
+
+> All import paths have been updated to reflect this structure.
+---
+
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
 - [Business Features](#business-features)

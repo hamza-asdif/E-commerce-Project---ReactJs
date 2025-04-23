@@ -9,9 +9,9 @@ import axios from "axios";
 import PropTypes from "prop-types";
 import "alertifyjs/build/css/alertify.rtl.css";
 import "alertifyjs/build/css/themes/default.rtl.css";
-import "../styles/alertify.custom.css";
+import "./alertify.custom.css";
 import alertify from "alertifyjs";
-import supabase from "../lib/supabaseClient";
+import supabase from "../supabaseClient";
 
 // import the supabase variables
 const SUPABASE_API_URL = import.meta.env.VITE_SUPABASE_API_URL;
@@ -20,10 +20,10 @@ const SUPABASE_API_KEY = import.meta.env.VITE_SUPABASE_API_KEY;
 const CART_STORAGE_KEY = "ProductsInCart";
 const PRODUCT_PAGE_STORAGE_KEY = "productPage_Product";
 
-const GlobalContextInstance = createContext();
+const GlobalContext = createContext();
 
 const contextModule = {
-  GlobalContext: GlobalContextInstance,
+  GlobalContext,
   GlobalProvider: ({ children }) => {
     // حالات المنتجات
     const [allProducts, setAllProducts] = useState([]);
@@ -507,4 +507,6 @@ contextModule.GlobalProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export const { GlobalContext, GlobalProvider } = contextModule;
+export const { GlobalContext: GlobalContextExport, GlobalProvider } =
+  contextModule;
+export { useGlobalContext } from "./GlobalContextHooks";
