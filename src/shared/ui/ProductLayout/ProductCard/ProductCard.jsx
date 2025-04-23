@@ -12,7 +12,7 @@ import { useGlobalContext } from "../../../../hooks/GlobalContextHooks";
 import alertify from "alertifyjs";
 import "alertifyjs/build/css/alertify.rtl.css";
 import "alertifyjs/build/css/themes/default.rtl.css";
-import "../../../../../styles/alertify.custom.css";
+import "../../../../../src/styles/alertify.custom.css";
 import "./ProductCard.css";
 
 const RatingStars = ({ rating }) => {
