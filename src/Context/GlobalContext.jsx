@@ -228,36 +228,33 @@ const contextModule = {
             (item) => parseInt(item.id) !== id
           );
 
-          return new Promise((resolve) => {
-            alertify
-              .confirm(
-                "تأكيد الحذف",
-                "هل تريد حذف هذا المنتج من السلة؟",
-                function () {
-                  setProductsInCart(updatedCart);
-                  alertify.success("تم حذف المنتج بنجاح ✅");
-                  resolve(true);
-                },
-                function () {
-                  alertify.error("تم إلغاء العملية");
-                  resolve(false);
-                }
-              )
-              .set({
-                labels: {
-                  ok: "حذف",
-                  cancel: "إلغاء",
-                },
-                transition: "pulse",
-                movable: false,
-                closableByDimmer: false,
-                defaultFocusOn: "cancel",
-                padding: 10,
-                closable: false,
-                rtl: true,
-                pinnable: false,
-              });
-          });
+          alertify
+            .confirm(
+              "تأكيد الحذف",
+              "هل تريد حذف هذا المنتج من السلة؟",
+              function () {
+                setProductsInCart(updatedCart);
+                alertify.success("تم حذف المنتج بنجاح ✅");
+                // resolve(true);
+              },
+              function () {
+                alertify.error("تم إلغاء العملية");
+                // resolve(false);
+              }
+            )
+            .set({
+              labels: {
+                ok: "حذف",
+                cancel: "إلغاء",
+              },
+              transition: "pulse",
+              movable: false,
+              closableByDimmer: false,
+              defaultFocusOn: "cancel",
+              padding: 10,
+              closable: false,
+              rtl: true,
+            });
         } catch (error) {
           alertify.error("حدث خطأ في حذف المنتج");
           return false;
@@ -327,9 +324,9 @@ const contextModule = {
     const ProductsByNumber = useCallback(
       (Num = allProducts.length) => {
         const limitedProducts =
-          Num < 8 && allProducts.length > 0
-            ? allProducts.slice(0, Num)
-            : allProducts;
+          Num < 8 && allProducts.length > 0 ?
+            allProducts.slice(0, Num)
+          : allProducts;
         setDisplayedProducts(limitedProducts);
         return limitedProducts;
       },

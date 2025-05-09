@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useGlobalContext } from "../../hooks/GlobalContextHooks";
-import { FaMinus, FaPlus, FaCartArrowDown, FaChevronLeft, FaChevronRight, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import {
+  FaMinus,
+  FaPlus,
+  FaCartArrowDown,
+  FaChevronLeft,
+  FaChevronRight,
+  FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
+} from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Breadcrumb from "../../shared/ui/Breadcrumb/Breadcrumb";
@@ -8,7 +17,7 @@ import CheckoutForm from "../Checkout/CheckoutForm/CheckoutForm";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import "./Productpage.css";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 const ProductPageSkeleton = () => (
   <div className="single-product-page">
@@ -132,23 +141,23 @@ const StarRating = ({ rating }) => {
   const stars = [];
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 !== 0;
-  
+
   // Add full stars
   for (let i = 0; i < fullStars; i++) {
     stars.push(<FaStar key={`full-${i}`} />);
   }
-  
+
   // Add half star if needed
   if (hasHalfStar) {
     stars.push(<FaStarHalfAlt key="half" />);
   }
-  
+
   // Add empty stars to make 5 total
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-  for (let i = 0; i <emptyStars; i++) {
+  for (let i = 0; i < emptyStars; i++) {
     stars.push(<FaRegStar key={`empty-${i}`} />);
   }
-  
+
   return <div className="product-reviews-stars">{stars}</div>;
 };
 
@@ -271,7 +280,10 @@ function ProductPage() {
 
   // Handle thumbnail navigation
   const handleNextThumbnails = () => {
-    if ((currentThumbnailPage + 1) * thumbnailsPerPage < productImages.length + 1) {
+    if (
+      (currentThumbnailPage + 1) * thumbnailsPerPage <
+      productImages.length + 1
+    ) {
       setCurrentThumbnailPage(currentThumbnailPage + 1);
     }
   };
@@ -286,11 +298,13 @@ function ProductPage() {
   const getVisibleThumbnails = () => {
     const startIdx = currentThumbnailPage * thumbnailsPerPage;
     const endIdx = startIdx + thumbnailsPerPage;
-    
+
     // First thumbnail is always the main product image
-    const allThumbnails = [{ image: productPage.Image, isMain: true }, 
-      ...productImages.map(img => ({ image: img, isMain: false }))];
-    
+    const allThumbnails = [
+      { image: productPage.Image, isMain: true },
+      ...productImages.map((img) => ({ image: img, isMain: false })),
+    ];
+
     return allThumbnails.slice(startIdx, endIdx);
   };
 
@@ -325,8 +339,8 @@ function ProductPage() {
   const handleAddToCart = async () => {
     if (ProductPage_Quantity >= 1) {
       const newProductsInCart = productsInCart.map((product) => {
-        return product.id === id
-          ? { ...product, quantity: product.quantity + ProductPage_Quantity }
+        return product.id === id ?
+            { ...product, quantity: product.quantity + ProductPage_Quantity }
           : product;
       });
 
@@ -362,17 +376,18 @@ function ProductPage() {
   };
 
   const visibleThumbnails = getVisibleThumbnails();
-  const hasMoreThumbnails = (currentThumbnailPage + 1) * thumbnailsPerPage < productImages.length + 1;
+  const hasMoreThumbnails =
+    (currentThumbnailPage + 1) * thumbnailsPerPage < productImages.length + 1;
   const hasPrevThumbnails = currentThumbnailPage > 0;
   const rating = productPage.Rating ? productPage.Rating : 4.8;
   const reviewCount = getReviewCount(productPage);
 
   const handlePrevImage = (e) => {
     if (e) e.stopPropagation();
-    
+
     // Create a combined array of all images
     const allImages = [productPage.Image, ...productImages];
-    
+
     // Find current index
     let currentIndex;
     if (imageIndex === null) {
@@ -380,10 +395,10 @@ function ProductPage() {
     } else {
       currentIndex = imageIndex + 1; // +1 because main image is at index 0
     }
-    
+
     // Calculate previous index with wrap-around
     let prevIndex = (currentIndex - 1 + allImages.length) % allImages.length;
-    
+
     // Update state
     if (prevIndex === 0) {
       setImageIndex(null); // Main image
@@ -396,10 +411,10 @@ function ProductPage() {
 
   const handleNextImage = (e) => {
     if (e) e.stopPropagation();
-    
+
     // Create a combined array of all images
     const allImages = [productPage.Image, ...productImages];
-    
+
     // Find current index
     let currentIndex;
     if (imageIndex === null) {
@@ -407,10 +422,10 @@ function ProductPage() {
     } else {
       currentIndex = imageIndex + 1; // +1 because main image is at index 0
     }
-    
+
     // Calculate next index with wrap-around
     let nextIndex = (currentIndex + 1) % allImages.length;
-    
+
     // Update state
     if (nextIndex === 0) {
       setImageIndex(null); // Main image
@@ -434,21 +449,20 @@ function ProductPage() {
             <div className="single-product-content">
               {/* Product Gallery */}
               <div className="single-product-gallery">
-                <div 
-                  className={`single-product-main-image ${isZoomed ? 'zoomed' : ''}`}
+                <div
+                  className={`single-product-main-image ${isZoomed ? "zoomed" : ""}`}
                   onClick={handleZoomToggle}
                 >
-                  {!productPage_MainImage ? (
+                  {!productPage_MainImage ?
                     <Skeleton height={"100%"} width={"100%"} />
-                  ) : (
-                    <>
+                  : <>
                       <img
                         src={`${productPage_MainImage}`}
                         alt={productPage.name}
                         loading="lazy"
                       />
-                      <button 
-                        className="image-nav-button prev-image" 
+                      <button
+                        className="image-nav-button prev-image"
                         onClick={(e) => {
                           e.stopPropagation();
                           handlePrevImage(e);
@@ -457,8 +471,8 @@ function ProductPage() {
                       >
                         <FaChevronRight />
                       </button>
-                      <button 
-                        className="image-nav-button next-image" 
+                      <button
+                        className="image-nav-button next-image"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleNextImage(e);
@@ -468,34 +482,41 @@ function ProductPage() {
                         <FaChevronLeft />
                       </button>
                     </>
-                  )}
+                  }
                 </div>
-                
+
                 <div className="single-product-thumbnails-wrapper">
                   {hasPrevThumbnails && (
-                    <button 
-                      className="thumbnails-nav-button prev" 
+                    <button
+                      className="thumbnails-nav-button prev"
                       onClick={handlePrevThumbnails}
                       aria-label="Previous thumbnails"
                     >
                       <FaChevronRight />
                     </button>
                   )}
-                  
+
                   <div className="single-product-thumbnails">
                     {visibleThumbnails.map((item, idx) => (
                       <div
                         key={idx}
                         ref={item.isMain ? mainImageRef : null}
                         className={`single-product-thumbnail ${
-                          (item.isMain && imageIndex === null) || 
-                          (!item.isMain && imageIndex === productImages.indexOf(item.image)) 
-                            ? "active" 
-                            : ""
+                          (
+                            (item.isMain && imageIndex === null) ||
+                            (!item.isMain &&
+                              imageIndex === productImages.indexOf(item.image))
+                          ) ?
+                            "active"
+                          : ""
                         }`}
                         onClick={() => {
                           setProductPage_MainImage(item.image);
-                          setImageIndex(item.isMain ? null : productImages.indexOf(item.image));
+                          setImageIndex(
+                            item.isMain ? null : (
+                              productImages.indexOf(item.image)
+                            )
+                          );
                           if (item.isMain) {
                             mainImageRef.current.classList.add("active");
                           } else {
@@ -512,10 +533,10 @@ function ProductPage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {hasMoreThumbnails && (
-                    <button 
-                      className="thumbnails-nav-button next" 
+                    <button
+                      className="thumbnails-nav-button next"
                       onClick={handleNextThumbnails}
                       aria-label="Next thumbnails"
                     >
@@ -527,15 +548,19 @@ function ProductPage() {
 
               {/* Product Details */}
               <div className="single-product-details">
-                {!productPage.name ? (
+                {!productPage.name ?
                   <Skeleton height="50px" width="100%" />
-                ) : (
-                  <h1 className="single-product-title">{productPage.name}</h1>
-                )}
+                : <h1 className="single-product-title">{productPage.name}</h1>}
                 <div className="single-product-pricing">
                   {productPage.OldPrice && (
                     <div className="discount-badge">
-                      خصم {Math.round(((productPage.OldPrice - productPage.price) / productPage.OldPrice) * 100)}%
+                      خصم{" "}
+                      {Math.round(
+                        ((productPage.OldPrice - productPage.price) /
+                          productPage.OldPrice) *
+                          100
+                      )}
+                      %
                     </div>
                   )}
                   <span className="single-product-current-price">
@@ -549,15 +574,14 @@ function ProductPage() {
                 </div>
 
                 {/* Order Form */}
-                {!loading && isExpressCheckoutEnable ? (
+                {!loading && isExpressCheckoutEnable ?
                   <div className="single-product-express-checkout">
                     <CheckoutForm
                       productPage_Product={productPage}
                       checkoutStyle={false}
                     />
                   </div>
-                ) : (
-                  <div className="checkout-btn-product-page">
+                : <div className="checkout-btn-product-page">
                     <div className="checkout-btn-product-page-quantitySelect">
                       <button
                         className="quantity-btn minus-btn"
@@ -588,84 +612,64 @@ function ProductPage() {
 
                     <div className="checkout-btn-product-page-button">
                       <button className="buy-now-btn" onClick={handleAddToCart}>
-                        {btnLoader ? <div className="loader"></div> : btnText}
+                        {btnLoader ?
+                          <div className="loader"></div>
+                        : btnText}
                         {!btnLoader && (
                           <FaCartArrowDown id="buy-now-btn-icon" />
                         )}
                       </button>
                     </div>
                   </div>
-                )}
+                }
 
                 {/* Product Stats */}
                 <div className="single-product-stats">
-                  {isExpressCheckoutEnable ? (
-                    <div className="single-product-stats-compact">
+                  <>
+                    <p className="single-product-stats-item">
+                      <span className="stats-icon">⭐</span>
+                      تقييم عملائنا {rating.toFixed(1)}
+                      /5 ({reviewCount}+ تقييم)
+                    </p>
+                    {productPage.OldPrice && (
                       <p className="single-product-stats-item">
-                        <span className="stats-icon">🚚</span>
-                        توصيل مجاني لجميع مدن المملكة
+                        <span className="stats-icon">💥</span>
+                        خصم{" "}
+                        {Math.round(
+                          ((productPage.OldPrice - productPage.price) /
+                            productPage.OldPrice) *
+                            100
+                        )}
+                        % لفترة محدودة
                       </p>
-                      <p className="single-product-stats-item">
-                        <span className="stats-icon">💯</span>
-                        ضمان استرجاع خلال 14 يوم
-                      </p>
-                      <p className="single-product-stats-item highlight-stats">
-                        <span className="stats-icon">👁️</span>
-                        يشاهده حالياً{" "}
-                        <span className="single-product-highlight">
-                          <strong>{randomVisitors}</strong>
-                        </span>{" "}
-                        شخص
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      <p className="single-product-stats-item">
-                        <span className="stats-icon">⭐</span>
-                        تقييم عملائنا{" "}
-                        {rating.toFixed(1)}
-                        /5 ({reviewCount}+ تقييم)
-                      </p>
-                      {productPage.OldPrice && (
-                        <p className="single-product-stats-item">
-                          <span className="stats-icon">💥</span>
-                          خصم{" "}
-                          {Math.round(
-                            ((productPage.OldPrice - productPage.price) /
-                              productPage.OldPrice) *
-                              100
-                          )}
-                          % لفترة محدودة
-                        </p>
-                      )}
-                      <p className="single-product-stats-item">
-                        <span className="stats-icon">📦</span>
-                        {productPage.Stock > 10
-                          ? "متوفر في المخزون"
-                          : `باقي ${productPage.Stock} قطع فقط`}
-                      </p>
-                      <p className="single-product-stats-item">
-                        <span className="stats-icon">🚚</span>
-                        توصيل مجاني لجميع مدن المملكة
-                      </p>
-                      <p className="single-product-stats-item">
-                        <span className="stats-icon">💯</span>
-                        ضمان استرجاع خلال 14 يوم
-                      </p>
-                      <p className="single-product-stats-item highlight-stats">
-                        <span className="stats-icon">👁️</span>
-                        يشاهده حالياً{" "}
-                        <span className="single-product-highlight">
-                          <strong>{randomVisitors}</strong>
-                        </span>{" "}
-                        شخص
-                      </p>
-                    </>
-                  )}
+                    )}
+                    <p className="single-product-stats-item">
+                      <span className="stats-icon">📦</span>
+                      {productPage.Stock > 10 ?
+                        "متوفر في المخزون"
+                      : `باقي ${productPage.Stock} قطع فقط`}
+                    </p>
+                    <p className="single-product-stats-item">
+                      <span className="stats-icon">🚚</span>
+                      توصيل مجاني لجميع مدن المملكة
+                    </p>
+                    <p className="single-product-stats-item">
+                      <span className="stats-icon">💯</span>
+                      ضمان استرجاع خلال 14 يوم
+                    </p>
+                    <p className="single-product-stats-item highlight-stats">
+                      <span className="stats-icon">👁️</span>
+                      يشاهده حالياً{" "}
+                      <span className="single-product-highlight">
+                        <strong>{randomVisitors}</strong>
+                      </span>{" "}
+                      شخص
+                    </p>
+                  </>
                 </div>
               </div>
             </div>
-            
+
             {/* Reviews Section Placeholder */}
             <div className="product-reviews-section">
               <div className="product-reviews-header">
@@ -673,12 +677,18 @@ function ProductPage() {
               </div>
               <div className="product-reviews-summary">
                 <div className="product-reviews-average">
-                  <div className="product-reviews-average-number">{rating.toFixed(1)}</div>
+                  <div className="product-reviews-average-number">
+                    {rating.toFixed(1)}
+                  </div>
                   <StarRating rating={rating} />
-                  <div className="product-reviews-count">{reviewCount} تقييم</div>
+                  <div className="product-reviews-count">
+                    {reviewCount} تقييم
+                  </div>
                 </div>
               </div>
-              <p style={{textAlign: 'center', padding: '20px'}}>سيتم إضافة نظام التقييمات قريباً</p>
+              <p style={{ textAlign: "center", padding: "20px" }}>
+                سيتم إضافة نظام التقييمات قريباً
+              </p>
             </div>
           </div>
         </div>
